@@ -42,3 +42,4 @@ AIXContainer分为三部分:
 
 # 流程图
 
+![image](https://github.com/Eric-Ma-C/AIXContainer/edit/master/container-flow-chart.png)
