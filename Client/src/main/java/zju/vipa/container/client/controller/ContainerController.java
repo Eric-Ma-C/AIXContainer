@@ -60,10 +60,12 @@ public class ContainerController {
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
 
             /** 2.安装conda环境,安装过程回显至服务器 */
+//            new ShellTask("cd root/aix/code").exec();
+//            new ShellTask("apt-get update").exec();
 
-            ShellTask shellTask = new ShellTask("conda env create -f " + path);
-//            ShellTask shellTask=new ShellTask("ping www.baidu.com","/bin");
-            shellTask.exec();
+
+
+            new ShellTask("conda env create -f " + path).exec();
 
 
 

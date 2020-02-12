@@ -170,7 +170,6 @@ public class TcpClient {
 
             mReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), Message.CHARSET_NAME));
 
-
             String tmpStr;
             int index;
             try {
@@ -184,15 +183,16 @@ public class TcpClient {
             } catch (SocketTimeoutException e) {
                 ExceptionUtils.handle(e, "响应数据读取超时。");
             }
-
-
-            LogUtils.debug("Client收到: " + response);
-
-
         } catch (Exception e) {
             ExceptionUtils.handle(e);
         }
 
+        /** 服务端无需回应 */
+        if("".equals(response)||response==null){
+            return null;
+        }
+
+        LogUtils.debug("Client收到: " + response);
 
         Message body = JsonUtils.parseObject(response.toString(), Message.class);
 

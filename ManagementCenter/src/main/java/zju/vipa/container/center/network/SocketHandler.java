@@ -130,11 +130,11 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellInfo(String value) {
-        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
+//        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
     }
 
     private void shellResult(String value) {
-        LogUtils.debug("Shell result from " + mSocket.getInetAddress() + " :" + value);
+//        LogUtils.debug("Shell result from " + mSocket.getInetAddress() + " :" + value);
 
 
     }
@@ -150,9 +150,9 @@ public class SocketHandler implements Runnable {
     private void getCondaEnvFileByTaskId(String taskId) {
 
         Message msg;
-        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
+//        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
-//            msg = new Message(Intent.condaEnvFileUrl, "http:ip/aix-container/train_client.yml");
+            msg = new Message(Intent.condaEnvFileUrl, "/root/aix/code/train_client.yml");
 
         //写返回报文
         response(msg);
@@ -185,7 +185,7 @@ public class SocketHandler implements Runnable {
             ExceptionUtils.handle(e);
         }
 //        LogUtils.debug("Receive from client " + mSocket.getInetAddress() + ":" + mSocket.getPort() + " :" + response);
-        LogUtils.info("Receive from client " + mSocket.getInetAddress() + ":" + response);
+        LogUtils.info(mSocket.getInetAddress() + ":" + response);
 
         Message msg = JsonUtils.parseObject(response.toString(), Message.class);
         return msg;

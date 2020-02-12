@@ -8,7 +8,7 @@ package zju.vipa.container.utils;
 public class LogUtils {
 
 
-    private static final LogLevelEnum LOG_LEVEL=LogLevelEnum.DEBUG;
+    private static final LogLevelEnum LOG_LEVEL=LogLevelEnum.INFO;
 
     public static void info(String msg){
         if (LOG_LEVEL.match(LogLevelEnum.INFO)){
@@ -39,7 +39,7 @@ public class LogUtils {
         INFO,WORNING,DEBUG,ERROR;
 
         public boolean match(LogLevelEnum logLevel){
-            return this.ordinal()>=logLevel.ordinal();
+            return this.ordinal()<=logLevel.ordinal();
         }
     }
 }
