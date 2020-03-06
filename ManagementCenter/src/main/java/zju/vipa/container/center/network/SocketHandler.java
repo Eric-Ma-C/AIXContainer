@@ -1,9 +1,8 @@
 package zju.vipa.container.center.network;
 
-import sun.security.ssl.Debug;
 import zju.vipa.container.message.Intent;
 import zju.vipa.container.message.Message;
-import zju.vipa.container.utils.DebugUtils;
+import zju.vipa.container.network.NetworkConfig;
 import zju.vipa.container.utils.ExceptionUtils;
 import zju.vipa.container.utils.JsonUtils;
 import zju.vipa.container.utils.LogUtils;
@@ -59,19 +58,28 @@ public class SocketHandler implements Runnable {
             return;
         }
         switch (msg.getIntent()) {
-            case getCondaEnvFileByTaskId:
+            case CONDA_SOURCE:
+                getCondaSource();
+                break;
+            case GET_CONDA_ENV_FILE_BY_TASKID:
                 getCondaEnvFileByTaskId(msg.getValue());
                 break;
-            case deamonQuery:
+            case GET_PIP_ENV_FILE_BY_TASKID:
+                getPipEnvFileByTaskId(msg.getValue());
+                break;
+            case DEAMON_QUERY:
                 deamonQuery();
                 break;
-            case shellInfo:
+            case SHELL_BEGIN:
+                shellBegin(msg.getValue());
+                break;
+            case SHELL_INFO:
                 shellInfo(msg.getValue());
                 break;
-            case shellResult:
+            case SHELL_RESULT:
                 shellResult(msg.getValue());
                 break;
-            case shellError:
+            case SHELL_ERROR:
                 shellError(msg.getValue());
                 break;
             default:
@@ -81,6 +89,22 @@ public class SocketHandler implements Runnable {
 
         /** 关闭socket,短连接 */
         disconnect();
+    }
+
+
+
+    /**
+     * 设置conda源
+     *
+     * @param:
+     * @return:
+     */
+    private void getCondaSource() {
+//        Message msg = new Message(Intent.CONDA_SOURCE,"test");
+        Message msg = new Message(Intent.CONDA_SOURCE, NetworkConfig.DEFAULT_CONDA_SOURCE);
+
+        //写返回报文
+        response(msg);
     }
 
     /**
@@ -129,19 +153,23 @@ public class SocketHandler implements Runnable {
         //todo reconnect
     }
 
+    private void shellBegin(String value) {
+        LogUtils.info("\n******* exec: "+value+" *******");
+    }
+
     private void shellInfo(String value) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
+        LogUtils.info(value);
     }
 
     private void shellResult(String value) {
 //        LogUtils.debug("Shell result from " + mSocket.getInetAddress() + " :" + value);
-
-
+        LogUtils.info(value);
     }
 
     private void shellError(String value) {
-        LogUtils.error("Shell error from " + mSocket.getInetAddress() + " :" + value);
-        //todo
+//        LogUtils.error("Shell error from " + mSocket.getInetAddress() + " :" + value);
+        LogUtils.error(value);
     }
 
     /**
@@ -152,8 +180,24 @@ public class SocketHandler implements Runnable {
         Message msg;
 //        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
-            msg = new Message(Intent.condaEnvFileUrl, "/root/aix/code/train_client.yml");
+        msg = new Message(Intent.CONDA_ENV_FILE_URL, "/root/aix/code/train_client.yml");
 
+        //写返回报文
+        response(msg);
+    }
+
+    /**
+     * 返回pip环境文件路径
+     */
+    private void getPipEnvFileByTaskId(String taskId) {
+
+        Message msg;
+//        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
+
+        String pipFile="/root/aix/code/requirements.txt";
+        msg = new Message(Intent.CONDA_ENV_FILE_URL, pipFile);
+
+        LogUtils.info("pip file url:"+pipFile);
         //写返回报文
         response(msg);
     }
@@ -185,7 +229,7 @@ public class SocketHandler implements Runnable {
             ExceptionUtils.handle(e);
         }
 //        LogUtils.debug("Receive from client " + mSocket.getInetAddress() + ":" + mSocket.getPort() + " :" + response);
-        LogUtils.info(mSocket.getInetAddress() + ":" + response);
+//        LogUtils.info(mSocket.getInetAddress() + ":" + response);
 
         Message msg = JsonUtils.parseObject(response.toString(), Message.class);
         return msg;

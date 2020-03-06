@@ -24,13 +24,19 @@ public class JsonUtils {
 
     public static <T> T parseObject(String json, Class<T> tClass) {
 
+        if ("".equals(json) || json == null) {
+//            LogUtils.info("");
+            return null;
+        }
+
         T obj = null;
 
         try {
             /** 反序列化 */
             obj = JSON.parseObject(json, tClass);
         } catch (Exception e) {
-            ExceptionUtils.handle(e,json);
+            LogUtils.debug("Json parse failed:" + json);
+            ExceptionUtils.handle(e);
         }
 
         return obj;

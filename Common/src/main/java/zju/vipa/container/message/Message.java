@@ -7,7 +7,7 @@ package zju.vipa.container.message;
  */
 public class Message {
         /** 结束字符串 */
-        public static final String END_STRING = "eof-aix-message";
+        public static final String END_STRING = "EOF-AIX-MESSAGE";
         /** 消息字符编码格式 */
         public static final String CHARSET_NAME = "UTF-8";
 
@@ -17,6 +17,11 @@ public class Message {
         public Message(Intent intent, String value) {
                 this.intent = intent;
                 this.value = value;
+        }
+
+        public Message(Intent intent) {
+                this.intent = intent;
+                this.value = "";
         }
 
 

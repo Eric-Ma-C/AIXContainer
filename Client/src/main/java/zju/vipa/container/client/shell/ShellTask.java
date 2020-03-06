@@ -1,7 +1,7 @@
 package zju.vipa.container.client.shell;
 
 import zju.vipa.container.utils.ExceptionUtils;
-import zju.vipa.container.client.network.TcpClient;
+import zju.vipa.container.network.TcpClient;
 import zju.vipa.container.message.Intent;
 import zju.vipa.container.utils.LogUtils;
 
@@ -13,23 +13,33 @@ import zju.vipa.container.utils.LogUtils;
 public class ShellTask implements RealtimeProcessInterface {
 
     private RealtimeProcess mRealtimeProcess = null;
-    private String[] command;
-    private String cmdDir;
+//    private String command;
+//    private String cmdDir;
 
-    public ShellTask(String cmd,String cmdDir) {
-        this.command = cmd.split("\\s+");
-        this.cmdDir=cmdDir;
+    public ShellTask(String cmd, String cmdDir) {
+        mRealtimeProcess = new RealtimeProcess(this);
+        mRealtimeProcess.setExecDir(cmdDir);
+        mRealtimeProcess.setCommand(cmd);
     }
 
     public ShellTask(String cmd) {
-        this.command = cmd.split("\\s+");
-        this.cmdDir="/";
+        mRealtimeProcess = new RealtimeProcess(this);
+        mRealtimeProcess.setExecDir(System.getProperty("user.home"));
+        mRealtimeProcess.setCommand(cmd);
+    }
+
+    public ShellTask(String[] cmds) {
+        mRealtimeProcess = new RealtimeProcess(this);
+        mRealtimeProcess.setExecDir(System.getProperty("user.home"));
+        String cmdList="";
+        for (String cmd : cmds) {
+            cmdList=cmdList.concat(cmd+" && ");
+        }
+        mRealtimeProcess.setCommand(cmdList.substring(0,cmdList.length()-4));
     }
 
     public void exec() {
-        mRealtimeProcess = new RealtimeProcess(this);
-        mRealtimeProcess.setDirectory(cmdDir);
-        mRealtimeProcess.setCommand(command);
+
 
         try {
             mRealtimeProcess.start();
@@ -41,30 +51,38 @@ public class ShellTask implements RealtimeProcessInterface {
 
     }
 
-    /** shell指令执行回调接口实现 todo:回传center*/
+    @Override
+    public void onProcessBegin(String cmd) {
+        LogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
+        TcpClient.getInstance().uploadState(Intent.SHELL_BEGIN, cmd);
+    }
+
+    /**
+     * shell指令执行回调接口实现 todo:回传center
+     */
     @Override
     public void onNewStdoutListener(String newStdOut) {
-        if ("".equals(newStdOut)||newStdOut==null) {
+        if ("".equals(newStdOut) || newStdOut == null) {
             return;
         }
         LogUtils.info(newStdOut);
-        TcpClient.getInstance().uploadShellState(Intent.shellInfo,newStdOut);
+        TcpClient.getInstance().uploadState(Intent.SHELL_INFO,newStdOut);
     }
 
     @Override
     public void onNewStderrListener(String newStdErr) {
-        if ("".equals(newStdErr)||newStdErr==null) {
+        if ("".equals(newStdErr) || newStdErr == null) {
             return;
         }
-        LogUtils.error("Shell Error :"+newStdErr);
-        TcpClient.getInstance().uploadShellState(Intent.shellError,newStdErr);
+        LogUtils.error("Shell Error :" + newStdErr);
+        TcpClient.getInstance().uploadState(Intent.SHELL_ERROR, newStdErr);
 
     }
 
     @Override
     public void onProcessFinish(int resultCode) {
-        LogUtils.debug("Shell Finished :"+resultCode);
-        TcpClient.getInstance().uploadShellState(Intent.shellResult,"resultCode="+resultCode);
+        LogUtils.debug("Shell Finished :" + resultCode);
+        TcpClient.getInstance().uploadState(Intent.SHELL_RESULT, "resultCode=" + resultCode);
 
     }
 }

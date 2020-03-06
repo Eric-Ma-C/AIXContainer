@@ -22,4 +22,29 @@ public class NetworkConfig {
      * tcp自定义端口号
      */
     public static final int SERVER_PORT = 10007;
+    /**
+     * todo:socket响应数据读取超时时间5s
+     */
+    public static final int SOCKET_READ_TIMEOUT = 3 * 1000;
+
+    /**
+     * conda源地址
+     */
+    public static final String DEFAULT_CONDA_SOURCE = "channels:\n" +
+        "  - defaults\n" +
+        "show_channel_urls: true\n" +
+        "channel_alias: https://mirrors.tuna.tsinghua.edu.cn/anaconda\n" +
+        "default_channels:\n" +
+        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main\n" +
+        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free\n" +
+        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r\n" +
+        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro\n" +
+        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2\n" +
+        "custom_channels:\n" +
+        "  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
+        "  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
+        "  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
+        "  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
+        "  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
+        "  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n";
 }

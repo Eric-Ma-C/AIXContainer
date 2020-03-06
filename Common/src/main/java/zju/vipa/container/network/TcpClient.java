@@ -1,7 +1,6 @@
-package zju.vipa.container.client.network;
+package zju.vipa.container.network;
 
 
-import zju.vipa.container.network.NetworkConfig;
 import zju.vipa.container.utils.ExceptionUtils;
 import zju.vipa.container.message.Intent;
 import zju.vipa.container.message.Message;
@@ -20,13 +19,6 @@ import java.net.SocketTimeoutException;
  * @Description: 容器端主动发起tcp请求
  */
 public class TcpClient {
-
-
-
-    /**
-     * socket响应数据读取超时时间15s
-     */
-    private static final int SOCKET_READ_TIMEOUT = 15 * 1000;
 
 
     /**
@@ -74,7 +66,7 @@ public class TcpClient {
      */
     public String getCondaEnvFileByTaskId(String taskId) {
 
-        Message message = new Message(Intent.getCondaEnvFileByTaskId, taskId);
+        Message message = new Message(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
         String response = "";
         try {
             response = sendMsgAndGetResponse(message).getValue();
@@ -87,14 +79,48 @@ public class TcpClient {
     }
 
     /**
-     * 上传shell指令执行输出和结果
+     * 通过taskId获取pip配置文件连接
      *
+     * @param: taskId
+     * @return: pip配置文件下载url
+     */
+    public String getPipEnvFileByTaskId(String taskId) {
+
+        Message message = new Message(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
+        String response = "";
+        try {
+            response = sendMsgAndGetResponse(message).getValue();
+        } catch (Exception e) {
+            ExceptionUtils.handle(e);
+        }
+
+        return response;
+
+    }
+
+    /**
+     * 重新设置conda国内源
+     */
+    public String getCondaSource() {
+        Message message = new Message(Intent.CONDA_SOURCE);
+
+        Message resMsg = sendMsgAndGetResponse(message);
+        if (resMsg == null) {
+            return "";
+        } else {
+            return resMsg.getValue();
+        }
+    }
+
+    /**
+     * 上传容器指令执行输出和结果
+     * java异常等等
      * @param:
      * @return:
      */
-    public Message uploadShellState(Intent shellIntent, String value) {
+    public Message uploadState(Intent intent, String value) {
 
-        Message message = new Message(shellIntent, value);
+        Message message = new Message(intent, value);
         Message body = null;
         try {
             body = sendMsgAndGetResponse(message);
@@ -107,6 +133,7 @@ public class TcpClient {
     }
 
 
+
     /**
      * tcp断开后,守护进程间隔性发起的tcp连接,
      * 询问服务器是否有消息传达
@@ -116,7 +143,7 @@ public class TcpClient {
      */
     public void deamonQuery() {
 
-        Message message = new Message(Intent.deamonQuery, "");
+        Message message = new Message(Intent.DEAMON_QUERY, "");
         try {
             sendMsgAndGetResponse(message);
         } catch (Exception e) {
@@ -135,6 +162,7 @@ public class TcpClient {
     /**
      * 通过tcp连接,发送msg,获取响应信息
      * 短连接方式
+     *
      * @param: msg
      * @return: 响应消息
      */
@@ -144,14 +172,14 @@ public class TcpClient {
         try {
             /** 短连接方式 */
 //            if (!isSocketAvailable()) {
-                //创建Socket对象
-                if (DebugUtils.isLocalDebug) {
-                    mSocket = new Socket(InetAddress.getByName(NetworkConfig.DEBUG_SERVER_IP), NetworkConfig.SERVER_PORT);
-                } else {
-                    mSocket = new Socket(InetAddress.getByName(NetworkConfig.VIPA_ALIYUN_SERVER_IP), NetworkConfig.SERVER_PORT);
-                }
-                //设置读取超时时间
-                mSocket.setSoTimeout(SOCKET_READ_TIMEOUT);
+            //创建Socket对象
+            if (DebugUtils.isLocalDebug) {
+                mSocket = new Socket(InetAddress.getByName(NetworkConfig.DEBUG_SERVER_IP), NetworkConfig.SERVER_PORT);
+            } else {
+                mSocket = new Socket(InetAddress.getByName(NetworkConfig.MY_ALIYUN_SERVER_IP), NetworkConfig.SERVER_PORT);
+            }
+            //设置读取超时时间
+            mSocket.setSoTimeout(NetworkConfig.SOCKET_READ_TIMEOUT);
 
 
 //            }
@@ -187,16 +215,17 @@ public class TcpClient {
             ExceptionUtils.handle(e);
         }
 
+        Message resMsg = new Message(Intent.NULL);
         /** 服务端无需回应 */
-        if("".equals(response)||response==null){
-            return null;
+        if ("".equals(response) || response == null) {
+            return resMsg;
         }
 
-        LogUtils.debug("Client收到: " + response);
+        LogUtils.debug("Client received: " + response);
 
-        Message body = JsonUtils.parseObject(response.toString(), Message.class);
+        resMsg = JsonUtils.parseObject(response.toString(), Message.class);
 
-        return body;
+        return resMsg;
     }
 
 

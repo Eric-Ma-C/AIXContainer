@@ -6,6 +6,8 @@ package zju.vipa.container.client.shell;
  * @Description: shell指令执行回调接口
  */
 interface RealtimeProcessInterface{
+    /** shell开始执行 */
+    void onProcessBegin(String cmd);
     /** shell标准输出响应 */
     void onNewStdoutListener(String newStdout);
     /** shell错误输出响应 */
