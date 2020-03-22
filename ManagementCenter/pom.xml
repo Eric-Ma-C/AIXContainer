@@ -35,7 +35,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>zju.vipa.container.center.ContainerManagementCenter</mainClass>
+                            <mainClass>zju.vipa.aix.container.center.ContainerManagementCenter</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -110,6 +110,7 @@
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
         </dependency>
+
 
 
     </dependencies>

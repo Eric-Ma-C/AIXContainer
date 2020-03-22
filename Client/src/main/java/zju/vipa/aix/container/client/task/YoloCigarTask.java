@@ -1,0 +1,70 @@
+package zju.vipa.aix.container.client.task;
+
+import zju.vipa.aix.container.client.network.TcpClient;
+import zju.vipa.aix.container.client.shell.ShellTask;
+import zju.vipa.aix.container.utils.LogUtils;
+
+/**
+ * @Date: 2020/3/10 9:39
+ * @Author: EricMa
+ * @Description: 抢到任务配置yolo香烟识别环境
+ */
+public class YoloCigarTask extends BaseTask{
+    private String mlTaskId;
+    private String condaEnvFilePath;
+
+    public YoloCigarTask() {
+    }
+
+    private YoloCigarTask(String mlTaskId) {
+        super();//可以省略
+        this.mlTaskId = mlTaskId;
+    }
+    /**
+     * 设置新的conda国内源
+     * @param:
+     * @return:
+     */
+    private void setCondaSource() {
+        String src = TcpClient.getInstance().getCondaSource();
+
+        new ShellTask("tee /root/.condarc << EOF\n" + src + "\nEOF").exec();
+//        FileUtils.write(src, condarcPath);
+    }
+
+    /**
+     * 获取conda环境文件url  todo:添加下载功能
+     *
+     * @param:
+     * @return:
+     */
+    private void getCondaYmlPath() {
+        condaEnvFilePath = TcpClient.getInstance().getCondaEnvFileByTaskId(mlTaskId);
+        LogUtils.debug("yml file path = " + condaEnvFilePath);
+            condaEnvFilePath="/root/aix/code/environment.yaml";
+//            path="/nfs2/mc/docker/aix-container/train_client.yml";
+    }
+
+    @Override
+    String[] initTaskCmds() {
+        String[] cmds={
+//            "conda env create -f " + condaEnvFilePath,
+            "source /root/miniconda3/bin/activate clean_yolo",
+            "python /nfs2/sontal/codes/TrainerProxy/main.py"
+        };
+        return cmds;
+    }
+
+    @Override
+     void procedure() {
+        /** 更新conda源 */
+//        setCondaSource();
+        /** 获取yml路径 */
+        getCondaYmlPath();
+
+        new ShellTask(getCommands()).exec();
+
+    }
+
+
+}

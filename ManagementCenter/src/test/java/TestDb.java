@@ -1,5 +1,6 @@
-import zju.vipa.container.center.db.DbManager;
-import zju.vipa.container.center.db.entity.User;
+import zju.vipa.aix.container.center.db.DbManager;
+import zju.vipa.aix.container.center.db.entity.Task;
+import zju.vipa.aix.container.center.db.entity.DataturksUser;
 
 import java.util.List;
 
@@ -10,13 +11,30 @@ import java.util.List;
  */
 public class TestDb {
         public static void main(String[] args) {
-               getUserList();
+//               getUserList();
+                getTaskList();
+                System.out.println("\n\n\n");
+                getWaittingTaskList();
         }
 
-        private static void getUserList(){
-                List<User> userList=DbManager.getInstance().getUsers();
-                for (User user : userList) {
-                        System.out.println(user.toString());
+        private static void getDataturksUserList(){
+                List<DataturksUser> dataturksUserList =DbManager.getInstance().getDataturksUserList();
+                for (DataturksUser dataturksUser : dataturksUserList) {
+                        System.out.println(dataturksUser.toString());
+                }
+        }
+
+        private static void getTaskList(){
+                List<Task> taskList=DbManager.getInstance().getTaskList();
+                for (Task task : taskList) {
+                        System.out.println(task.toString());
+                }
+        }
+
+        private static void getWaittingTaskList(){
+                List<Task> taskList=DbManager.getInstance().getWaittingTaskList();
+                for (Task task : taskList) {
+                        System.out.println(task.toString());
                 }
         }
 }

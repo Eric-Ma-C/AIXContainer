@@ -2,7 +2,7 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias alias="User" type="zju.vipa.container.center.db.entity.User" />
+        <typeAlias alias="User" type="zju.vipa.aix.container.center.db.entity.DataturksUser" />
 <!--    <typeAliases>标签内指定的是你定义的实体类的别名，方便之后使用。-->
     </typeAliases>
 
@@ -11,8 +11,8 @@
             <transactionManager type="JDBC" />
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver" />
-                <property name="url" value="jdbc:mysql://112.124.46.179:3316/hope" />
-                <property name="username" value="dataturks" />
+                <property name="url" value="jdbc:mysql://10.214.211.205:3316/center_temp?serverTimezone=Asia/Shanghai" />
+                <property name="username" value="sontal" />
                 <property name="password" value="12345" />
             </dataSource>
         </environment>
