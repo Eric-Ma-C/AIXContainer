@@ -15,12 +15,12 @@ public class SeverShellTask extends BaseTask {
     }
 
     @Override
-    String[] initTaskCmds() {
+    protected String[] initTaskCmds() {
         return new String[]{cmds};
     }
 
     @Override
-    void procedure() {
+    protected void procedure() {
         new ShellTask(getCommands()).exec();
     }
 }

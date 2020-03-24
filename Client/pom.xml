@@ -37,7 +37,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>zju.vipa.aix.container.client.ContainerManager</mainClass>
+                            <mainClass>zju.vipa.aix.container.client.Client</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

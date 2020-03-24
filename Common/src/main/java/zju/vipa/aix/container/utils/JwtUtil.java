@@ -58,7 +58,7 @@ public class JwtUtil {
             jwtVerifier.verify(token);
             return true;
         }catch (Exception e){
-            ExceptionUtils.handle(e);
+            ExceptionUtils.handle(e,"Token:"+token);
             return false;
         }
     }

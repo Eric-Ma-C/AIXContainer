@@ -4,7 +4,7 @@ import java.util.Date;
 /**
  * @Date: 2020/3/19 17:07
  * @Author: EricMa
- * @Description: todo:
+ * @Description:
  */
 public class Task implements Serializable {
 

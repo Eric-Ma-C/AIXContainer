@@ -1,15 +1,16 @@
-package zju.vipa.aix.container.client.task;
+package zju.vipa.aix.container.client.task.custom;
 
 import zju.vipa.aix.container.client.shell.ShellTask;
+import zju.vipa.aix.container.client.task.BaseTask;
 
 /**
  * @Date: 2020/3/13 11:10
  * @Author: EricMa
  * @Description: aix平台中用户上传的训练任务
  */
-public class TrainingTask extends BaseTask{
+public class TrainingTask extends BaseTask {
     @Override
-    String[] initTaskCmds() {
+    protected String[] initTaskCmds() {
         return new String[]{
             "cd /root/aix/code",
             "pwd",
@@ -21,7 +22,7 @@ public class TrainingTask extends BaseTask{
     }
 
     @Override
-     void procedure() {
+    protected void procedure() {
         new ShellTask(getCommands()).exec();
     }
 }

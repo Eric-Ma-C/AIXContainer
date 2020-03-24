@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.center.network;
 
+import zju.vipa.aix.container.center.ManagementCenter;
 import zju.vipa.aix.container.center.db.DbManager;
 import zju.vipa.aix.container.center.env.EnvError;
 import zju.vipa.aix.container.message.Intent;
@@ -108,7 +109,7 @@ public class SocketHandler implements Runnable {
 
     /**
      * 处理gpu信息
-     * 目前仅显示 todo 存入db
+     * 目前仅显示 todo 存入db?
      *
      * @param:
      * @return:
@@ -136,9 +137,13 @@ public class SocketHandler implements Runnable {
      */
     private void registerContainer(String token) {
         boolean ok = JwtUtil.verify(token);
+        /** todo 获取id号缓存下来 */
         Message msg = new Message(Intent.REGISTER, "DENIED");
         if (ok) {
             msg = new Message(Intent.REGISTER, "OK");
+            LogUtils.info("Container registered successfully! token:" + token);
+        } else {
+            LogUtils.error("Container registered failed! token:" + token);
         }
         //写返回报文
         response(msg);
@@ -194,7 +199,27 @@ public class SocketHandler implements Runnable {
 //        Message message = MessageManager.getInstance().getMessageById(NetworkConfig.TEST_CONTAINER_ID);
 //        boolean needTcpConnect = (message != null);
 
-        String codePath = DbManager.getInstance().grabTask(NetworkConfig.TEST_CONTAINER_ID);
+
+        SystemBriefInfo info = JsonUtils.parseObject(msg, SystemBriefInfo.class);
+        if (info == null) {
+            LogUtils.error("Heartbeat info error:" + msg);
+            disconnect();
+            return;
+        }
+        /** 根据token获取id */
+        String id = ManagementCenter.getInstance().getIdByToken(info.getToken());
+
+        if (id == null) {
+            LogUtils.error("No such a device:" + msg);
+            disconnect();
+            return;
+        }
+
+        LogUtils.info("Heartbeats from client " + id + ": IP=" + mSocket.getInetAddress() + " CPU=" + info.getCpuRate() +
+            "%  RAM=" + info.getRamRate() + "%      time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+
+
+        String codePath = DbManager.getInstance().grabTask(id);
         boolean newTaskToExec = (codePath != null);
 
 
@@ -206,21 +231,21 @@ public class SocketHandler implements Runnable {
 
             //cigar
 //            Message res = new Message(Intent.TASK, "zju.vipa.container.client.task.YoloCigarTask");
-            String cmds = "conda env create -f " + codePath + "/environment.yaml " +
-                "&& source /root/miniconda3/bin/activate clean_yolo " +
+
+
+//            String cmds = "conda env create -f " + codePath + "/environment.yaml " +
+//                "&& source /root/miniconda3/bin/activate clean_yolo " +
+//                "&& python " + codePath + "/main.py";
+
+
+            String cmds = "source /root/miniconda3/bin/activate clean_yolo " +
                 "&& python " + codePath + "/main.py";
             //写返回报文
             response(new Message(Intent.SHELL_TASK, cmds));
 //            response(new Message(Intent.TASK_CODE_URL,codePath));
 
         } else {
-            SystemBriefInfo info = JsonUtils.parseObject(msg, SystemBriefInfo.class);
-            if (info != null) {
-                LogUtils.info("Heartbeats from " + mSocket.getInetAddress() + ": CPU=" + info.getCpuRate() +
-                    "%  RAM=" + info.getRamRate() + "%      time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
-            }
-            //todo 不响应，节省开销
-//            Message msg = new Message(Intent.NULL);
+            /** 服务器对心跳包不响应，节省开销 */
             disconnect();
         }
     }

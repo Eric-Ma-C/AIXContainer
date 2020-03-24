@@ -1,11 +1,9 @@
-package zju.vipa.aix.container.client.controller;
+package zju.vipa.aix.container.client.task;
 
 import zju.vipa.aix.container.client.network.TcpClient;
-import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.client.task.TaskState;
-import zju.vipa.aix.container.client.thread.HeartbeatThread;
+import zju.vipa.aix.container.client.thread.ClientThreadManager;
+import zju.vipa.aix.container.client.thread.Heartbeat;
 import zju.vipa.aix.container.network.NetworkConfig;
-import zju.vipa.aix.container.utils.JwtUtil;
 import zju.vipa.aix.container.utils.LogUtils;
 import zju.vipa.aix.container.utils.SystemInfoUtils;
 
@@ -16,15 +14,17 @@ import java.util.Queue;
 /**
  * @Date: 2020/1/11 20:30
  * @Author: EricMa
- * @Description: 容器控制中心
+ * @Description: 容器任务管理中心
  */
-public class ContainerController {
+public class TaskController {
     /**
      * 待执行任务队列
      */
     private Queue<BaseTask> taskQueue;
 
-    /** 当前执行的task */
+    /**
+     * 当前执行的task
+     */
     private BaseTask currentTask;
 
 //
@@ -32,22 +32,23 @@ public class ContainerController {
 //    private String condarcPath = "/root/.condarc";
 
 
-    private static class ControlCenterHolder {
-        private static final ContainerController INSTANCE = new ContainerController();
+    private static class TaskControllerHolder {
+        private static final TaskController INSTANCE = new TaskController();
     }
 
-    private ContainerController() {
+    private TaskController() {
         init();
     }
 
-    public static ContainerController getInstance() {
-        return ControlCenterHolder.INSTANCE;
+    public static TaskController getInstance() {
+        return TaskControllerHolder.INSTANCE;
     }
 
-    private void init(){
-        taskQueue=new LinkedList<>();
-        currentTask=null;
+    private void init() {
+        taskQueue = new LinkedList<>();
+        currentTask = null;
     }
+
     /**
      * 启动容器心跳线程和工作线程
      *
@@ -58,12 +59,13 @@ public class ContainerController {
 
 
         //todo 容器id
-        boolean isSuccessful = TcpClient.getInstance().registerContainer(NetworkConfig.TEST_CONTAINER_ID);
+        boolean isSuccessful = TcpClient.getInstance().registerContainer(NetworkConfig.TEST_CONTAINER_TOKEN);
         if (isSuccessful) {
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
-            HeartbeatThread.getInstance().start();
+            ClientThreadManager.getInstance().startHeartbeat();
+//            Heartbeat.getInstance().start();
         } else {
-            LogUtils.error("容器注册失败，请检查平台配置。");
+            LogUtils.error("容器注册失败，请检查token配置。");
         }
     }
 
@@ -74,7 +76,7 @@ public class ContainerController {
      * @return:
      */
     public void addTask(BaseTask task) {
-        if (task==null){
+        if (task == null) {
             LogUtils.worning("The adding task is null.");
             return;
         }
@@ -83,24 +85,24 @@ public class ContainerController {
         execNewTask();
     }
 
-    private void execNewTask(){
-        if (taskQueue.isEmpty()){
+    private void execNewTask() {
+        if (taskQueue.isEmpty()) {
             LogUtils.info("Task Queue is empty.");
             /** 启动心跳线程 */
-            HeartbeatThread.getInstance().start();
+            ClientThreadManager.getInstance().startHeartbeat();
+//            Heartbeat.getInstance().start();
 
             return;
-        }else{
-            if (currentTask!=null&&currentTask.getState()!= TaskState.FINISHED){
+        } else {
+            if (currentTask != null && currentTask.getState() != TaskState.FINISHED) {
                 LogUtils.worning("Current task has not finished.");
                 return;
-            }else {
+            } else {
                 /** 保证poll()不返回null */
-                currentTask=taskQueue.poll();
+                currentTask = taskQueue.poll();
                 currentTask.run(new BaseTask.TaskStateListener() {
                     @Override
                     public void onBegin() {
-
                     }
 
                     @Override

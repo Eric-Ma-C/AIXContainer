@@ -11,7 +11,7 @@ public abstract class BaseTask {
     /**
      * 状态
      */
-    private TaskState state;
+    private volatile TaskState state;
     /**
      * shell指令序列
      */
@@ -23,7 +23,7 @@ public abstract class BaseTask {
     /**
      * 已运行时长
      */
-    private long execTime=0;
+    private long execTime = 0;
 
     public TaskState getState() {
         return state;
@@ -34,7 +34,7 @@ public abstract class BaseTask {
 //    }
 
     public String[] getCommands() {
-        if (commands==null){
+        if (commands == null) {
             setCommands(initTaskCmds());
         }
         return commands;
@@ -60,36 +60,50 @@ public abstract class BaseTask {
 //        this.execTime = execTime;
 //    }
 
-    BaseTask(){
-        state=TaskState.WAITING;
+    protected BaseTask() {
+        state = TaskState.WAITING;
     }
 
-    public void run(TaskStateListener taskStateListener){
-        this.listener=taskStateListener;
+    /**
+     * 执行任务
+     *
+     * @param taskStateListener 任务执行状态回调
+     * @return: void
+     */
+    public void run(TaskStateListener taskStateListener) {
+        this.listener = taskStateListener;
 
         listener.onBegin();
-        state=TaskState.RUNNING;
+        state = TaskState.RUNNING;
         procedure();
-        state=TaskState.FINISHED;
+        state = TaskState.FINISHED;
         listener.onFinished();
     }
+
     /**
      * 定义Task的shell命令
+     *
      * @param:
      * @return:
      */
-    abstract String[] initTaskCmds();
+    abstract protected String[] initTaskCmds();
 
     /**
      * 定义执行流程
+     *
      * @param:
      * @return:
      */
-     abstract void procedure();
+    abstract protected void procedure();
 
-     /** 任务执行完毕回调 */
-     public interface TaskStateListener{
-         void onBegin();
-         void onFinished();
-     };
+    /**
+     * 任务执行完毕回调
+     */
+    public interface TaskStateListener {
+        void onBegin();
+
+        void onFinished();
+    }
+
+    ;
 }

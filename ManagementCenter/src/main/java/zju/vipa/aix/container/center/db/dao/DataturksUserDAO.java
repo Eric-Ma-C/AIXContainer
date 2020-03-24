@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @Date: 2020/1/9 20:53
  * @Author: EricMa
- * @Description: todo: 待完善
+ * @Description:
  */
 public interface DataturksUserDAO {
         @Select("select * from d_users")

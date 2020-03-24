@@ -1,7 +1,8 @@
-package zju.vipa.aix.container.client.task;
+package zju.vipa.aix.container.client.task.custom;
 
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.shell.ShellTask;
+import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.utils.LogUtils;
 
 /**
@@ -9,7 +10,7 @@ import zju.vipa.aix.container.utils.LogUtils;
  * @Author: EricMa
  * @Description: 抢到任务在conda中配置pip环境
  */
-public class PipConfigTask extends BaseTask{
+public class PipConfigTask extends BaseTask {
     private String mlTaskId;
     private String pipEnvFilePath;
 
@@ -33,7 +34,7 @@ public class PipConfigTask extends BaseTask{
     }
 
     /**
-     * 获取pip环境文件url  todo:添加下载功能
+     * 获取pip环境文件url
      *
      * @param:
      * @return:
@@ -46,7 +47,7 @@ public class PipConfigTask extends BaseTask{
     }
 
     @Override
-    String[] initTaskCmds() {
+    protected String[] initTaskCmds() {
         String[] cmds={
             "conda create -n pip-env python=3.6 -y",
             "conda env list",
@@ -59,7 +60,7 @@ public class PipConfigTask extends BaseTask{
     }
 
     @Override
-    void procedure() {
+    protected void procedure() {
         /** 更新conda源 */
         setCondaSource();
 

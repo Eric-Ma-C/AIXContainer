@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @Date: 2020/1/11 19:42
  * @Author: EricMa
- * @Description: shell指令执行工具
+ * @Description: shell指令执行工具,主要执行快速返回的命令，作用类似RealtimeProcess
  */
 public class ShellUtils {
 
@@ -21,10 +21,10 @@ public class ShellUtils {
 
     static {
         if (System.getProperty("os.name").toUpperCase().indexOf("WINDOWS") != -1) {
-            System.out.println("window");
+//            System.out.println("window");
             COMMAND_SH = "cmd";
         } else {
-            System.out.println("unix");
+//            System.out.println("unix");
         }
 
     }
@@ -48,9 +48,9 @@ public class ShellUtils {
      * {@link CommandResult#result} is -1, there maybe some excepiton.
      *
      * @param commands     command array
-     * @param needResponse whether need result msg
+     * @param isNeedResultMsg whether need result msg
      */
-    public static CommandResult execCommand(String[] commands, final boolean needResponse) {
+    public static CommandResult execCommand(String[] commands, final boolean isNeedResultMsg) {
         int result = -1;
         if (commands == null || commands.length == 0) {
             return new CommandResult(result, null, "空命令");
@@ -61,36 +61,42 @@ public class ShellUtils {
         final StringBuilder successMsg = new StringBuilder();
         final StringBuilder errorMsg = new StringBuilder();
 
-        DataOutputStream os = null;
+        DataOutputStream outputStream = null;
         try {
             process = Runtime.getRuntime().exec(COMMAND_SH);
-            os = new DataOutputStream(process.getOutputStream());
+            outputStream = new DataOutputStream(process.getOutputStream());
             for (String command : commands) {
                 if (command == null) {
                     continue;
                 }
                 // donnot use os.writeBytes(commmand), avoid chinese charset error
-                os.write(command.getBytes());
-                os.writeBytes(COMMAND_LINE_END);
-                os.flush();
+                outputStream.write(command.getBytes());
+                outputStream.writeBytes(COMMAND_LINE_END);
+                outputStream.flush();
             }
-            os.writeBytes(COMMAND_EXIT);
-            os.flush();
+            outputStream.writeBytes(COMMAND_EXIT);
+            outputStream.flush();
 
             final BufferedReader successResult = new BufferedReader(new InputStreamReader(process.getInputStream()));
             final BufferedReader errorResult = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-            //http://249wangmang.blog.163.com/blog/static/52630765201261334351635/
+            //启动新的线程,解决process.waitFor()阻塞问题
             new Thread(new Runnable() {
                 @Override
                 public void run() {
 
                     try {
-                        if (needResponse) {
-                            String s;
-                            while ((s = successResult.readLine()) != null) {
-                                successMsg.append(s);
-                                successMsg.append(LINE_SEPARATOR);
+                        if (isNeedResultMsg) {
+                            String successTmp=null,errorTmp = null;
+                            while ((successTmp = successResult.readLine()) != null || (errorTmp = errorResult.readLine()) != null) {
+                                if (successTmp!=null) {
+                                    successMsg.append(successTmp);
+                                    successMsg.append(LINE_SEPARATOR);
+                                }
+                                if (errorTmp!=null){
+                                    errorMsg.append(errorTmp);
+                                    errorMsg.append(LINE_SEPARATOR);
+                                }
                             }
                         }
                     } catch (IOException e) {
@@ -98,24 +104,7 @@ public class ShellUtils {
                     }
                 }
             }).start();
-            //启动两个线程,解决process.waitFor()阻塞问题
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
 
-                    try {
-                        if (needResponse) {
-                            String s;
-                            while ((s = errorResult.readLine()) != null) {
-                                errorMsg.append(s);
-                                errorMsg.append(LINE_SEPARATOR);
-                            }
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }).start();
             result = process.waitFor();
             if (errorResult != null) {
                 errorResult.close();
@@ -124,17 +113,15 @@ public class ShellUtils {
                 successResult.close();
             }
 
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (Exception e) {
-            e.printStackTrace();
+            ExceptionUtils.handle(e);
         } finally {
             try {
-                if (os != null) {
-                    os.close();
+                if (outputStream != null) {
+                    outputStream.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                ExceptionUtils.handle(e);
             } finally {
                 if (process != null) {
                     process.destroy();

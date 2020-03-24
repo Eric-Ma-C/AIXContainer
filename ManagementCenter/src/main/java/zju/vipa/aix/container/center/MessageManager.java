@@ -30,9 +30,9 @@ public class MessageManager {
     private MessageManager() {
         messageMap = new HashMap<>();
 
-        //todo test code
-        Message msg = new Message(Intent.SHELL_TASK, "source /root/miniconda3/bin/activate clean_yolo && python  /nfs2/sontal/codes/TrainerProxy/main.py");
-        addMessage(NetworkConfig.TEST_CONTAINER_ID, msg);
+        //test code,to be deleted
+//        Message msg = new Message(Intent.SHELL_TASK, "source /root/miniconda3/bin/activate clean_yolo && python  /nfs2/sontal/codes/TrainerProxy/main.py");
+//        addMessage(NetworkConfig.TEST_CONTAINER_TOKEN, msg);
     }
 
     public static MessageManager getInstance() {

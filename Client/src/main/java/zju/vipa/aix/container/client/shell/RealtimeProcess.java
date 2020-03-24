@@ -1,6 +1,7 @@
 package zju.vipa.aix.container.client.shell;
 
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import zju.vipa.aix.container.utils.ExceptionUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -39,8 +40,8 @@ public class RealtimeProcess {
     private RealtimeProcessInterface mInterface = null;
     private int resultCode = 0;
     private String execDir = null;
-    private String tmp1 = null;
-    private String tmp2 = null;
+    private String stdOutTmp = null;
+    private String stdErrTmp = null;
 
 
     public RealtimeProcess(RealtimeProcessInterface mInterface) {
@@ -71,9 +72,9 @@ public class RealtimeProcess {
     public void start() throws IOException, InterruptedException {
         isRunning = true;
         mInterface.onProcessBegin(mRealtimeProcessCommand.getCmdWords());
-//        for(RealtimeProcessCommand mRealtimeProcessCommand : commandList){
+
 //        mProcessBuilder = new ProcessBuilder(partitionCommandLine(mRealtimeProcessCommand.getCmdWords()));
-        mProcessBuilder = new ProcessBuilder("/bin/bash","-c",mRealtimeProcessCommand.getCmdWords());
+        mProcessBuilder = new ProcessBuilder("/bin/bash", "-c", mRealtimeProcessCommand.getCmdWords());
 
         mProcessBuilder.directory(new File(execDir));
 //        mProcessBuilder.directory(new File(System.getenv("HOME")));
@@ -81,7 +82,7 @@ public class RealtimeProcess {
 
         // 不重定向错误输出
         mProcessBuilder.redirectErrorStream(false);
-
+        /** 启动process */
         exec(mProcessBuilder.start());
 //        }
     }
@@ -142,7 +143,14 @@ public class RealtimeProcess {
         return mStringBuffer.toString();
     }
 
-    private void exec(final Process process) throws InterruptedException {
+
+    /**
+     * 在新的线程中处理命令输出，防止io阻塞命令执行线程
+     *
+     * @param process 任务执行线程
+     * @return: void
+     */
+    private void exec(final Process process) {
         // 获取标准输出
         readStdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // 获取错误输出
@@ -150,25 +158,24 @@ public class RealtimeProcess {
 
 
 
-        // todo 线程池 创建线程执行
-        Thread execThread = new Thread() {
+        Thread handleOutputThread = new Thread() {
             @Override
             public void run() {
                 try {
-                    // 逐行读取
-                    while ((tmp1 = readStdout.readLine()) != null || (tmp2 = readStderr.readLine()) != null) {
-                        if (tmp1 != null) {
-                            mStringBuffer.append(tmp1 + "\n");
+                    // 逐行读取,readLine()只有在数据流发生异常或者另一端被close()掉时，才会返回null值
+                    while ((stdOutTmp = readStdout.readLine()) != null || (stdErrTmp = readStderr.readLine()) != null) {
+                        if (stdOutTmp != null) {
+                            mStringBuffer.append(stdOutTmp + "\n");
                             // 回调接口方法
-                            mInterface.onNewStdoutListener(tmp1);
+                            mInterface.onNewStdoutListener(stdOutTmp);
                         }
-                        if (tmp2 != null) {
-                            mStringBuffer.append(tmp2 + "\n");
-                            mInterface.onNewStderrListener(tmp2);
+                        if (stdErrTmp != null) {
+                            mStringBuffer.append(stdErrTmp + "\n");
+                            mInterface.onNewStderrListener(stdErrTmp);
                         }
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    ClientExceptionUtils.handle(e);
                 }
 //                resultCode = process.exitValue();
                 try {
@@ -178,8 +185,20 @@ public class RealtimeProcess {
                 }
             }
         };
-        execThread.start();
-        execThread.join();
+
+        handleOutputThread.start();
+        try {
+            handleOutputThread.join();
+        } catch (InterruptedException e) {
+            ClientExceptionUtils.handle(e);
+        } finally {
+
+            if (process != null) {
+                process.destroy();
+            }
+
+
+        }
         isRunning = false;
         mInterface.onProcessFinish(resultCode);
     }

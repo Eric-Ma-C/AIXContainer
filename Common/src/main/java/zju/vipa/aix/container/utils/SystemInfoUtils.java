@@ -3,6 +3,7 @@ package zju.vipa.aix.container.utils;
 import com.sun.management.OperatingSystemMXBean;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
+import zju.vipa.aix.container.network.NetworkConfig;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -13,7 +14,7 @@ import java.util.List;
  * @Date: 2020/3/10 14:30
  * @Author: EricMa
  * @Description: 获取linux系统（容器）cpu,ram,gpu信息
- * todo: gpu info
+ * gpu info
  */
 public class SystemInfoUtils {
 
@@ -84,7 +85,7 @@ public class SystemInfoUtils {
                 info.get(gpuBegin + 18),
                 info.get(gpuBegin + 20)));
 
-            gpuBegin += 27;//todo confirm
+            gpuBegin += 27;
         }
 
         processBegin += 14;
@@ -111,7 +112,7 @@ public class SystemInfoUtils {
         /** memory */
         int ramRate = (int) (osBean.getFreePhysicalMemorySize() * 1.0 / osBean.getTotalPhysicalMemorySize()*100);
 
-        return new SystemBriefInfo(cpuRate, ramRate);
+        return new SystemBriefInfo(cpuRate, ramRate, NetworkConfig.TEST_CONTAINER_TOKEN);
     }
 
 }

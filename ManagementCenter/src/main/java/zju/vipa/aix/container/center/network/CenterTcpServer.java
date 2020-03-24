@@ -12,7 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @Date: 2020/1/7 15:44
  * @Author: EricMa
- * @Description: 启动socket监听
+ * @Description: 启动socket监听 todo NIO
  */
 public class CenterTcpServer {
     /**
@@ -28,11 +28,14 @@ public class CenterTcpServer {
      */
     private static ServerSocket mServerSocket;
 
-    private static class CenterTcpServerHolder{
-        private static final CenterTcpServer INSTANCE=new CenterTcpServer();
+    private static class CenterTcpServerHolder {
+        private static final CenterTcpServer INSTANCE = new CenterTcpServer();
     }
-    private CenterTcpServer(){}
-    public static CenterTcpServer getInstance(){
+
+    private CenterTcpServer() {
+    }
+
+    public static CenterTcpServer getInstance() {
         return CenterTcpServerHolder.INSTANCE;
     }
 
@@ -53,7 +56,7 @@ public class CenterTcpServer {
         /** 线程等待队列 */
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(30);
         /** 线程创建工厂 */
-        ThreadFactory threadFactory = new AIXTreadFactory();
+        ThreadFactory threadFactory = new AIXThreadFactory();
         /** 拒绝策略 */
         RejectedExecutionHandler handler = new AIXIgnorePolicy();
 
@@ -85,8 +88,10 @@ public class CenterTcpServer {
 
     }
 
-        /** 可以更改线程的名称，线程组，优先级，守护进程状态等 */
-    static class AIXTreadFactory implements ThreadFactory {
+    /**
+     * 可以更改线程的名称，线程组，优先级，守护进程状态等
+     */
+    private static class AIXThreadFactory implements ThreadFactory {
 
         private final AtomicInteger mThreadNum = new AtomicInteger(1);
 
@@ -97,8 +102,11 @@ public class CenterTcpServer {
             return t;
         }
     }
-/** 拒绝策略 */
-    public static class AIXIgnorePolicy implements RejectedExecutionHandler {
+
+    /**
+     * 拒绝策略
+     */
+    private static class AIXIgnorePolicy implements RejectedExecutionHandler {
 
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
@@ -111,7 +119,7 @@ public class CenterTcpServer {
          */
         private void doLog(Runnable r, ThreadPoolExecutor e) {
             //
-            LogUtils.error(r.toString() + " rejected from "+e.toString());
+            LogUtils.error(r.toString() + " rejected from " + e.toString());
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }
     }

@@ -1,5 +1,7 @@
 package zju.vipa.aix.container.network;
 
+import zju.vipa.aix.container.utils.DebugUtils;
+
 /**
  * @Date: 2020/2/8 22:18
  * @Author: EricMa
@@ -15,20 +17,35 @@ public class NetworkConfig {
      */
     public static final String VIPA_ALIYUN_SERVER_IP = "120.55.242.132";
     /**
+     * vipa 内网205
+     */
+    public static final String VIPA_205_IP = "10.214.211.205";
+    /**
      * 本地测试地址
      */
     public static final String DEBUG_SERVER_IP = "127.0.0.1";
+
+    public static String SERVER_IP = VIPA_205_IP;
+
+    static {
+        if (DebugUtils.isLocalDebug) {
+            SERVER_IP = DEBUG_SERVER_IP;
+        }
+    }
+
     /**
      * tcp自定义端口号
      */
     public static final int SERVER_PORT = 10007;
     /**
-     * todo:socket响应数据读取超时时间5s
+     * socket响应数据读取超时时间5s
      */
     public static final int SOCKET_READ_TIMEOUT_DEFAULT = 5 * 1000;
-    /** test container id */
-    public static final String TEST_CONTAINER_ID="bfeb717242c94d60b73ad6dd695164e3";
-    public static final String TEST_CONTAINER_TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmViNzE3MjQyYzk0ZDYwYjczYWQ2ZGQ2OTUxNjRlMyJ9.zU16mNiGzYvuOxEq_dPI3Srv_I7rsNnH4ZUhT1TDlTY";
+    /**
+     * test container id
+     */
+    public static final String TEST_CONTAINER_ID = "bfeb717242c94d60b73ad6dd695164e3";
+    public static final String TEST_CONTAINER_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmViNzE3MjQyYzk0ZDYwYjczYWQ2ZGQ2OTUxNjRlMyJ9.zU16mNiGzYvuOxEq_dPI3Srv_I7rsNnH4ZUhT1TDlTY";
     /**
      * conda源地址
      */

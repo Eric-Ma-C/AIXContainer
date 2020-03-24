@@ -1,7 +1,8 @@
-package zju.vipa.aix.container.client.task;
+package zju.vipa.aix.container.client.task.custom;
 
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.shell.ShellTask;
+import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.utils.LogUtils;
 
 /**
@@ -9,7 +10,7 @@ import zju.vipa.aix.container.utils.LogUtils;
  * @Author: EricMa
  * @Description: 抢到任务配置yolo香烟识别环境
  */
-public class YoloCigarTask extends BaseTask{
+public class YoloCigarTask extends BaseTask {
     private String mlTaskId;
     private String condaEnvFilePath;
 
@@ -33,7 +34,7 @@ public class YoloCigarTask extends BaseTask{
     }
 
     /**
-     * 获取conda环境文件url  todo:添加下载功能
+     * 获取conda环境文件url
      *
      * @param:
      * @return:
@@ -46,7 +47,7 @@ public class YoloCigarTask extends BaseTask{
     }
 
     @Override
-    String[] initTaskCmds() {
+    protected String[] initTaskCmds() {
         String[] cmds={
 //            "conda env create -f " + condaEnvFilePath,
             "source /root/miniconda3/bin/activate clean_yolo",
@@ -56,7 +57,7 @@ public class YoloCigarTask extends BaseTask{
     }
 
     @Override
-     void procedure() {
+    protected  void procedure() {
         /** 更新conda源 */
 //        setCondaSource();
         /** 获取yml路径 */

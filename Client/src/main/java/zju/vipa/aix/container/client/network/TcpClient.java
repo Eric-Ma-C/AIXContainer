@@ -2,16 +2,15 @@ package zju.vipa.aix.container.client.network;
 
 
 import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.client.controller.ContainerController;
+import zju.vipa.aix.container.client.task.TaskController;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.client.task.SeverShellTask;
-import zju.vipa.aix.container.client.thread.HeartbeatThread;
+import zju.vipa.aix.container.client.thread.Heartbeat;
 import zju.vipa.aix.container.network.NetworkConfig;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
-import zju.vipa.aix.container.utils.DebugUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
 import zju.vipa.aix.container.utils.LogUtils;
 
@@ -23,7 +22,7 @@ import java.net.SocketTimeoutException;
 /**
  * @Date: 2020/1/7 15:26
  * @Author: EricMa
- * @Description: 容器端主动发起tcp请求
+ * @Description: 容器端主动发起tcp请求 todo NIO
  */
 public class TcpClient {
 
@@ -31,16 +30,16 @@ public class TcpClient {
     /**
      * socket对象
      */
-    private Socket mSocket;
+//    private Socket mSocket;
     /**
      * socket输出OutputStreamWriter
      */
-    private Writer mWriter;
+//    private Writer mWriter;
+
     /**
      * socket输入
      */
-    BufferedReader mReader;
-
+//    BufferedReader mReader;
     private TcpClient() {
     }
 
@@ -70,11 +69,11 @@ public class TcpClient {
      * Java底层是不会检测到连接断开并改变Socket的状态的，
      * 所以，真实的检测连接状态还是得通过额外的手段
      */
-    public boolean isSocketAvailable() {
-        return mSocket != null && mSocket.isBound() &&
-            !mSocket.isClosed() && mSocket.isConnected() &&
-            !mSocket.isInputShutdown() && !mSocket.isOutputShutdown();
-    }
+//    public boolean isSocketAvailable() {
+//        return mSocket != null && mSocket.isBound() &&
+//            !mSocket.isClosed() && mSocket.isConnected() &&
+//            !mSocket.isInputShutdown() && !mSocket.isOutputShutdown();
+//    }
 
     /**
      * 处理平台下发的命令
@@ -98,8 +97,6 @@ public class TcpClient {
             default:
                 break;
         }
-        //断开连接
-        disconnect();
     }
 ///**
 // *   开始执行新训练
@@ -123,7 +120,7 @@ public class TcpClient {
     private void execShellTask(String value) {
 
         SeverShellTask task = new SeverShellTask(value);
-        ContainerController.getInstance().addTask(task);
+        TaskController.getInstance().addTask(task);
 
     }
 
@@ -139,7 +136,7 @@ public class TcpClient {
             taskClass = Class.forName(taskName);
             if (taskClass != null) {
                 BaseTask task = (BaseTask) taskClass.newInstance();
-                ContainerController.getInstance().addTask(task);
+                TaskController.getInstance().addTask(task);
 //                task.run();
 
                 //得到方法
@@ -166,8 +163,8 @@ public class TcpClient {
      * @param:
      * @return:
      */
-    public boolean registerContainer(String containerId) {
-        Message message = new Message(Intent.REGISTER, containerId);
+    public boolean registerContainer(String containerToken) {
+        Message message = new Message(Intent.REGISTER, containerToken);
         String response = "";
         try {
             response = sendMsgAndGetResponse(message).getValue();
@@ -235,27 +232,6 @@ public class TcpClient {
         }
     }
 
-//    /**
-//     * 上传容器指令执行输出和结果
-//     * java异常等等
-//     *
-//     * @param:
-//     * @return:
-//     */
-//    public void uploadState(Intent intent, String value) {
-//
-//        Message message = new Message(intent, value);
-//
-//        try {
-//            sendMessage(message);
-//        } catch (Exception e) {
-//            ExceptionUtils.handle(e);
-//        }
-//
-//
-//    }
-
-
     /**
      * 心跳汇报
      * 定时询问服务器有无连接需求，同时汇报容器状态（cpu，gpu，内存占用率等等）
@@ -264,20 +240,19 @@ public class TcpClient {
      * @return:
      */
     public void heartbeatReport(SystemBriefInfo info) {
+
         Message message = new Message(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
         Message body = null;
         try {
-            /** 500ms读超时 */
-            body = sendMsgAndGetResponse(message, 500);
+            /** 1000ms读超时 */
+            body = sendMsgAndGetResponse(message, 1000);
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
         }
-        //todo：断开连接检查
-        if (body == null || body.getIntent() == Intent.NULL) {
-            disconnect();
-        } else {
-            //停止心跳线程,执行任务
-            HeartbeatThread.keepRunning = false;
+
+        if (body != null && body.getIntent() != Intent.NULL) {
+            /** 停止心跳线程,执行任务 */
+            Heartbeat.stop();
             handleResponseMsg(body);
         }
 
@@ -318,22 +293,23 @@ public class TcpClient {
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
         StringBuffer response = new StringBuffer();
 
+        Writer mWriter = null;
+        Socket mSocket = null;
+        BufferedReader mReader = null;
         try {
             /** 短连接方式 */
-//            if (!isSocketAvailable()) {
+
             //创建Socket对象
-            if (DebugUtils.isLocalDebug) {
-                mSocket = new Socket(InetAddress.getByName(NetworkConfig.DEBUG_SERVER_IP), NetworkConfig.SERVER_PORT);
-            } else {
-                mSocket = new Socket(InetAddress.getByName(NetworkConfig.MY_ALIYUN_SERVER_IP), NetworkConfig.SERVER_PORT);
-            }
+
+            mSocket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+
+
             //设置读取超时时间
             mSocket.setSoTimeout(readTimeOut);
 
 
 //            }
 
-            //todo 检测writer,reader状态
             mWriter = new OutputStreamWriter(mSocket.getOutputStream(), Message.CHARSET_NAME);
 
             mWriter.write(JsonUtils.toJSONString(msg));
@@ -362,6 +338,21 @@ public class TcpClient {
             }
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
+        } finally {
+            /** 及时断开连接 */
+            try {
+                if (mWriter != null) {
+                    mWriter.close();
+                }
+                if (mReader != null) {
+                    mReader.close();
+                }
+                if (mSocket != null) {
+                    mSocket.close();
+                }
+            } catch (IOException e) {
+                ClientExceptionUtils.handle(e);
+            }
         }
 
         Message resMsg = new Message(Intent.NULL);
@@ -387,18 +378,16 @@ public class TcpClient {
     public void sendMessage(Message msg) {
         StringBuffer response = new StringBuffer();
 
+        Writer mWriter = null;
+        Socket mSocket = null;
         try {
             /** 短连接方式 */
             //创建Socket对象
-            if (DebugUtils.isLocalDebug) {
-                mSocket = new Socket(InetAddress.getByName(NetworkConfig.DEBUG_SERVER_IP), NetworkConfig.SERVER_PORT);
-            } else {
-                mSocket = new Socket(InetAddress.getByName(NetworkConfig.MY_ALIYUN_SERVER_IP), NetworkConfig.SERVER_PORT);
-            }
+            mSocket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+
             //设置读取超时时间
 //            mSocket.setSoTimeout(5000);
 
-            //todo 检测writer,reader状态
             mWriter = new OutputStreamWriter(mSocket.getOutputStream(), Message.CHARSET_NAME);
 
             mWriter.write(JsonUtils.toJSONString(msg));
@@ -408,31 +397,30 @@ public class TcpClient {
 
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
+        } finally {
+            try {
+                if (mWriter != null) {
+                    mWriter.close();
+                }
+                if (mSocket != null) {
+                    mSocket.close();
+                }
+            } catch (IOException e) {
+                ClientExceptionUtils.handle(e);
+            }
         }
 
-        disconnect();
+
     }
 
 
     /**
      * 断开tcp连接
      */
-    public void disconnect() {
-
-        try {
-            if (mWriter != null) {
-                mWriter.close();
-            }
-            if (mReader != null) {
-                mReader.close();
-            }
-            if (mSocket != null) {
-                mSocket.close();
-            }
-        } catch (IOException e) {
-            ClientExceptionUtils.handle(e);
-        }
-    }
+//    private void disconnect(Writer mWriter,BufferedReader mReader,Socket mSocket) {
+//
+//
+//    }
 //    /**
 //     * 发起tcp长连接,直到主动断开连接,或服务器,网络异常断开
 //     */
