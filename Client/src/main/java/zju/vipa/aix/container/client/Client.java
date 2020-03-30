@@ -1,7 +1,9 @@
 package zju.vipa.aix.container.client;
 
-import zju.vipa.aix.container.client.task.TaskController;
+import zju.vipa.aix.container.client.task.ClientTaskController;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+
+import java.util.PriorityQueue;
 
 /**
  * @Date: 2020/1/11 14:57
@@ -9,10 +11,11 @@ import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
  * @Description: 主入口
  */
 public class Client {
+
     public static void main(String[] args) {
 
         ClientExceptionUtils.setDefaultUncaughtExceptionHandler();
-        TaskController.getInstance().start();
+        ClientTaskController.getInstance().start();
 //        SystemInfoUtils.getGpuInfo();
     }
 }

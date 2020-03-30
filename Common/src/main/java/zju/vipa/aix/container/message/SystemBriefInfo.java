@@ -12,13 +12,12 @@ public class SystemBriefInfo {
     private int ramRate;
     /** gpu */
 //    private int gpuRate;
-    /** token */
-    private String token;
 
-    public SystemBriefInfo(int cpuRate, int ramRate, String token) {
+
+    public SystemBriefInfo(int cpuRate, int ramRate) {
         this.cpuRate = cpuRate;
         this.ramRate = ramRate;
-        this.token = token;
+
     }
 
     public int getCpuRate() {
@@ -37,11 +36,4 @@ public class SystemBriefInfo {
         this.ramRate = ramRate;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
 }

@@ -3,7 +3,6 @@ package zju.vipa.aix.container.utils;
 import com.sun.management.OperatingSystemMXBean;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
-import zju.vipa.aix.container.network.NetworkConfig;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;
@@ -112,7 +111,7 @@ public class SystemInfoUtils {
         /** memory */
         int ramRate = (int) (osBean.getFreePhysicalMemorySize() * 1.0 / osBean.getTotalPhysicalMemorySize()*100);
 
-        return new SystemBriefInfo(cpuRate, ramRate, NetworkConfig.TEST_CONTAINER_TOKEN);
+        return new SystemBriefInfo(cpuRate, ramRate);
     }
 
 }

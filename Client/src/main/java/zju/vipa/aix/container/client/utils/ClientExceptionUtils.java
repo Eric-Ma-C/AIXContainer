@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.utils;
 
+import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
@@ -17,13 +18,13 @@ public class ClientExceptionUtils {
 
     public static void handle(Throwable e) {
         ExceptionUtils.handle(e);
-        TcpClient.getInstance().sendMessage(new Message(Intent.EXCEPTION, ExceptionUtils.getMessage(e)));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.EXCEPTION, ExceptionUtils.getMessage(e)));
 
     }
 
     public static void handle(Throwable e, String worningInfo) {
         ExceptionUtils.handle(e, worningInfo);
-        TcpClient.getInstance().sendMessage(new Message(Intent.EXCEPTION, worningInfo + " " + ExceptionUtils.getMessage(e)));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.EXCEPTION, worningInfo + " " + ExceptionUtils.getMessage(e)));
     }
 
     /**

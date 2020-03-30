@@ -36,7 +36,7 @@ public class JsonUtils {
             /** 反序列化 */
             obj = JSON.parseObject(json, tClass);
         } catch (Exception e) {
-            LogUtils.debug("Json parse failed:" + json);
+            LogUtils.debug(TokenUtils.getDeviceToken(),"Json parse failed:" + json);
             ExceptionUtils.handle(e);
         }
 

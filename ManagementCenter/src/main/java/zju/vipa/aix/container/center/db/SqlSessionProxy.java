@@ -5,19 +5,15 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import org.apache.ibatis.session.defaults.DefaultSqlSession;
 import zju.vipa.aix.container.center.db.dao.*;
-import zju.vipa.aix.container.center.db.entity.Model;
-import zju.vipa.aix.container.center.db.entity.Task;
 import zju.vipa.aix.container.utils.ExceptionUtils;
 
 import java.io.Reader;
-import java.util.List;
 
 /**
  * @Date: 2020/3/24 17:37
  * @Author: EricMa
- * @Description: 代理 sql session
+ * @Description: 封装 sql session
  */
 public class SqlSessionProxy {
 
@@ -97,7 +93,6 @@ public class SqlSessionProxy {
      * @return: T 外部接口的返回值
      */
     public static <T> T start(SqlTask<T> task) {
-        //
         SqlSession sqlSession = getSession();
         try {
             T obj = task.exec(sqlSession);

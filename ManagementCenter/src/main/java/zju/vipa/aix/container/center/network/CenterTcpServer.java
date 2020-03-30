@@ -49,12 +49,12 @@ public class CenterTcpServer {
         /** 核心线程池大小 */
         int corePoolSize = 4;
         /** 最大线程池大小 */
-        int maximumPoolSize = 10;
+        int maximumPoolSize = 20;
         /** 线程最大空闲时间 */
         long keepAliveTime = 20;
         TimeUnit unit = TimeUnit.SECONDS;
         /** 线程等待队列 */
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(30);
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(300);
         /** 线程创建工厂 */
         ThreadFactory threadFactory = new AIXThreadFactory();
         /** 拒绝策略 */

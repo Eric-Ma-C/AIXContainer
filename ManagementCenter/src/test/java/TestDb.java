@@ -37,4 +37,9 @@ public class TestDb {
                         System.out.println(task.toString());
                 }
         }
+
+        /** 向数据库写入测试device */
+        public static void initTestDevices(){
+
+        }
 }

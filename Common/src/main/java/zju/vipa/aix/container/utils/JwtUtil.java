@@ -41,11 +41,11 @@ public class JwtUtil {
         return token;
     }
 
-    public static String decodeClinetId(String token) throws JWTVerificationException{
+    public static String decodeClinetIdByToken(String token) {
         try {
             String clientId = JWT.decode(token).getAudience().get(0);
             return clientId;
-        }catch (Exception e){
+        }catch (JWTVerificationException e){
             ExceptionUtils.handle(e);
             return null;
         }
@@ -57,7 +57,7 @@ public class JwtUtil {
         try {
             jwtVerifier.verify(token);
             return true;
-        }catch (Exception e){
+        }catch (JWTVerificationException e){
             ExceptionUtils.handle(e,"Token:"+token);
             return false;
         }

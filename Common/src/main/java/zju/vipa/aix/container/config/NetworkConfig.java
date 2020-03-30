@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.network;
+package zju.vipa.aix.container.config;
 
 import zju.vipa.aix.container.utils.DebugUtils;
 
@@ -25,7 +25,8 @@ public class NetworkConfig {
      */
     public static final String DEBUG_SERVER_IP = "127.0.0.1";
 
-    public static String SERVER_IP = VIPA_205_IP;
+    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
+//    public static String SERVER_IP = VIPA_205_IP;
 
     static {
         if (DebugUtils.isLocalDebug) {
@@ -46,6 +47,11 @@ public class NetworkConfig {
      */
     public static final String TEST_CONTAINER_ID = "bfeb717242c94d60b73ad6dd695164e3";
     public static final String TEST_CONTAINER_TOKEN = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJiZmViNzE3MjQyYzk0ZDYwYjczYWQ2ZGQ2OTUxNjRlMyJ9.zU16mNiGzYvuOxEq_dPI3Srv_I7rsNnH4ZUhT1TDlTY";
+
+    public static final String CENTER_ID = "aix-center";
+    public static final String CENTER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhaXgtY2VudGVyIn0.-l8OW-Z9ebMS7TJA1rYUt4xFk8Bu8pG2T6qssV_77NU";
+
+
     /**
      * conda源地址
      */

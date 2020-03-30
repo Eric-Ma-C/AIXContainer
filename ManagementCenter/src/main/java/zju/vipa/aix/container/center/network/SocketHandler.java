@@ -1,12 +1,11 @@
 package zju.vipa.aix.container.center.network;
 
 import zju.vipa.aix.container.center.ManagementCenter;
-import zju.vipa.aix.container.center.db.DbManager;
-import zju.vipa.aix.container.center.env.EnvError;
+import zju.vipa.aix.container.center.env.TaskManager;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.message.SystemBriefInfo;
-import zju.vipa.aix.container.network.NetworkConfig;
+import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.utils.ExceptionUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
 import zju.vipa.aix.container.utils.JwtUtil;
@@ -65,9 +64,7 @@ public class SocketHandler implements Runnable {
             return;
         }
         switch (msg.getIntent()) {
-            case EXCEPTION:
-                handleException(msg.getValue());
-                break;
+
             case CONDA_SOURCE:
                 getCondaSource();
                 break;
@@ -78,25 +75,31 @@ public class SocketHandler implements Runnable {
                 getPipEnvFileByTaskId(msg.getValue());
                 break;
             case HEARTBEAT:
-                handleHeartbeat(msg.getValue());
+                handleHeartbeat(msg);
                 break;
             case SHELL_BEGIN:
-                shellBegin(msg.getValue());
+                shellBegin(msg);
                 break;
             case SHELL_INFO:
-                shellInfo(msg.getValue());
+                shellInfo(msg);
                 break;
             case SHELL_RESULT:
-                shellResult(msg.getValue());
+                shellResult(msg);
                 break;
             case SHELL_ERROR:
-                shellError(msg.getValue());
+                shellError(msg);
+                break;
+            case REAL_TIME_LOG:
+                handleRealtimeLog(msg);
                 break;
             case REGISTER:
                 registerContainer(msg.getValue());
                 break;
             case GPU_INFO:
-                handleGpuInfo(msg.getValue());
+                handleGpuInfo(msg);
+                break;
+            case EXCEPTION:
+                handleException(msg);
                 break;
             default:
                 break;
@@ -108,14 +111,21 @@ public class SocketHandler implements Runnable {
     }
 
     /**
+     * 容器实时日志处理
+     */
+    private void handleRealtimeLog(Message msg) {
+        LogUtils.debug(msg);
+    }
+
+    /**
      * 处理gpu信息
      * 目前仅显示 todo 存入db?
      *
      * @param:
      * @return:
      */
-    private void handleGpuInfo(String value) {
-        LogUtils.info(value);
+    private void handleGpuInfo(Message message) {
+        LogUtils.info("GPU info:" + message.getValue());
     }
 
     /**
@@ -124,8 +134,8 @@ public class SocketHandler implements Runnable {
      * @param:
      * @return:
      */
-    private void handleException(String value) {
-        LogUtils.error(value);
+    private void handleException(Message message) {
+        LogUtils.error(message);
     }
 
 
@@ -137,11 +147,14 @@ public class SocketHandler implements Runnable {
      */
     private void registerContainer(String token) {
         boolean ok = JwtUtil.verify(token);
-        /** todo 获取id号缓存下来 */
-        Message msg = new Message(Intent.REGISTER, "DENIED");
+        Message msg = new ServerMessage(Intent.REGISTER, "DENIED");
+
         if (ok) {
-            msg = new Message(Intent.REGISTER, "OK");
-            LogUtils.info("Container registered successfully! token:" + token);
+            /** 获取id号并缓存下来 */
+            String id = ManagementCenter.getInstance().getIdByToken(token);
+
+            msg = new ServerMessage(Intent.REGISTER, "OK");
+            LogUtils.info("Container " + id + " registered successfully! token="+token);
         } else {
             LogUtils.error("Container registered failed! token:" + token);
         }
@@ -158,7 +171,7 @@ public class SocketHandler implements Runnable {
      */
     private void getCondaSource() {
 //        Message msg = new Message(Intent.CONDA_SOURCE,"test");
-        Message msg = new Message(Intent.CONDA_SOURCE, NetworkConfig.DEFAULT_CONDA_SOURCE);
+        Message msg = new ServerMessage(Intent.CONDA_SOURCE, NetworkConfig.DEFAULT_CONDA_SOURCE);
 
         //写返回报文
         response(msg);
@@ -193,21 +206,17 @@ public class SocketHandler implements Runnable {
      * @param msg
      * @return: void
      */
-    private void handleHeartbeat(String msg) {
-        //根据容器id判断是否需要连接容器
-        //尝试取出一条待发送消息
-//        Message message = MessageManager.getInstance().getMessageById(NetworkConfig.TEST_CONTAINER_ID);
-//        boolean needTcpConnect = (message != null);
-
-
-        SystemBriefInfo info = JsonUtils.parseObject(msg, SystemBriefInfo.class);
+    private void handleHeartbeat(Message msg) {
+        String token = msg.getToken();
+        SystemBriefInfo info = JsonUtils.parseObject(msg.getValue(), SystemBriefInfo.class);
         if (info == null) {
             LogUtils.error("Heartbeat info error:" + msg);
             disconnect();
             return;
         }
         /** 根据token获取id */
-        String id = ManagementCenter.getInstance().getIdByToken(info.getToken());
+//        LogUtils.debug("getIdByToken="+token);
+        String id = ManagementCenter.getInstance().getIdByToken(token);
 
         if (id == null) {
             LogUtils.error("No such a device:" + msg);
@@ -215,12 +224,13 @@ public class SocketHandler implements Runnable {
             return;
         }
 
-        LogUtils.info("Heartbeats from client " + id + ": IP=" + mSocket.getInetAddress() + " CPU=" + info.getCpuRate() +
-            "%  RAM=" + info.getRamRate() + "%      time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+        LogUtils.info(token, "Heartbeats from client (id=" + id + "): IP" + mSocket.getInetAddress() + " CPU=" + info.getCpuRate() +
+            "%  RAM=" + info.getRamRate() + "%  time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
 
-        String codePath = DbManager.getInstance().grabTask(id);
-        boolean newTaskToExec = (codePath != null);
+        //尝试取出一条待发送消息
+        Message message = TaskManager.getInstance().askForWork(token);
+        boolean newTaskToExec = (message != null);
 
 
         if (newTaskToExec) {
@@ -233,16 +243,11 @@ public class SocketHandler implements Runnable {
 //            Message res = new Message(Intent.TASK, "zju.vipa.container.client.task.YoloCigarTask");
 
 
-//            String cmds = "conda env create -f " + codePath + "/environment.yaml " +
-//                "&& source /root/miniconda3/bin/activate clean_yolo " +
+//            String cmds = "source /root/miniconda3/bin/activate clean_yolo " +
 //                "&& python " + codePath + "/main.py";
-
-
-            String cmds = "source /root/miniconda3/bin/activate clean_yolo " +
-                "&& python " + codePath + "/main.py";
             //写返回报文
-            response(new Message(Intent.SHELL_TASK, cmds));
-//            response(new Message(Intent.TASK_CODE_URL,codePath));
+//            response(new Message(Intent.SHELL_TASK, cmds));
+            response(message);
 
         } else {
             /** 服务器对心跳包不响应，节省开销 */
@@ -250,44 +255,38 @@ public class SocketHandler implements Runnable {
         }
     }
 
-    private void shellBegin(String value) {
-        LogUtils.info("\n****************************\nexec: " + value + "\n****************************");
+    private void shellBegin(Message message) {
+        LogUtils.info("\n****************************\nexec: " + message.getValue() + "\n****************************");
     }
 
-    private void shellInfo(String value) {
+    private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
-        LogUtils.info(value);
+        LogUtils.info(message.getValue());
     }
 
 
     /**
      * shell指令执行结果显示，环境配置错误处理
      *
-     * @param value shell result info
+     * @param message shell result info
      * @return: void
      */
-    private void shellResult(String value) {
-        LogUtils.info(value);
-        Message res = new Message(Intent.NULL, "");
-        if (!"resultCode=0".equals(value) && EnvError.errorDetected) {
-            EnvError.errorDetected = false;
-            LogUtils.info("Solve ModuleNotFoundError...");
-            //安装缺少的包
-            res = new Message(Intent.SHELL_TASK, EnvError.cmds);
+    private void shellResult(Message message) {
+        LogUtils.info(message.getValue());
+        Message msg = null;
+        if (!"resultCode=0".equals(message.getValue())) {
+            /** 遇到错误尝试获取修复指令，可能会失败 */
+            msg = TaskManager.getInstance().askForWork(message.getToken());
         }
         //写返回报文
-        response(res);
+        response(msg);
     }
 
-    private void shellError(String value) {
-        LogUtils.error(value);
-        //自动安装一些conda库
-        if (value != null && value.startsWith("ModuleNotFoundError: No module named")) {
-            String moduleName = value.substring(value.indexOf("named") + 7, value.length() - 1);
-            EnvError.cmds = "source /root/miniconda3/bin/activate clean_yolo && pip install " + moduleName + " && python /nfs2/sontal/codes/TrainerProxy/main.py";
+    private void shellError(Message message) {
+        LogUtils.error(message.getValue());
+        /** 保存检测到的错误信息，放入对应client的task中暂存 */
+        TaskManager.getInstance().handleError(message);
 
-            EnvError.errorDetected = true;
-        }
     }
 
     /**
@@ -298,7 +297,7 @@ public class SocketHandler implements Runnable {
         Message msg;
 //        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
-        msg = new Message(Intent.CONDA_ENV_FILE_URL, "/root/aix/code/train_client.yml");
+        msg = new ServerMessage(Intent.CONDA_ENV_FILE_URL, "/root/aix/code/train_client.yml");
 
         //写返回报文
         response(msg);
@@ -313,7 +312,7 @@ public class SocketHandler implements Runnable {
 //        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
         String pipFile = "/root/aix/code/requirements.txt";
-        msg = new Message(Intent.CONDA_ENV_FILE_URL, pipFile);
+        msg = new ServerMessage(Intent.CONDA_ENV_FILE_URL, pipFile);
 
         //写返回报文
         response(msg);
@@ -359,6 +358,9 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void response(Message msg) {
+        if (msg == null) {
+            return;
+        }
         OutputStream outputStream = null;
         try {
             outputStream = mSocket.getOutputStream();

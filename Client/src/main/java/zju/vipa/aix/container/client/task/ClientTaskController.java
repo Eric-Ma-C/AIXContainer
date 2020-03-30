@@ -2,13 +2,13 @@ package zju.vipa.aix.container.client.task;
 
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
-import zju.vipa.aix.container.client.thread.Heartbeat;
-import zju.vipa.aix.container.network.NetworkConfig;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
+import zju.vipa.aix.container.utils.TokenUtils;
 import zju.vipa.aix.container.utils.LogUtils;
 import zju.vipa.aix.container.utils.SystemInfoUtils;
 
-import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 /**
@@ -16,7 +16,7 @@ import java.util.Queue;
  * @Author: EricMa
  * @Description: 容器任务管理中心
  */
-public class TaskController {
+public class ClientTaskController {
     /**
      * 待执行任务队列
      */
@@ -33,19 +33,19 @@ public class TaskController {
 
 
     private static class TaskControllerHolder {
-        private static final TaskController INSTANCE = new TaskController();
+        private static final ClientTaskController INSTANCE = new ClientTaskController();
     }
 
-    private TaskController() {
+    private ClientTaskController() {
         init();
     }
 
-    public static TaskController getInstance() {
+    public static ClientTaskController getInstance() {
         return TaskControllerHolder.INSTANCE;
     }
 
     private void init() {
-        taskQueue = new LinkedList<>();
+        taskQueue = new ConcurrentLinkedQueue<>();
         currentTask = null;
     }
 
@@ -58,12 +58,13 @@ public class TaskController {
     public void start() {
 
 
-        //todo 容器id
-        boolean isSuccessful = TcpClient.getInstance().registerContainer(NetworkConfig.TEST_CONTAINER_TOKEN);
+        /** 上传验证容器token */
+        boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
         if (isSuccessful) {
+            /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
             ClientThreadManager.getInstance().startHeartbeat();
-//            Heartbeat.getInstance().start();
+
         } else {
             LogUtils.error("容器注册失败，请检查token配置。");
         }
@@ -80,37 +81,48 @@ public class TaskController {
             LogUtils.worning("The adding task is null.");
             return;
         }
-
+        ClientLogUtils.debug("Task added:" + task);
         taskQueue.add(task);
         execNewTask();
     }
 
-    private void execNewTask() {
-        if (taskQueue.isEmpty()) {
-            LogUtils.info("Task Queue is empty.");
+    /**
+     * client容器执行新任务
+     */
+    private synchronized void execNewTask() {
+
+        boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
+
+        if (!noTaskRunning) {
+            LogUtils.worning("Current task has not finished.");
+            return;
+
+        } else if (noTaskRunning && taskQueue.isEmpty()) {
+            LogUtils.info("Task Queue is empty.Start heartbeats report.");
             /** 启动心跳线程 */
             ClientThreadManager.getInstance().startHeartbeat();
-//            Heartbeat.getInstance().start();
-
             return;
-        } else {
-            if (currentTask != null && currentTask.getState() != TaskState.FINISHED) {
-                LogUtils.worning("Current task has not finished.");
-                return;
-            } else {
-                /** 保证poll()不返回null */
-                currentTask = taskQueue.poll();
-                currentTask.run(new BaseTask.TaskStateListener() {
-                    @Override
-                    public void onBegin() {
-                    }
 
-                    @Override
-                    public void onFinished() {
-                        execNewTask();
-                    }
-                });
-            }
+        } else {/** noTaskRunning && !taskQueue.isEmpty() */
+
+            /** 给currentTask赋新值，保证poll()不返回null */
+            currentTask = taskQueue.poll();
+            ClientLogUtils.debug("ClientTaskController.execNewTask:" + currentTask.toString());
+
+            /** 在新线程执行新任务 */
+            ClientThreadManager.getInstance().startNewTask(currentTask.getRunnable(new BaseTask.TaskStateListener() {
+                @Override
+                public void onBegin() {
+//                    ClientLogUtils.debug("****** Task begin ******:" + currentTask.toString());
+                }
+
+                @Override
+                public void onFinished() {
+                    ClientLogUtils.debug("****** Task finished ******:" + currentTask.toString());
+                    execNewTask();
+                }
+            }));
+
         }
     }
 

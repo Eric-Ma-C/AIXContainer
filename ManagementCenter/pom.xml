@@ -78,14 +78,14 @@
 <!--                            <url>scp://120.55.242.132/home/aix/downloads/</url>-->
 <!--                            &lt;!&ndash; 配置服务器的地址以及文件上传的目录。 &ndash;&gt;-->
 
-<!--                            <serverId>my-aliyun</serverId>-->
-<!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
-<!--                            <url>scp://112.124.46.179/root/tmp/</url>-->
-
-
-                            <serverId>vipa-205</serverId>
+                            <serverId>my-aliyun</serverId>
                             <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <url>scp://10.214.211.205/nfs2/mc/docker</url>
+                            <url>scp://112.124.46.179/root/tmp/</url>
+
+
+<!--                            <serverId>vipa-205</serverId>-->
+<!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
+<!--                            <url>scp://10.214.211.205/nfs2/mc/docker</url>-->
 
                         </configuration>
                     </execution>

@@ -100,20 +100,18 @@ public class DbManager {
      *
      * @return: java.util.List<zju.vipa.aix.container.center.db.entity.Task>
      */
-    public String grabTask(final String clientId) {
+    public Task grabTask(final String clientId) {
 
-        return SqlSessionProxy.start(new SqlTask<String>() {
+        return SqlSessionProxy.start(new SqlTask<Task>() {
             @Override
-            public String exec(SqlSession sqlSession) {
+            public Task exec(SqlSession sqlSession) {
                 // 获取映射类
                 TaskDAO taskDAO = sqlSession.getMapper(TaskDAO.class);
-                // 直接调用接口的方法，传入参数id=1，返回Student对象
                 List<Task> taskList = taskDAO.findWaittingList();
                 if (taskList == null || taskList.size() == 0) {
                     /** No waiting task,grab failed */
                     return null;
                 }
-
                 Task task = taskList.get(0);
                 //TODO 方便测试用
                 taskDAO.updateTask(task.getId(), "WAITING", clientId);
@@ -122,9 +120,9 @@ public class DbManager {
                 ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
                 Model model = modelDAO.findModelById(task.getModelId());
                 String codePath = model.getCodePath();
+                task.setCodePath(codePath);
 
-                sqlSession.commit();
-                return codePath;
+                return task;
             }
         });
     }

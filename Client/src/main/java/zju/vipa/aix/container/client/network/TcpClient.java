@@ -2,12 +2,12 @@ package zju.vipa.aix.container.client.network;
 
 
 import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.client.task.TaskController;
+import zju.vipa.aix.container.client.task.ClientTaskController;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
-import zju.vipa.aix.container.client.task.SeverShellTask;
+import zju.vipa.aix.container.client.task.custom.SeverCmdsTask;
 import zju.vipa.aix.container.client.thread.Heartbeat;
-import zju.vipa.aix.container.network.NetworkConfig;
+import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
@@ -50,7 +50,7 @@ public class TcpClient {
      * @return:
      */
     public void uploadGpuInfo(GpuInfo gpuInfo) {
-        Message msg = new Message(Intent.GPU_INFO, JsonUtils.toJSONString(gpuInfo));
+        Message msg = new ClientMessage(Intent.GPU_INFO, JsonUtils.toJSONString(gpuInfo));
         sendMessage(msg);
     }
 
@@ -119,8 +119,9 @@ public class TcpClient {
      */
     private void execShellTask(String value) {
 
-        SeverShellTask task = new SeverShellTask(value);
-        TaskController.getInstance().addTask(task);
+        SeverCmdsTask task = new SeverCmdsTask(value);
+//        ClientLogUtils.debug("SeverCmdsTask="+value);
+        ClientTaskController.getInstance().addTask(task);
 
     }
 
@@ -136,7 +137,7 @@ public class TcpClient {
             taskClass = Class.forName(taskName);
             if (taskClass != null) {
                 BaseTask task = (BaseTask) taskClass.newInstance();
-                TaskController.getInstance().addTask(task);
+                ClientTaskController.getInstance().addTask(task);
 //                task.run();
 
                 //得到方法
@@ -164,7 +165,7 @@ public class TcpClient {
      * @return:
      */
     public boolean registerContainer(String containerToken) {
-        Message message = new Message(Intent.REGISTER, containerToken);
+        Message message = new ClientMessage(Intent.REGISTER, containerToken);
         String response = "";
         try {
             response = sendMsgAndGetResponse(message).getValue();
@@ -186,7 +187,7 @@ public class TcpClient {
      */
     public String getCondaEnvFileByTaskId(String taskId) {
 
-        Message message = new Message(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
+        Message message = new ClientMessage(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
         String response = "";
         try {
             response = sendMsgAndGetResponse(message).getValue();
@@ -206,7 +207,7 @@ public class TcpClient {
      */
     public String getPipEnvFileByTaskId(String taskId) {
 
-        Message message = new Message(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
+        Message message = new ClientMessage(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
         String response = "";
         try {
             response = sendMsgAndGetResponse(message).getValue();
@@ -222,7 +223,7 @@ public class TcpClient {
      * 重新设置conda国内源
      */
     public String getCondaSource() {
-        Message message = new Message(Intent.CONDA_SOURCE);
+        Message message = new ClientMessage(Intent.CONDA_SOURCE);
 
         Message resMsg = sendMsgAndGetResponse(message);
         if (resMsg == null) {
@@ -241,11 +242,11 @@ public class TcpClient {
      */
     public void heartbeatReport(SystemBriefInfo info) {
 
-        Message message = new Message(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
+        Message message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
         Message body = null;
         try {
-            /** 1000ms读超时 */
-            body = sendMsgAndGetResponse(message, 1000);
+            /** 10s读超时 */
+            body = sendMsgAndGetResponse(message, 10000);
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
         }
@@ -355,7 +356,7 @@ public class TcpClient {
             }
         }
 
-        Message resMsg = new Message(Intent.NULL);
+        Message resMsg = new ClientMessage(Intent.NULL);
         /** 服务端无需回应 */
         if ("".equals(response) || response == null) {
             return resMsg;

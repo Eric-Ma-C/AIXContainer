@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.shell;
 
+import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.utils.ExceptionUtils;
 
@@ -8,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @Date: 2020/1/11 21:45
@@ -69,7 +71,7 @@ public class RealtimeProcess {
         this.execDir = execDir;
     }
 
-    public void start() throws IOException, InterruptedException {
+    public void start() throws IOException {
         isRunning = true;
         mInterface.onProcessBegin(mRealtimeProcessCommand.getCmdWords());
 
@@ -150,15 +152,14 @@ public class RealtimeProcess {
      * @param process 任务执行线程
      * @return: void
      */
-    private void exec(final Process process) {
+    private void exec(final Process process) throws IOException {
         // 获取标准输出
         readStdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // 获取错误输出
         readStderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
-
-
-        Thread handleOutputThread = new Thread() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        ClientThreadManager.getInstance().startNewTask(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -182,23 +183,36 @@ public class RealtimeProcess {
                     resultCode = process.waitFor();
                 } catch (InterruptedException e) {
                     ClientExceptionUtils.handle(e);
+                } finally {
+                    if (process != null) {
+                        process.destroy();
+                    }
+
+                    latch.countDown();
                 }
             }
-        };
 
-        handleOutputThread.start();
+        });
+//        Thread handleOutputThread = new Thread() {
+//
+//        };
+
+//        handleOutputThread.start();
         try {
-            handleOutputThread.join();
+//            handleOutputThread.join();
+            latch.await();
         } catch (InterruptedException e) {
             ClientExceptionUtils.handle(e);
         } finally {
-
-            if (process != null) {
-                process.destroy();
+            if (readStderr != null) {
+                readStderr.close();
             }
-
-
+            if (readStdout != null) {
+                readStdout.close();
+            }
         }
+
+
         isRunning = false;
         mInterface.onProcessFinish(resultCode);
     }

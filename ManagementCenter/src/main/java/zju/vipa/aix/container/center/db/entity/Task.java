@@ -1,6 +1,12 @@
 package zju.vipa.aix.container.center.db.entity;
+
+import zju.vipa.aix.container.center.env.AIXEnvConfig;
+import zju.vipa.aix.container.center.env.EnvError;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.concurrent.ConcurrentLinkedQueue;
+
 /**
  * @Date: 2020/3/19 17:07
  * @Author: EricMa
@@ -79,6 +85,14 @@ public class Task implements Serializable {
      * 训练细节
      */
     private String traindetail;
+    /**
+     * 代码路径
+     */
+    private transient String codePath;
+    /**
+     * 任务环境配置过程中的报错列表
+     */
+    private transient ConcurrentLinkedQueue<EnvError> errorQueue;
 
     public Task() {
     }
@@ -96,16 +110,60 @@ public class Task implements Serializable {
             ", updatedtime=" + updatedtime +
             ", createdtime=" + createdtime +
             ", status='" + status + '\'' +
-            ", modelid='" + modelId + '\'' +
+            ", modelId='" + modelId + '\'' +
             ", modelprovider='" + modelprovider + '\'' +
             ", trainby='" + trainby + '\'' +
             ", traindetail='" + traindetail + '\'' +
+            ", codePath='" + codePath + '\'' +
             '}';
     }
 
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
+    /**
+     * 启动命令
+     */
+    public String getStartCmds() {
+        return "source /root/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME + " && python " + codePath + "/main.py";
     }
+
+    /**
+     * conda配置命令
+     */
+    public String getCondaEnvCreateCmds() {
+        return "conda env create -n " + AIXEnvConfig.CONDA_ENV_NAME + " -f " + codePath + "/environment.yaml --json";
+    }
+
+    /**
+     * pip补充配置命令,一般在conda配置完成后使用
+     */
+    public String getPipComplementCmds(String moduleName) {
+        return "source /root/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME +
+            " && pip install " + moduleName;
+//            " && python " + task.getCodePath() + "/main.py";
+    }
+
+
+    public String getCodePath() {
+        return codePath;
+    }
+
+    public void setCodePath(String codePath) {
+        this.codePath = codePath;
+    }
+
+    public ConcurrentLinkedQueue<EnvError> getErrorQueue() {
+        if (errorQueue == null) {
+            errorQueue = new ConcurrentLinkedQueue<>();
+        }
+        return errorQueue;
+    }
+
+    public void addEnvError(EnvError envError) {
+        if (errorQueue == null) {
+            errorQueue = new ConcurrentLinkedQueue<>();
+        }
+        errorQueue.offer(envError);
+    }
+
 
     public String getId() {
         return id;

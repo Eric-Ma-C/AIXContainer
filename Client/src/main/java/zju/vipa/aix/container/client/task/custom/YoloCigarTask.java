@@ -66,6 +66,4 @@ public class YoloCigarTask extends BaseTask {
         new ShellTask(getCommands()).exec();
 
     }
-
-
 }

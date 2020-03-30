@@ -1,12 +1,19 @@
 package zju.vipa.aix.container.client.task;
 
 
+import java.util.Arrays;
+
 /**
  * @Date: 2020/3/10 9:23
  * @Author: EricMa
  * @Description: 封装容器基本任务，所有任务的基类
  */
-public abstract class BaseTask {
+public abstract class BaseTask{
+    /**
+     * 执行代码
+     */
+    private  Runnable runnable;
+
     private TaskStateListener listener;
     /**
      * 状态
@@ -15,7 +22,7 @@ public abstract class BaseTask {
     /**
      * shell指令序列
      */
-    private String[] commands;
+    private String[] commands=null;
     /**
      * 指令输出
      */
@@ -65,20 +72,29 @@ public abstract class BaseTask {
     }
 
     /**
-     * 执行任务
+     * 获取执行任务的人Runnable接口
      *
      * @param taskStateListener 任务执行状态回调
-     * @return: void
+     * @return: Runnable 给线程池执行的接口
      */
-    public void run(TaskStateListener taskStateListener) {
-        this.listener = taskStateListener;
+    public Runnable getRunnable(TaskStateListener taskStateListener) {
+        listener = taskStateListener;
 
-        listener.onBegin();
-        state = TaskState.RUNNING;
-        procedure();
-        state = TaskState.FINISHED;
-        listener.onFinished();
+        runnable=new Runnable() {
+            @Override
+            public void run() {
+
+                listener.onBegin();
+                state = TaskState.RUNNING;
+                procedure();
+                state = TaskState.FINISHED;
+                listener.onFinished();
+
+            }
+        };
+        return runnable;
     }
+
 
     /**
      * 定义Task的shell命令
@@ -105,5 +121,16 @@ public abstract class BaseTask {
         void onFinished();
     }
 
-    ;
+    @Override
+    public String toString() {
+        String cmds="";
+        if (commands!=null){
+            for (String cmd : commands) {
+                cmds+=cmd+" ";
+            }
+        }
+        return "BaseTask{" +
+            "commands=" + cmds +
+            '}';
+    }
 }

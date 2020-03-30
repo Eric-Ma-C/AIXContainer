@@ -1,5 +1,7 @@
 package zju.vipa.aix.container.client.thread;
 
+import zju.vipa.aix.container.client.task.BaseTask;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.utils.LogUtils;
 
 import java.util.concurrent.*;
@@ -31,8 +33,9 @@ public class ClientThreadManager {
     /**
      * 执行新任务
      */
-    public void execute(Runnable command) {
-        mThreadPoolExecutor.execute(command);
+    public void startNewTask(Runnable runnable) {
+        LogUtils.debug("ClientThreadManager.startNewTask() runnable="+runnable);
+        mThreadPoolExecutor.execute(runnable);
     }
 
     /**
@@ -81,7 +84,7 @@ public class ClientThreadManager {
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r, "aix-client-t" + mThreadNum.getAndIncrement());
-            LogUtils.info(t.getName() + " has been created");
+            ClientLogUtils.info(t.getName() + " has been created");
             return t;
         }
     }
@@ -102,7 +105,7 @@ public class ClientThreadManager {
          */
         private void doLog(Runnable r, ThreadPoolExecutor e) {
             //
-            LogUtils.error(r.toString() + " rejected from " + e.toString());
+            ClientLogUtils.error(r.toString() + " rejected from " + e.toString());
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }
     }

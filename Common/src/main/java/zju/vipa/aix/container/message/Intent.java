@@ -104,10 +104,14 @@ public enum Intent {
     /**
      * 容器java异常上传
      */
-    EXCEPTION;
+    EXCEPTION,
+    /**
+     * 容器实时日志上传
+     */
+    REAL_TIME_LOG;
 
     @Override
     public String toString() {
-        return this.toString();
+        return this.name();
     }
 }

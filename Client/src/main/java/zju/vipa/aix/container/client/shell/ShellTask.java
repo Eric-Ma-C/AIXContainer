@@ -1,10 +1,14 @@
 package zju.vipa.aix.container.client.shell;
 
+import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.utils.LogUtils;
+
+import java.io.IOException;
 
 /**
  * @Date: 2020/1/11 21:49
@@ -41,10 +45,9 @@ public class ShellTask implements RealtimeProcessInterface {
 
     public void exec() {
 
-
         try {
             mRealtimeProcess.start();
-        } catch (Exception e) {
+        } catch (IOException e) {
             ClientExceptionUtils.handle(e);
         }
 
@@ -55,7 +58,7 @@ public class ShellTask implements RealtimeProcessInterface {
     @Override
     public void onProcessBegin(String cmd) {
         LogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
-        TcpClient.getInstance().sendMessage(new Message(Intent.SHELL_BEGIN, cmd));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
     }
 
     /**
@@ -67,7 +70,7 @@ public class ShellTask implements RealtimeProcessInterface {
             return;
         }
         LogUtils.info(newStdOut);
-        TcpClient.getInstance().sendMessage(new Message(Intent.SHELL_INFO,newStdOut));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO,newStdOut));
     }
 
     @Override
@@ -76,16 +79,14 @@ public class ShellTask implements RealtimeProcessInterface {
             return;
         }
         LogUtils.error("Shell Error :" + newStdErr);
-        TcpClient.getInstance().sendMessage(new Message(Intent.SHELL_ERROR, newStdErr));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_ERROR, newStdErr));
 
     }
 
     @Override
     public void onProcessFinish(int resultCode) {
         LogUtils.debug("Shell Finished :" + resultCode);
-        TcpClient.getInstance().reportShellResult(new Message(Intent.SHELL_RESULT, "resultCode=" + resultCode));
-        if(resultCode!=0){
-            return;
-        }
+        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
+
     }
 }
