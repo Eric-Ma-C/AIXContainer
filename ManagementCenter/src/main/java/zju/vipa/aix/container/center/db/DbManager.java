@@ -113,7 +113,7 @@ public class DbManager {
                 Task task = taskList.get(0);
                 //TODO 方便测试用
                 taskDAO.updateTask(task.getId(), "WAITING", clientId);
-//            taskDAO.updateTask(task.getId(), "TRAINING", clientId);
+//                taskDAO.updateTask(task.getId(), "TRAINING", clientId);
                 // 获取映射类
                 ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
                 Model model = modelDAO.findModelById(task.getModelId());

@@ -9,18 +9,22 @@ import zju.vipa.aix.container.center.util.LogUtils;
  * @Description: shell错误解析器
  */
 public class ErrorParser {
-    /**
-     * 任务运行报错，一般可以通过pip安装对应的库
-     */
-    public static final String MODULE_NOT_FOUND_ERROR = "ModuleNotFoundError: No module named";
-    /**
-     * 已有同名conda环境
-     */
-    public static final String CONDA_PREFIX_ALREADY_EXISTS = "CondaValueError: prefix already exists";
-    /**
-     * conda环境未找到
-     */
-    public static final String CONDA_PREFIX_NOT_FOUND = "Could not find conda environment";
+//    /**
+//     * 任务运行报错，一般可以通过pip安装对应的库
+//     */
+//    public static final String MODULE_NOT_FOUND_ERROR = "ModuleNotFoundError: No module named";
+//    /**
+//     * 已有同名conda环境
+//     */
+//    public static final String CONDA_PREFIX_ALREADY_EXISTS = "CondaValueError: prefix already exists";
+//    /**
+//     * conda环境未找到
+//     */
+//    public static final String CONDA_PREFIX_NOT_FOUND = "Could not find conda environment";
+//    /**
+//     * cuda内存耗尽
+//     */
+//    public static final String CUDA_OUT_OF_MEMORY = "RuntimeError: CUDA out of memory";
 
 
 
@@ -29,30 +33,41 @@ public class ErrorParser {
             return null;
         }
         String repairCmds = null;
-        String type=null;
+        ErrorType errorType=null;
 
-        if (value.startsWith(MODULE_NOT_FOUND_ERROR)) {
-            type=MODULE_NOT_FOUND_ERROR;
-
-            /** 自动安装一些conda库 */
-            String moduleName = value.substring(value.indexOf("named") + 7, value.length() - 1);
-            repairCmds = task.getPipComplementCmds(moduleName)+" && "+task.getStartCmds();
-
-        } else if (value.contains(CONDA_PREFIX_ALREADY_EXISTS)) {
-            type=CONDA_PREFIX_ALREADY_EXISTS;
-            repairCmds = task.getStartCmds();
-
-        } else if (value.contains(CONDA_PREFIX_NOT_FOUND)) {
-            type=CONDA_PREFIX_NOT_FOUND;
-            repairCmds = task.getCondaEnvCreateCmds()+" && "+task.getStartCmds();
-
-
-        } else {
-            /**  其他错误,什么都不做  */
-            return null;
+        ErrorType[] types=ErrorType.values();
+        for (ErrorType type : types) {
+            if (value.contains(type.getKeyWords())){
+                errorType=type;
+                break;
+            }
         }
 
-        LogUtils.info(token, "'"+type+"'添加至error列表中，repairCmds=" + repairCmds);
-        return new EnvError(type,value,repairCmds);
+        switch (errorType){
+            case MODULE_NOT_FOUND:
+                /** 自动安装一些conda库 */
+                String moduleName = value.substring(value.indexOf("named") + 7, value.length() - 1);
+                repairCmds = task.getPipComplementCmds(moduleName)+" && "+task.getStartCmds();
+                break;
+            case CONDA_PREFIX_ALREADY_EXISTS:
+                /** 直接重启 */
+                repairCmds = task.getStartCmds();
+                break;
+            case CONDA_PREFIX_NOT_FOUND:
+                /** 重新安装conda环境 */
+                repairCmds = task.getCondaEnvCreateCmds()+" && "+task.getStartCmds();
+                break;
+            case CUDA_OUT_OF_MEMORY:
+                /**  内存不够,等一会儿重启任务  */
+                repairCmds = "sleep 30 && "+task.getStartCmds();
+                break;
+            default:
+                /**  其他错误,什么都不做  */
+                break;
+        }
+
+        LogUtils.info(token, "'"+errorType.name()+"'添加至error列表中，repairCmds=" + repairCmds);
+
+        return new EnvError(errorType,value,repairCmds);
     }
 }

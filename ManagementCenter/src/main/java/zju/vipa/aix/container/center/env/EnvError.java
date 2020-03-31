@@ -6,23 +6,23 @@ package zju.vipa.aix.container.center.env;
  * @Description: 环境配置过程中的error
  */
 public class EnvError {
-    private String type;
+    private ErrorType type;
     private String details;
 
     /** 可能的修复语句 */
     private String repairCmds;
 
-    public EnvError(String type, String details, String repairCmds) {
+    public EnvError(ErrorType type, String details, String repairCmds) {
         this.type = type;
         this.details = details;
         this.repairCmds = repairCmds;
     }
 
-    public String getType() {
+    public ErrorType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ErrorType type) {
         this.type = type;
     }
 

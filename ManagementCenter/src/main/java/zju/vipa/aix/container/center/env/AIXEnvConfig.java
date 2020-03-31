@@ -6,5 +6,6 @@ package zju.vipa.aix.container.center.env;
  * @Description: conda配置
  */
 public class AIXEnvConfig {
-    public static final String CONDA_ENV_NAME ="aix-task";
+//    public static final String CONDA_ENV_NAME ="aix-task";
+    public static final String CONDA_ENV_NAME ="clean_yolo";
 }
