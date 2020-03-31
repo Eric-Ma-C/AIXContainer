@@ -3,7 +3,7 @@ package zju.vipa.aix.container.client.task.custom;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.shell.ShellTask;
 import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.utils.LogUtils;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 /**
  * @Date: 2020/3/10 9:39
@@ -41,7 +41,7 @@ public class YoloCigarTask extends BaseTask {
      */
     private void getCondaYmlPath() {
         condaEnvFilePath = TcpClient.getInstance().getCondaEnvFileByTaskId(mlTaskId);
-        LogUtils.debug("yml file path = " + condaEnvFilePath);
+        ClientLogUtils.debug("yml file path = " + condaEnvFilePath);
             condaEnvFilePath="/root/aix/code/environment.yaml";
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }

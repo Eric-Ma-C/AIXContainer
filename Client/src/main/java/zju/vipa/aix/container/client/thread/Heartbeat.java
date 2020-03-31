@@ -1,10 +1,10 @@
 package zju.vipa.aix.container.client.thread;
 
 import zju.vipa.aix.container.client.network.TcpClient;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
-import zju.vipa.aix.container.utils.LogUtils;
-import zju.vipa.aix.container.utils.SystemInfoUtils;
+import zju.vipa.aix.container.client.utils.SystemInfoUtils;
 
 /**
  * @Date: 2020/3/10 13:47
@@ -39,7 +39,7 @@ public class Heartbeat {
             @Override
             public void run() {
                 exit = false;
-                LogUtils.info("Start heartbeats report.");
+                ClientLogUtils.info("Start heartbeats report.");
                 while (!exit) {
 
                     SystemBriefInfo info = SystemInfoUtils.getSystemBriefInfo();

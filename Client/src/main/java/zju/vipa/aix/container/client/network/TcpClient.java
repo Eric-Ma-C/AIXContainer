@@ -3,6 +3,7 @@ package zju.vipa.aix.container.client.network;
 
 import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.task.ClientTaskController;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.client.task.custom.SeverCmdsTask;
@@ -12,7 +13,6 @@ import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.utils.JsonUtils;
-import zju.vipa.aix.container.utils.LogUtils;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -81,7 +81,7 @@ public class TcpClient {
     public void handleResponseMsg(Message msg) {
 
         if (msg == null) {
-            LogUtils.worning("Response body is null!");
+            ClientLogUtils.worning("Response body is null!");
             return;
         }
         switch (msg.getIntent()) {
@@ -292,6 +292,8 @@ public class TcpClient {
      * @return: 响应消息
      */
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
+        ClientLogUtils.debug("SEND MSG AndGetResponse:"+msg);
+
         StringBuffer response = new StringBuffer();
 
         Writer mWriter = null;
@@ -335,7 +337,7 @@ public class TcpClient {
                     response.append(tmpStr);
                 }
             } catch (SocketTimeoutException e) {
-                ClientExceptionUtils.handle(e, "响应数据读取超时。");
+                ClientExceptionUtils.handle("响应数据读取超时。",e);
             }
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
@@ -362,10 +364,9 @@ public class TcpClient {
             return resMsg;
         }
 
-        LogUtils.debug("Client received: " + response);
-
         resMsg = JsonUtils.parseObject(response.toString(), Message.class);
 
+        ClientLogUtils.debug("sendMsgAnd GET RESPONSE:"+resMsg);
         return resMsg;
     }
 
@@ -377,7 +378,8 @@ public class TcpClient {
      * @param: msg
      */
     public void sendMessage(Message msg) {
-        StringBuffer response = new StringBuffer();
+        ClientLogUtils.debug("SEND Message:"+msg);
+//        StringBuffer response = new StringBuffer();
 
         Writer mWriter = null;
         Socket mSocket = null;

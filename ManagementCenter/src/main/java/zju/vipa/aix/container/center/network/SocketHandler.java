@@ -6,10 +6,10 @@ import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.config.NetworkConfig;
-import zju.vipa.aix.container.utils.ExceptionUtils;
+import zju.vipa.aix.container.center.util.ExceptionUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
-import zju.vipa.aix.container.utils.JwtUtil;
-import zju.vipa.aix.container.utils.LogUtils;
+import zju.vipa.aix.container.center.util.JwtUtils;
+import zju.vipa.aix.container.center.util.LogUtils;
 
 import java.io.*;
 import java.net.Socket;
@@ -125,7 +125,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleGpuInfo(Message message) {
-        LogUtils.info("GPU info:" + message.getValue());
+        LogUtils.info(message.getToken(),"GPU info:" + message.getValue());
     }
 
     /**
@@ -146,7 +146,7 @@ public class SocketHandler implements Runnable {
      * @return: void
      */
     private void registerContainer(String token) {
-        boolean ok = JwtUtil.verify(token);
+        boolean ok = JwtUtils.verify(token);
         Message msg = new ServerMessage(Intent.REGISTER, "DENIED");
 
         if (ok) {
@@ -256,12 +256,12 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellBegin(Message message) {
-        LogUtils.info("\n****************************\nexec: " + message.getValue() + "\n****************************");
+        LogUtils.info(message.getToken(),"\n****************************\nexec: " + message.getValue() + "\n****************************");
     }
 
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
-        LogUtils.info(message.getValue());
+        LogUtils.info(message);
     }
 
 
@@ -272,7 +272,7 @@ public class SocketHandler implements Runnable {
      * @return: void
      */
     private void shellResult(Message message) {
-        LogUtils.info(message.getValue());
+        LogUtils.info(message);
         Message msg = null;
         if (!"resultCode=0".equals(message.getValue())) {
             /** 遇到错误尝试获取修复指令，可能会失败 */
@@ -283,7 +283,7 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellError(Message message) {
-        LogUtils.error(message.getValue());
+        LogUtils.error(message);
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
         TaskManager.getInstance().handleError(message);
 

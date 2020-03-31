@@ -1,8 +1,6 @@
 package zju.vipa.aix.container.message;
 
 
-import zju.vipa.aix.container.utils.TokenUtils;
-
 /**
  * @Date: 2020/1/9 21:59
  * @Author: EricMa
@@ -24,6 +22,10 @@ public class Message {
      * 每个容器的唯一身份标识
      */
     private String token;
+
+    /** fastjson需要 */
+    public Message() {
+    }
 
     protected Message(Intent intent, String value, String token) {
         this.intent = intent;

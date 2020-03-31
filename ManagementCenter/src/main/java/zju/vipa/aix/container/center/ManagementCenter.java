@@ -2,8 +2,8 @@ package zju.vipa.aix.container.center;
 
 import zju.vipa.aix.container.center.network.CenterTcpServer;
 import zju.vipa.aix.container.config.NetworkConfig;
-import zju.vipa.aix.container.utils.ExceptionUtils;
-import zju.vipa.aix.container.utils.JwtUtil;
+import zju.vipa.aix.container.center.util.ExceptionUtils;
+import zju.vipa.aix.container.center.util.JwtUtils;
 
 import java.io.IOException;
 import java.util.Map;
@@ -49,7 +49,7 @@ public class ManagementCenter {
             /** todo 目前没有去数据库检查token */
 //            id = DbManager.getInstance().getClientIdByToken(token);
 
-            id= JwtUtil.decodeClinetIdByToken(token);
+            id= JwtUtils.decodeClinetIdByToken(token);
             if (id != null) {
                 cachedTokenMap.put(token, id);
             }

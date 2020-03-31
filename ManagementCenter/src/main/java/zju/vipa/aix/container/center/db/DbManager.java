@@ -1,13 +1,11 @@
 package zju.vipa.aix.container.center.db;
 
-import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 import zju.vipa.aix.container.center.db.dao.*;
 import zju.vipa.aix.container.center.db.entity.Device;
 import zju.vipa.aix.container.center.db.entity.Model;
 import zju.vipa.aix.container.center.db.entity.Task;
 import zju.vipa.aix.container.center.db.entity.DataturksUser;
-import zju.vipa.aix.container.utils.ExceptionUtils;
 
 import java.util.List;
 

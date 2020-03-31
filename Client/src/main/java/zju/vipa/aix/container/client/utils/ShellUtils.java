@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.client.utils;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -114,14 +114,14 @@ public class ShellUtils {
             }
 
         } catch (Exception e) {
-            ExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e);
         } finally {
             try {
                 if (outputStream != null) {
                     outputStream.close();
                 }
             } catch (IOException e) {
-                ExceptionUtils.handle(e);
+                ClientExceptionUtils.handle(e);
             } finally {
                 if (process != null) {
                     process.destroy();

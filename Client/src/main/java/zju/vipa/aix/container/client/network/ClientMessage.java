@@ -1,8 +1,9 @@
 package zju.vipa.aix.container.client.network;
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
-import zju.vipa.aix.container.utils.TokenUtils;
+import zju.vipa.aix.container.client.utils.TokenUtils;
 
 /**
  * @Date: 2020/3/30 21:26
@@ -10,13 +11,12 @@ import zju.vipa.aix.container.utils.TokenUtils;
  * @Description: 容器消息
  */
 public class ClientMessage extends Message {
-        private static String token= TokenUtils.getDeviceToken();
 
     public ClientMessage(Intent intent, String value) {
-        super(intent,value,token);
+        super(intent, value, Client.TOKEN);
     }
 
     public ClientMessage(Intent intent) {
-        super(intent,token);
+        super(intent, Client.TOKEN);
     }
 }

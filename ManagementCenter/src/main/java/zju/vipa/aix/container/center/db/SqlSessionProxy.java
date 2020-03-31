@@ -6,7 +6,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import zju.vipa.aix.container.center.db.dao.*;
-import zju.vipa.aix.container.utils.ExceptionUtils;
+import zju.vipa.aix.container.center.util.ExceptionUtils;
 
 import java.io.Reader;
 

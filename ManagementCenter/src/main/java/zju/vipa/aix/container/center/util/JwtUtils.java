@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.center.util;
 
 
 
@@ -16,7 +16,7 @@ import java.util.Date;
  * @version 1.0
  * @date 2020/2/26 15:49
  */
-public class JwtUtil {
+public class JwtUtils {
 
     private static String secret;
 
@@ -24,7 +24,7 @@ public class JwtUtil {
 
 
     static{
-        secret = PropertyUtil.getProperty("jwt.secret","vipa-dev");
+        secret = PropertyUtils.getProperty("jwt.secret","vipa-dev");
         jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
     }
 

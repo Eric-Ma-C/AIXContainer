@@ -2,11 +2,9 @@ package zju.vipa.aix.container.client.shell;
 
 import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
-import zju.vipa.aix.container.client.utils.ClientLogUtils;
-import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.Intent;
-import zju.vipa.aix.container.utils.LogUtils;
 
 import java.io.IOException;
 
@@ -57,7 +55,7 @@ public class ShellTask implements RealtimeProcessInterface {
 
     @Override
     public void onProcessBegin(String cmd) {
-        LogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
+        ClientLogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
         TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
     }
 
@@ -69,7 +67,7 @@ public class ShellTask implements RealtimeProcessInterface {
         if ("".equals(newStdOut) || newStdOut == null) {
             return;
         }
-        LogUtils.info(newStdOut);
+        ClientLogUtils.info(newStdOut);
         TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO,newStdOut));
     }
 
@@ -78,14 +76,14 @@ public class ShellTask implements RealtimeProcessInterface {
         if ("".equals(newStdErr) || newStdErr == null) {
             return;
         }
-        LogUtils.error("Shell Error :" + newStdErr);
+        ClientLogUtils.error("Shell Error :" + newStdErr);
         TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_ERROR, newStdErr));
 
     }
 
     @Override
     public void onProcessFinish(int resultCode) {
-        LogUtils.debug("Shell Finished :" + resultCode);
+        ClientLogUtils.debug("Shell Finished :" + resultCode);
         TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
 
     }

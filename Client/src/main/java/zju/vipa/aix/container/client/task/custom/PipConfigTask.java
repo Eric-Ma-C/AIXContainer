@@ -3,7 +3,7 @@ package zju.vipa.aix.container.client.task.custom;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.shell.ShellTask;
 import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.utils.LogUtils;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 /**
  * @Date: 2020/3/10 11:05
@@ -41,7 +41,7 @@ public class PipConfigTask extends BaseTask {
      */
     private void getPipEnvFilePath() {
         pipEnvFilePath = TcpClient.getInstance().getPipEnvFileByTaskId(mlTaskId);
-        LogUtils.debug("pip file path = " + pipEnvFilePath);
+        ClientLogUtils.debug("pip file path = " + pipEnvFilePath);
 //            path="/root/tmp/tf-gpu.yml";
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }

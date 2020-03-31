@@ -1,8 +1,6 @@
 package zju.vipa.aix.container.client.thread;
 
-import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
-import zju.vipa.aix.container.utils.LogUtils;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -34,7 +32,7 @@ public class ClientThreadManager {
      * 执行新任务
      */
     public void startNewTask(Runnable runnable) {
-        LogUtils.debug("ClientThreadManager.startNewTask() runnable="+runnable);
+        ClientLogUtils.debug("ClientThreadManager.startNewTask() runnable="+runnable);
         mThreadPoolExecutor.execute(runnable);
     }
 
@@ -105,7 +103,7 @@ public class ClientThreadManager {
          */
         private void doLog(Runnable r, ThreadPoolExecutor e) {
             //
-            ClientLogUtils.error(r.toString() + " rejected from " + e.toString());
+            ClientLogUtils.error(r.toString() + " rejected from " + e.toString(),true);
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }
     }

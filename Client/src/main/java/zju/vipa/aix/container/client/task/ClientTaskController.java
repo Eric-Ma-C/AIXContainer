@@ -3,9 +3,8 @@ package zju.vipa.aix.container.client.task;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
-import zju.vipa.aix.container.utils.TokenUtils;
-import zju.vipa.aix.container.utils.LogUtils;
-import zju.vipa.aix.container.utils.SystemInfoUtils;
+import zju.vipa.aix.container.client.utils.TokenUtils;
+import zju.vipa.aix.container.client.utils.SystemInfoUtils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -66,7 +65,7 @@ public class ClientTaskController {
             ClientThreadManager.getInstance().startHeartbeat();
 
         } else {
-            LogUtils.error("容器注册失败，请检查token配置。");
+            ClientLogUtils.error("容器注册失败，请检查token配置。");
         }
     }
 
@@ -78,7 +77,7 @@ public class ClientTaskController {
      */
     public void addTask(BaseTask task) {
         if (task == null) {
-            LogUtils.worning("The adding task is null.");
+            ClientLogUtils.worning("The adding task is null.");
             return;
         }
         ClientLogUtils.debug("Task added:" + task);
@@ -94,11 +93,11 @@ public class ClientTaskController {
         boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
 
         if (!noTaskRunning) {
-            LogUtils.worning("Current task has not finished.");
+            ClientLogUtils.worning("Current task has not finished.");
             return;
 
         } else if (noTaskRunning && taskQueue.isEmpty()) {
-            LogUtils.info("Task Queue is empty.Start heartbeats report.");
+            ClientLogUtils.info("Task Queue is empty.Start heartbeats report.");
             /** 启动心跳线程 */
             ClientThreadManager.getInstance().startHeartbeat();
             return;

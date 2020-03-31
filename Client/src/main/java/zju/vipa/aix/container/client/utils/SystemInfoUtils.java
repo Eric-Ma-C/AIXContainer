@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.client.utils;
 
 import com.sun.management.OperatingSystemMXBean;
 import zju.vipa.aix.container.message.GpuInfo;
@@ -60,7 +60,7 @@ public class SystemInfoUtils {
     public static GpuInfo getGpuInfo() {
         ShellUtils.CommandResult result = ShellUtils.execCommand("nvidia-smi");
         if (result.result != 0) {
-            LogUtils.error(result.errorMsg);
+            ClientLogUtils.error(result.errorMsg);
             return null;
         }
         List<String> info = Arrays.asList(result.responseMsg.split("\\s+"));

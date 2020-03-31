@@ -1,6 +1,5 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.center.util;
 
-import javax.swing.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -8,7 +7,7 @@ import java.io.UnsupportedEncodingException;
 /**
  * @Date: 2020/1/11 15:27
  * @Author: EricMa
- * @Description:集中异常处理
+ * @Description: 集中异常处理
  */
 public class ExceptionUtils {
 

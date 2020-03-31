@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.center.util;
 
 
 import java.io.IOException;
@@ -10,7 +10,7 @@ import java.util.Properties;
  * @version 1.0
  * @date 2020/2/27 10:14
  */
-public class PropertyUtil {
+public class PropertyUtils {
 
     private static Properties properties;
 
@@ -18,7 +18,7 @@ public class PropertyUtil {
      * static init block, read the properties file in the first use
      */
     static{
-        InputStream in = PropertyUtil.class.getClassLoader().getResourceAsStream("custom.properties");
+        InputStream in = PropertyUtils.class.getClassLoader().getResourceAsStream("custom.properties");
         properties = new Properties();
         try {
             properties.load(in);

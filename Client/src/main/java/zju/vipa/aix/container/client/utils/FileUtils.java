@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.client.utils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +32,7 @@ public class FileUtils {
 
             return new String(b, "UTF-8");
         } catch (IOException e) {
-            ExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e);
         }
 
         return null;
@@ -54,7 +54,7 @@ public class FileUtils {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            ExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e);
         }
     }
 
@@ -80,7 +80,7 @@ public class FileUtils {
             try {
                 file.createNewFile();
             } catch (IOException e) {
-                ExceptionUtils.handle(e);
+                ClientExceptionUtils.handle(e);
             }
         }
         return file;

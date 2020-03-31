@@ -2,7 +2,6 @@ package zju.vipa.aix.container.client.shell;
 
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
-import zju.vipa.aix.container.utils.ExceptionUtils;
 
 import java.io.BufferedReader;
 import java.io.File;

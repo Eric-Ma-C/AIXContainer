@@ -1,8 +1,7 @@
-package zju.vipa.aix.container.utils;
+package zju.vipa.aix.container.client.utils;
 
 import zju.vipa.aix.container.config.Config;
 import zju.vipa.aix.container.config.NetworkConfig;
-import zju.vipa.aix.container.utils.FileUtils;
 
 /**
  * @Date: 2020/3/27 9:17
