@@ -9,7 +9,8 @@ package zju.vipa.aix.container.message;
 public enum Intent {
 
     /**
-     * 空
+     * 空消息
+     * 若容器收到此消息，则开始心跳线程
      */
     NULL,
     /**
@@ -21,7 +22,7 @@ public enum Intent {
      */
     GPU_INFO,
     /**
-     * deamon轮询
+     * 容器心跳轮询
      */
     HEARTBEAT,
     /**
@@ -57,10 +58,13 @@ public enum Intent {
 
 
     /**
-     * 暂时没用，HEARTBEAT代表空闲，收到心跳相当于抢任务
-     * 请求新任务，即抢任务
+     * 请求新任务，平台返回待发送消息
+     * 若平台没有待发送消息，返回HEARTBEAT，容器开始心跳汇报
      */
-    ASK_FOR_TASK,
+    ASK_FOR_WORK,
+
+
+
     /**
      * 请求任务代码
      */

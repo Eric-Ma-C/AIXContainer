@@ -7,7 +7,14 @@ import zju.vipa.aix.container.config.NetworkConfig;
  */
 public class Test {
     public static void main(String[] args) {
-
+        String param = null;
+        switch (param) {
+            case "null":
+                System.out.println("匹配null字符串");
+                break;
+            default:
+                System.out.println("进入default");
+        }
     }
 
 

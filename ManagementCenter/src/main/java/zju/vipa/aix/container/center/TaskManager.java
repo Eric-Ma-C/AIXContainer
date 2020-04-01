@@ -2,6 +2,7 @@ package zju.vipa.aix.container.center;
 
 import zju.vipa.aix.container.center.db.DbManager;
 import zju.vipa.aix.container.center.db.entity.Task;
+import zju.vipa.aix.container.center.env.AIXEnvConfig;
 import zju.vipa.aix.container.center.env.EnvError;
 import zju.vipa.aix.container.center.env.ErrorParser;
 import zju.vipa.aix.container.center.network.ServerMessage;
@@ -67,6 +68,13 @@ public class TaskManager {
      */
     public Message askForWork(String token) {
 
+        Message message=getMessageByToken(token);
+        if (message!=null){
+            /** 消息队列中有待发送消息，直接取出 */
+            return message;
+        }
+
+        /** 若没有待发送消息，则尝试添加消息，首先判断有无正在执行的任务 */
         synchronized (token.intern()) {
             Task task = taskMap.get(token);
             if (task == null) {
@@ -83,11 +91,12 @@ public class TaskManager {
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
 
+                String updataCondaSrcCmds = AIXEnvConfig.getUpdateCondaSrcCmds();
                 String cmds = task.getCondaEnvCreateCmds() + " && " + task.getStartCmds();
 
-//                String cmds = task.getStartCmds();
 
-                /** 添加一条待发送任务至列表 */
+                /** 添加待发送任务至列表 */
+                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
                 addMessage(token, new ServerMessage(Intent.SHELL_TASK, cmds));
 
 
@@ -95,6 +104,8 @@ public class TaskManager {
                 /**  task ！= null，说明有任务正在配置环境 */
                 LogUtils.info(token, "发现已有任务" + task);
 
+
+                /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
@@ -124,6 +135,7 @@ public class TaskManager {
 
     /**
      * 从队列中获取
+     * @return 若token对应容器没有待发送消息，返回null
      */
     private Message getMessageByToken(String token) {
         Message message = null;
@@ -133,6 +145,9 @@ public class TaskManager {
             if (messageList != null) {
                 message = messageList.poll();
             }
+        }
+        if (message==null){
+            return null;
         }
 
         LogUtils.info(token, "从队列中获取待发送消息：" + message);

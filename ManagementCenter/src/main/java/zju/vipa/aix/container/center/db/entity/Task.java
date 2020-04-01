@@ -2,6 +2,7 @@ package zju.vipa.aix.container.center.db.entity;
 
 import zju.vipa.aix.container.center.env.AIXEnvConfig;
 import zju.vipa.aix.container.center.env.EnvError;
+import zju.vipa.aix.container.config.NetworkConfig;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -129,8 +130,10 @@ public class Task implements Serializable {
      * conda配置命令
      */
     public String getCondaEnvCreateCmds() {
-        return "conda env create -n " + AIXEnvConfig.CONDA_ENV_NAME + " -f " + codePath + "/environment.yaml --json";
+
+        return "conda env create -n " + AIXEnvConfig.CONDA_ENV_NAME + " -f " + codePath + "/environment.yaml";//--json
     }
+
 
     /**
      * pip补充配置命令,一般在conda配置完成后使用

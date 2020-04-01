@@ -40,7 +40,9 @@ public class ClientThreadManager {
      * 开始心跳汇报
      */
     public void startHeartbeat() {
-        mThreadPoolExecutor.execute(Heartbeat.getRunnable());
+        if (!Heartbeat.isRunning()) {
+            mThreadPoolExecutor.execute(Heartbeat.getRunnable());
+        }
     }
 
     /**

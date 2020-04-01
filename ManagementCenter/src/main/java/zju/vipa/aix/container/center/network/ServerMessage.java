@@ -11,7 +11,8 @@ import zju.vipa.aix.container.message.Message;
  * @Description: 服务器消息
  */
 public class ServerMessage extends Message {
-    private static String token= NetworkConfig.CENTER_TOKEN;
+//    private static String token= NetworkConfig.CENTER_TOKEN;
+    private static String token= "aix center";
 
 
     public ServerMessage(Intent intent, String value) {

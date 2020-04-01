@@ -33,7 +33,7 @@ public class ErrorParser {
             return null;
         }
         String repairCmds = null;
-        ErrorType errorType=null;
+        ErrorType errorType=ErrorType.UNKNOWN;
 
         ErrorType[] types=ErrorType.values();
         for (ErrorType type : types) {
@@ -44,6 +44,9 @@ public class ErrorParser {
         }
 
         switch (errorType){
+            case UNKNOWN:
+                /** 可能是一些非关键描述信息，无法提取错误类别 */
+                return null;
             case MODULE_NOT_FOUND:
                 /** 自动安装一些conda库 */
                 String moduleName = value.substring(value.indexOf("named") + 7, value.length() - 1);

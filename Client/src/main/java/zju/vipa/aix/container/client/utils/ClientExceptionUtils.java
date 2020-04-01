@@ -12,19 +12,30 @@ import java.io.UnsupportedEncodingException;
 /**
  * @Date: 2020/1/11 15:27
  * @Author: EricMa
- * @Description: client中异常处理，记录log，上传
+ * @Description: client中异常处理，记录log，默认上传至平台
  */
 public class ClientExceptionUtils {
 
-    public static void handle(Throwable e) {
+    public static void handle(Throwable e,boolean isUpload) {
         String msg = getMessage(e);
-        printLogAndUpload(msg);
-
+        /** 网络错误导致的Exception不再上传 */
+        if (isUpload) {
+            printLogAndUpload(msg);
+        }
+    }
+    public static void handle(Throwable e) {
+        /** 默认上传 */
+        handle(e,true);
     }
 
-    public static void handle(String worningInfo,Throwable e) {
+    public static void handle(String worningInfo,Throwable e,boolean isUpload) {
         String msg = worningInfo+"  "+getMessage(e);
-        printLogAndUpload(msg);
+        if (isUpload) {
+            printLogAndUpload(msg);
+        }
+    }
+    public static void handle(String worningInfo,Throwable e) {
+        handle(worningInfo,e,true);
     }
 
     private static void printLogAndUpload(String msg){

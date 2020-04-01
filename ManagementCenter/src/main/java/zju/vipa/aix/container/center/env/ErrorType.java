@@ -7,6 +7,10 @@ package zju.vipa.aix.container.center.env;
  */
 public enum ErrorType {
     /**
+     * 未知错误
+     */
+    UNKNOWN("Unknown error,or not important info"),
+    /**
      * 任务运行报错，一般可以通过pip安装对应的库
      */
     MODULE_NOT_FOUND("ModuleNotFoundError: No module named"),

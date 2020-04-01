@@ -42,11 +42,9 @@ public class SocketHandler implements Runnable {
 
     @Override
     public void run() {
-        try {
-            handleRequest();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+        handleRequest();
+
     }
 
     /**
@@ -64,7 +62,9 @@ public class SocketHandler implements Runnable {
             return;
         }
         switch (msg.getIntent()) {
-
+            case ASK_FOR_WORK:
+                clientAskForWork(msg.getToken());
+                break;
             case CONDA_SOURCE:
                 getCondaSource();
                 break;
@@ -111,6 +111,18 @@ public class SocketHandler implements Runnable {
     }
 
     /**
+     * 容器已没有待执行Task
+     */
+    private void clientAskForWork(String token) {
+        Message toSendMsg=TaskManager.getInstance().askForWork(token);
+        if (toSendMsg==null){
+            /** 使容器开始心跳汇报 */
+           toSendMsg=new ServerMessage(Intent.NULL);
+        }
+        response(toSendMsg);
+    }
+
+    /**
      * 容器实时日志处理
      */
     private void handleRealtimeLog(Message msg) {
@@ -125,7 +137,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleGpuInfo(Message message) {
-        LogUtils.info(message.getToken(),"GPU info:" + message.getValue());
+        LogUtils.info(message.getToken(), "GPU info:" + message.getValue());
     }
 
     /**
@@ -154,7 +166,7 @@ public class SocketHandler implements Runnable {
             String id = ManagementCenter.getInstance().getIdByToken(token);
 
             msg = new ServerMessage(Intent.REGISTER, "OK");
-            LogUtils.info("Container " + id + " registered successfully! token="+token);
+            LogUtils.info("Container " + id + " registered successfully! token=" + token);
         } else {
             LogUtils.error("Container registered failed! token:" + token);
         }
@@ -252,11 +264,12 @@ public class SocketHandler implements Runnable {
         } else {
             /** 服务器对心跳包不响应，节省开销 */
             disconnect();
+//            response(new ServerMessage(Intent.NULL));
         }
     }
 
     private void shellBegin(Message message) {
-        LogUtils.info(message.getToken(),"\n****************************\nexec: " + message.getValue() + "\n****************************");
+        LogUtils.info(message.getToken(), "\n****************************\nexec: " + message.getValue() + "\n****************************");
     }
 
     private void shellInfo(Message message) {
@@ -359,6 +372,7 @@ public class SocketHandler implements Runnable {
      */
     private void response(Message msg) {
         if (msg == null) {
+            LogUtils.worning("Response messags is null!");
             return;
         }
         OutputStream outputStream = null;

@@ -71,5 +71,5 @@ public class NetworkConfig {
         "  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
         "  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
         "  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n\n";
+        "  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud";
 }

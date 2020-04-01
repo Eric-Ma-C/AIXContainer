@@ -93,13 +93,18 @@ public class ClientTaskController {
         boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
 
         if (!noTaskRunning) {
-            ClientLogUtils.worning("Current task has not finished.");
+            ClientLogUtils.error("Current task has not finished.");
             return;
 
         } else if (noTaskRunning && taskQueue.isEmpty()) {
-            ClientLogUtils.info("Task Queue is empty.Start heartbeats report.");
-            /** 启动心跳线程 */
-            ClientThreadManager.getInstance().startHeartbeat();
+
+            /** 向平台请求任务 */
+            ClientLogUtils.info("Client Task Queue is empty.Ask for new work.");
+            TcpClient.getInstance().askForWork();
+
+//            ClientLogUtils.info("Task Queue is empty.Start heartbeats report.");
+//            /** 启动心跳线程 */
+//            ClientThreadManager.getInstance().startHeartbeat();
             return;
 
         } else {/** noTaskRunning && !taskQueue.isEmpty() */

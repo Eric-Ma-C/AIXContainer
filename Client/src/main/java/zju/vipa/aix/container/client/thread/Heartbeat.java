@@ -18,24 +18,31 @@ public class Heartbeat {
      * 执行代码
      */
     private static Runnable runnable;
-    /** 线程池 */
-//    private ExecutorService singleThreadExecutor;
     /**
      * deamon心跳汇报间隔时间 30s
      */
     private static final int HEARTBEAT_REPORT_INTERVAL = 30 * 1000;
 
-    private static volatile boolean exit = false;
+    private static volatile boolean exit = true;
 
-    protected static Runnable getRunnable(){
+    protected static Runnable getRunnable() {
         return runnable;
     }
-    /** 停止心跳线程 */
-    public static void stop(){
-        exit=true;
+
+    /**
+     * 停止心跳线程
+     * 本方法不会立刻停止心跳线程，需要等待本心跳周期任务结束，线程才会终止
+     */
+    public static void stop() {
+        exit = true;
     }
+
+    public static boolean isRunning(){
+        return !exit;
+    }
+
     static {
-        runnable =new Runnable() {
+        runnable = new Runnable() {
             @Override
             public void run() {
                 exit = false;
@@ -44,6 +51,7 @@ public class Heartbeat {
 
                     SystemBriefInfo info = SystemInfoUtils.getSystemBriefInfo();
 
+                    /** 若抢到了任务，会在新线程执行任务 */
                     TcpClient.getInstance().heartbeatReport(info);
 
                     /** 休眠 */

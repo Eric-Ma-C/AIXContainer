@@ -3,6 +3,7 @@ package zju.vipa.aix.container.client.network;
 
 import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.task.ClientTaskController;
+import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
@@ -63,17 +64,7 @@ public class TcpClient {
         return ContainerTcpClientHolder.INSTANCE;
     }
 
-    /**
-     * tcp连接是否保持
-     * 注意如果网络断开、服务器主动断开，
-     * Java底层是不会检测到连接断开并改变Socket的状态的，
-     * 所以，真实的检测连接状态还是得通过额外的手段
-     */
-//    public boolean isSocketAvailable() {
-//        return mSocket != null && mSocket.isBound() &&
-//            !mSocket.isClosed() && mSocket.isConnected() &&
-//            !mSocket.isInputShutdown() && !mSocket.isOutputShutdown();
-//    }
+
 
     /**
      * 处理平台下发的命令
@@ -85,9 +76,10 @@ public class TcpClient {
             return;
         }
         switch (msg.getIntent()) {
-//            case TASK_CODE_URL:
-//                startNewTraining(msg.getValue());
-//                break;
+            case NULL:
+                /** 平台没有待发送消息，容器开始心跳汇报 */
+                ClientThreadManager.getInstance().startHeartbeat();
+                break;
             case TASK:
                 execTask(msg.getValue());
                 break;
@@ -167,11 +159,9 @@ public class TcpClient {
     public boolean registerContainer(String containerToken) {
         Message message = new ClientMessage(Intent.REGISTER, containerToken);
         String response = "";
-        try {
-            response = sendMsgAndGetResponse(message).getValue();
-        } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
-        }
+
+        response = sendMsgAndGetResponse(message).getValue();
+
         if ("OK".equals(response)) {
             return true;
         } else {
@@ -189,11 +179,9 @@ public class TcpClient {
 
         Message message = new ClientMessage(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
         String response = "";
-        try {
-            response = sendMsgAndGetResponse(message).getValue();
-        } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
-        }
+
+        response = sendMsgAndGetResponse(message).getValue();
+
 
         return response;
 
@@ -209,11 +197,9 @@ public class TcpClient {
 
         Message message = new ClientMessage(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
         String response = "";
-        try {
-            response = sendMsgAndGetResponse(message).getValue();
-        } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
-        }
+
+        response = sendMsgAndGetResponse(message).getValue();
+
 
         return response;
 
@@ -234,6 +220,17 @@ public class TcpClient {
     }
 
     /**
+     * 向平台请求任务
+     */
+    public void askForWork() {
+        Message message = new ClientMessage(Intent.ASK_FOR_WORK);
+
+        Message resMsg = sendMsgAndGetResponse(message);
+
+        handleResponseMsg(resMsg);
+    }
+
+    /**
      * 心跳汇报
      * 定时询问服务器有无连接需求，同时汇报容器状态（cpu，gpu，内存占用率等等）
      *
@@ -243,34 +240,27 @@ public class TcpClient {
     public void heartbeatReport(SystemBriefInfo info) {
 
         Message message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
-        Message body = null;
-        try {
-            /** 10s读超时 */
-            body = sendMsgAndGetResponse(message, 10000);
-        } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
-        }
+        Message resMsg = null;
 
-        if (body != null && body.getIntent() != Intent.NULL) {
+        /** 10s读超时，抢任务并发多时可能会比较慢？ */
+        resMsg = sendMsgAndGetResponse(message, 10000);
+
+
+        if (resMsg != null && resMsg.getIntent() != Intent.NULL) {
             /** 停止心跳线程,执行任务 */
             Heartbeat.stop();
-            handleResponseMsg(body);
+            handleResponseMsg(resMsg);
         }
 
     }
 
     public void reportShellResult(Message msg) {
         Message body = null;
-        try {
-            /** 5000ms读超时 */
-            body = sendMsgAndGetResponse(msg, 5000);
-        } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
-        }
+
+        /** 5000ms读超时 */
+        body = sendMsgAndGetResponse(msg, 5000);
 
         handleResponseMsg(body);
-
-
     }
 
     /**
@@ -292,7 +282,7 @@ public class TcpClient {
      * @return: 响应消息
      */
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
-        ClientLogUtils.debug("SEND MSG AndGetResponse:"+msg);
+        ClientLogUtils.debug("SEND MSG AndGetResponse:" + msg);
 
         StringBuffer response = new StringBuffer();
 
@@ -337,10 +327,10 @@ public class TcpClient {
                     response.append(tmpStr);
                 }
             } catch (SocketTimeoutException e) {
-                ClientExceptionUtils.handle("响应数据读取超时。",e);
+                ClientExceptionUtils.handle("响应数据读取超时。", e);
             }
         } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e, false);
         } finally {
             /** 及时断开连接 */
             try {
@@ -366,7 +356,7 @@ public class TcpClient {
 
         resMsg = JsonUtils.parseObject(response.toString(), Message.class);
 
-        ClientLogUtils.debug("sendMsgAnd GET RESPONSE:"+resMsg);
+        ClientLogUtils.debug("sendMsgAnd GET RESPONSE:" + resMsg);
         return resMsg;
     }
 
@@ -378,7 +368,7 @@ public class TcpClient {
      * @param: msg
      */
     public void sendMessage(Message msg) {
-        ClientLogUtils.debug("SEND Message:"+msg);
+        ClientLogUtils.debug("SEND Message:" + msg);
 //        StringBuffer response = new StringBuffer();
 
         Writer mWriter = null;
@@ -399,7 +389,7 @@ public class TcpClient {
 
 
         } catch (Exception e) {
-            ClientExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e, false);
         } finally {
             try {
                 if (mWriter != null) {
@@ -473,5 +463,19 @@ public class TcpClient {
 //        return sb.toString();
 //    }
 
+
+
+
+//    /**
+//     * tcp连接是否保持
+//     * 注意如果网络断开、服务器主动断开，
+//     * Java底层是不会检测到连接断开并改变Socket的状态的，
+//     * 所以，真实的检测连接状态还是得通过额外的手段
+//     */
+//    public boolean isSocketAvailable() {
+//        return mSocket != null && mSocket.isBound() &&
+//            !mSocket.isClosed() && mSocket.isConnected() &&
+//            !mSocket.isInputShutdown() && !mSocket.isOutputShutdown();
+//    }
 
 }
