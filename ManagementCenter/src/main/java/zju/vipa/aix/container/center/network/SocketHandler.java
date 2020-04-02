@@ -220,14 +220,8 @@ public class SocketHandler implements Runnable {
      */
     private void handleHeartbeat(Message msg) {
         String token = msg.getToken();
-        SystemBriefInfo info = JsonUtils.parseObject(msg.getValue(), SystemBriefInfo.class);
-        if (info == null) {
-            LogUtils.error("Heartbeat info error:" + msg);
-            disconnect();
-            return;
-        }
+
         /** 根据token获取id */
-//        LogUtils.debug("getIdByToken="+token);
         String id = ManagementCenter.getInstance().getIdByToken(token);
 
         if (id == null) {
@@ -235,6 +229,14 @@ public class SocketHandler implements Runnable {
             disconnect();
             return;
         }
+
+        SystemBriefInfo info = JsonUtils.parseObject(msg.getValue(), SystemBriefInfo.class);
+        if (info == null) {
+            LogUtils.error("Heartbeat info error:" + msg);
+            disconnect();
+            return;
+        }
+
 
         LogUtils.info(token, "Heartbeats from client (id=" + id + "): IP" + mSocket.getInetAddress() + " CPU=" + info.getCpuRate() +
             "%  RAM=" + info.getRamRate() + "%  time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));

@@ -1,4 +1,5 @@
 import zju.vipa.aix.container.config.NetworkConfig;
+import zju.vipa.aix.container.utils.TimeUtils;
 
 /**
  * @Date: 2020/3/29 20:10
@@ -7,15 +8,16 @@ import zju.vipa.aix.container.config.NetworkConfig;
  */
 public class Test {
     public static void main(String[] args) {
-        String param = null;
-        switch (param) {
-            case "null":
-                System.out.println("匹配null字符串");
-                break;
-            default:
-                System.out.println("进入default");
-        }
+
     }
 
+    private static void TimeUtilsTest(){
+        System.out.println(TimeUtils.getInterval(234));
+        System.out.println(TimeUtils.getInterval(1010));
+        System.out.println(TimeUtils.getInterval(345000));
+        System.out.println(TimeUtils.getInterval(3600001));
+        System.out.println(TimeUtils.getInterval(86400200));
+        System.out.println(TimeUtils.getInterval(4325234546435645L ));
+    }
 
 }

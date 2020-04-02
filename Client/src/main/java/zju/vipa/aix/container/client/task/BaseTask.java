@@ -1,18 +1,21 @@
 package zju.vipa.aix.container.client.task;
 
 
+import zju.vipa.aix.container.utils.TimeUtils;
+
 import java.util.Arrays;
+import java.util.Date;
 
 /**
  * @Date: 2020/3/10 9:23
  * @Author: EricMa
  * @Description: 封装容器基本任务，所有任务的基类
  */
-public abstract class BaseTask{
+public abstract class BaseTask {
     /**
      * 执行代码
      */
-    private  Runnable runnable;
+    private Runnable runnable;
 
     private TaskStateListener listener;
     /**
@@ -22,15 +25,19 @@ public abstract class BaseTask{
     /**
      * shell指令序列
      */
-    private String[] commands=null;
+    private String[] commands = null;
     /**
      * 指令输出
      */
     private String output;
     /**
-     * 已运行时长
+     * 开始运行时间
      */
-    private long execTime = 0;
+    private long beginTime = 0L;
+    /**
+     * 结束运行时间
+     */
+    private long endTime = 0L;
 
     public TaskState getState() {
         return state;
@@ -51,21 +58,6 @@ public abstract class BaseTask{
         this.commands = commands;
     }
 
-//    public String getOutput() {
-//        return output;
-//    }
-//
-//    public void setOutput(String output) {
-//        this.output = output;
-//    }
-//
-//    public long getExecTime() {
-//        return execTime;
-//    }
-//
-//    public void setExecTime(long execTime) {
-//        this.execTime = execTime;
-//    }
 
     protected BaseTask() {
         state = TaskState.WAITING;
@@ -80,21 +72,37 @@ public abstract class BaseTask{
     public Runnable getRunnable(TaskStateListener taskStateListener) {
         listener = taskStateListener;
 
-        runnable=new Runnable() {
+        runnable = new Runnable() {
             @Override
             public void run() {
 
+
                 listener.onBegin();
+                beginTime = System.currentTimeMillis();
                 state = TaskState.RUNNING;
                 procedure();
                 state = TaskState.FINISHED;
+                endTime = System.currentTimeMillis();
                 listener.onFinished();
+
 
             }
         };
         return runnable;
     }
 
+    /**
+     * 任务运行时间，单位毫秒
+     */
+    public long getExecTime() {
+        if (beginTime == 0L) {
+            return 0L;
+        } else if (endTime == 0L) {
+            return System.currentTimeMillis() - beginTime;
+        } else {
+            return endTime - beginTime;
+        }
+    }
 
     /**
      * 定义Task的shell命令
@@ -123,10 +131,10 @@ public abstract class BaseTask{
 
     @Override
     public String toString() {
-        String cmds="";
-        if (commands!=null){
+        String cmds = "";
+        if (commands != null) {
             for (String cmd : commands) {
-                cmds+=cmd+" ";
+                cmds += cmd + " ";
             }
         }
         return "BaseTask{" +

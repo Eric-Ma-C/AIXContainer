@@ -29,7 +29,7 @@ public class NetworkConfig {
 //    public static String SERVER_IP = VIPA_205_IP;
 
     static {
-        if (DebugUtils.isLocalDebug) {
+        if (DebugUtils.IS_LOCAL_DEBUG) {
             SERVER_IP = DEBUG_SERVER_IP;
         }
     }

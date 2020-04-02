@@ -5,6 +5,7 @@ import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.client.utils.TokenUtils;
 import zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import zju.vipa.aix.container.utils.TimeUtils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -59,6 +60,7 @@ public class ClientTaskController {
 
         /** 上传验证容器token */
         boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
+        /** 此处判断可以减少非法token的容器发送大量无效心跳请求 */
         if (isSuccessful) {
             /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
@@ -122,7 +124,7 @@ public class ClientTaskController {
 
                 @Override
                 public void onFinished() {
-                    ClientLogUtils.debug("****** Task finished ******:" + currentTask.toString());
+                    ClientLogUtils.debug("*** Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +"***:" + currentTask.toString(),true);
                     execNewTask();
                 }
             }));
