@@ -91,12 +91,12 @@ public class TaskManager {
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
 
-                String updataCondaSrcCmds = AIXEnvConfig.getUpdateCondaSrcCmds();
+                String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
                 String cmds = task.getCondaEnvCreateCmds() + " && " + task.getStartCmds();
 
 
                 /** 添加待发送任务至列表 */
-                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
+//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
                 addMessage(token, new ServerMessage(Intent.SHELL_TASK, cmds));
 
 

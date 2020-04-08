@@ -5,10 +5,12 @@ import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.session.SqlSessionManager;
 import zju.vipa.aix.container.center.db.dao.*;
 import zju.vipa.aix.container.center.util.ExceptionUtils;
 
 import java.io.Reader;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Date: 2020/3/24 17:37
@@ -108,4 +110,7 @@ public class SqlSessionProxy {
             closeSession();
         }
     }
+
+
+
 }

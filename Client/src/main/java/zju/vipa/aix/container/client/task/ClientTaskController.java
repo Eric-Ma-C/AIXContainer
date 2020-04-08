@@ -124,7 +124,7 @@ public class ClientTaskController {
 
                 @Override
                 public void onFinished() {
-                    ClientLogUtils.debug("*** Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +"***:" + currentTask.toString(),true);
+                    ClientLogUtils.debug("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:" + currentTask.toString(),true);
                     execNewTask();
                 }
             }));

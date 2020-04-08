@@ -83,7 +83,7 @@ public class ShellTask implements RealtimeProcessInterface {
 
     @Override
     public void onProcessFinish(int resultCode) {
-        ClientLogUtils.debug("Shell Finished :" + resultCode);
+        ClientLogUtils.debug("Shell Finished :" + resultCode+"\n");
         TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
 
     }

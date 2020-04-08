@@ -27,30 +27,31 @@ public class ErrorParser {
 //    public static final String CUDA_OUT_OF_MEMORY = "RuntimeError: CUDA out of memory";
 
 
-
-    public static EnvError handle(String token,String value, Task task) {
+    public static EnvError handle(String token, String value, Task task) {
         if (value == null) {
             return null;
         }
         String repairCmds = null;
-        ErrorType errorType=ErrorType.UNKNOWN;
+        ErrorType errorType = ErrorType.UNKNOWN;
 
-        ErrorType[] types=ErrorType.values();
+        ErrorType[] types = ErrorType.values();
         for (ErrorType type : types) {
-            if (value.contains(type.getKeyWords())){
-                errorType=type;
+            if (value.contains(type.getKeyWords())) {
+                errorType = type;
                 break;
             }
         }
 
-        switch (errorType){
+        switch (errorType) {
             case UNKNOWN:
                 /** 可能是一些非关键描述信息，无法提取错误类别 */
                 return null;
             case MODULE_NOT_FOUND:
                 /** 自动安装一些conda库 */
-                String moduleName = value.substring(value.indexOf("named") + 7, value.length() - 1);
-                repairCmds = task.getPipComplementCmds(moduleName)+" && "+task.getStartCmds();
+                String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
+                String moduleName = getModuleNameByPrompt(promptName);
+
+                repairCmds = task.getPipComplementCmds(moduleName) + " && " + task.getStartCmds();
                 break;
             case CONDA_PREFIX_ALREADY_EXISTS:
                 /** 直接重启 */
@@ -58,19 +59,41 @@ public class ErrorParser {
                 break;
             case CONDA_PREFIX_NOT_FOUND:
                 /** 重新安装conda环境 */
-                repairCmds = task.getCondaEnvCreateCmds()+" && "+task.getStartCmds();
+                repairCmds = task.getCondaEnvCreateCmds() + " && " + task.getStartCmds();
                 break;
             case CUDA_OUT_OF_MEMORY:
                 /**  内存不够,等一会儿重启任务  */
-                repairCmds = "sleep 30 && "+task.getStartCmds();
+                repairCmds = "sleep 30 && " + task.getStartCmds();
+                break;
+            case UNICODE_ENCODE_ERROR:
+                /**  编码问题  */
+                repairCmds = task.getStartCmds().replace("python", "PYTHONIOENCODING=utf-8 python");
+                break;
+            case NUMPY_RANDOM_HAS_NO_ATTRIBUTE_BIT_GENERATOR:
+                /**  降级安装numpy  */
+                repairCmds = AIXEnvConfig.CONDA_ACTIVATE_CMD + " && pip uninstall numpy -y && pip install -U numpy==1.17.0 && " + task.getStartCmds();
                 break;
             default:
                 /**  其他错误,什么都不做  */
                 break;
         }
 
-        LogUtils.info(token, "'"+errorType.name()+"'添加至error列表中，repairCmds=" + repairCmds);
+        LogUtils.info(token, "'" + errorType.name() + "'添加至error列表中，repairCmds=" + repairCmds);
 
-        return new EnvError(errorType,value,repairCmds);
+        return new EnvError(errorType, value, repairCmds);
+    }
+
+
+    /**
+     * 提示ModuleNotFoundError: No module named xxx
+     * 有时候包名不一致
+     */
+    private static String getModuleNameByPrompt(String promptName) {
+        String moduleName = promptName;
+        if ("cv2".equals(moduleName)) {
+            moduleName = "opencv-python";
+        }
+
+        return moduleName;
     }
 }

@@ -25,7 +25,27 @@ public enum ErrorType {
     /**
      * cuda内存耗尽
      */
-    CUDA_OUT_OF_MEMORY("RuntimeError: CUDA out of memory");
+    CUDA_OUT_OF_MEMORY("RuntimeError: CUDA out of memory"),
+    /**
+     * conda找不到相关安装包,一般需要用pip安装
+     */
+    RESOLVE_PACKAGE_NOT_FOUND("ResolvePackageNotFound"),
+    /**
+     *  编码问题
+     *  "PYTHONIOENCODING=utf-8 python -u -m  recognition.main -name prov_test"
+     */
+    UNICODE_ENCODE_ERROR("UnicodeEncodeError"),
+    /**
+     * numpy版本太高，没有bit_generator
+     * 降级安装
+     * "pip uninstall numpy -y",
+     *         "pip install -U numpy==1.17.0",
+     */
+    NUMPY_RANDOM_HAS_NO_ATTRIBUTE_BIT_GENERATOR("AttributeError: module 'numpy.random' has no attribute 'bit_generator'");
+
+
+
+
 
     private String keyWords;
 
