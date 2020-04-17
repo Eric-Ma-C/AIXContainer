@@ -89,9 +89,10 @@ public class RealtimeProcess {
         /** 启动process */
         exec(mProcessBuilder.start());
 
-        ClientLogUtils.info(mProcessBuilder.environment().toString(), true);
+        //test env
+//        ClientLogUtils.info(mProcessBuilder.environment().toString(), true);
 //        ClientLogUtils.info("System.getProperties() "+System.getProperties().toString(), true);
-        ClientLogUtils.info("System.getenv() "+System.getenv().toString(), true);
+//        ClientLogUtils.info("System.getenv() "+System.getenv().toString(), true);
     }
 
     public static String[] partitionCommandLine(final String command) {

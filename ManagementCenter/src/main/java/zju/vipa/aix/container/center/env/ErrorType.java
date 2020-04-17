@@ -58,6 +58,43 @@ public enum ErrorType {
     }
 
 
+
+
+
+
+//    ****************************
+//    exec: source /home/aix/miniconda3/bin/activate aix-task && pip install  --prefer-binary -i http://mirrors.aliyun.com/pypi/simple/ --cache-dir "/home/aix/cache/pip/" tensorflow && source /home/aix/miniconda3/bin/activate aix-task && cd /nfs/mc/docker/plate-recognition && python -u -m recognition.main -name prov_test
+//        ****************************
+//        17:03:30,048 [INFO] (aix-t4):
+//    IpoM8-nAs: Looking in indexes: http://mirrors.aliyun.com/pypi/simple/
+//        17:03:30,119 [ERROR] (aix-t1):
+//    IpoM8-nAs: WARNING: The repository located at mirrors.aliyun.com is not a trusted or secure host and is being ignored. If this repository is available via HTTPS we recommend you use HTTPS instead, otherwise you may silence this warning and allow it anyway with '--trusted-host mirrors.aliyun.com'.
+//        17:03:30,124 [ERROR] (aix-t2):
+//    IpoM8-nAs: ERROR: Could not find a version that satisfies the requirement tensorflow (from versions: none)
+//17:03:30,129 [ERROR] (aix-t3):
+//    IpoM8-nAs: ERROR: No matching distribution found for tensorflow
+//17:03:30,134 [INFO] (aix-t4):
+//    IpoM8-nAs: resultCode=1
+
+
+
+
+
+
+
+
+//    IpoM8-nAs:   File "/home/aix/miniconda3/envs/aix-task/lib/python3.6/site-packages/pip/_vendor/urllib3/response.py", line 430, in _error_catcher
+//17:38:54,673 [ERROR] (aix-t3):
+//    IpoM8-nAs:     raise ReadTimeoutError(self._pool, None, "Read timed out.")
+//17:38:54,677 [ERROR] (aix-t4):
+//    IpoM8-nAs: pip._vendor.urllib3.exceptions.ReadTimeoutError: HTTPSConnectionPool(host='pypi.tuna.tsinghua.edu.cn', port=443): Read timed out.
+//17:38:54,682 [INFO] (aix-t2):
+//    IpoM8-nAs: resultCode=2
+
+
+
+
+
 //
 //    IpoM8-nAs: ERROR: Could not install packages due to an EnvironmentError: HTTPSConnectionPool(host='files.pythonhosted.org', port=443): Max retries exceeded with url: /packages/11/df/5a3bba95b4600d5ca7aff072082ef0d9837056dd28cc4e738e7ce88dd8f8/imgaug-0.3.0-py2.py3-none-any.whl
 //    (Caused by ConnectTimeoutError(<pip._vendor.urllib3.connection.VerifiedHTTPSConnection object at 0x7fda1f71b630>,

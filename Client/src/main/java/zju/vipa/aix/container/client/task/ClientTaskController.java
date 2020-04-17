@@ -82,8 +82,10 @@ public class ClientTaskController {
             ClientLogUtils.worning("The adding task is null.");
             return;
         }
-        ClientLogUtils.debug("Task added:" + task);
+
         taskQueue.add(task);
+        ClientLogUtils.debug("Task added:" + task);
+
         execNewTask();
     }
 
@@ -95,7 +97,7 @@ public class ClientTaskController {
         boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
 
         if (!noTaskRunning) {
-            ClientLogUtils.error("Current task has not finished.");
+            ClientLogUtils.worning("Current task has not finished.Wait for execution.");
             return;
 
         } else if (noTaskRunning && taskQueue.isEmpty()) {
@@ -125,9 +127,11 @@ public class ClientTaskController {
                 @Override
                 public void onFinished() {
                     ClientLogUtils.debug("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:" + currentTask.toString(),true);
-                    if (currentTask.getRepairCmds()!=null){
+                    String repairCmds=currentTask.getRepairCmds();
+                    if (repairCmds!=null){
+                        ClientLogUtils.info("currentTask.getRepairCmds()="+repairCmds,true);
                         /** 修复运行环境 */
-                        ClientShellTask task = new ClientShellTask(currentTask.getRepairCmds());
+                        ClientShellTask task = new ClientShellTask(repairCmds);
                         addTask(task);
                     }
 

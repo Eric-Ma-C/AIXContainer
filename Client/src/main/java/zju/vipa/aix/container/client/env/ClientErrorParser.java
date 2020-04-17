@@ -23,7 +23,7 @@ public class ClientErrorParser {
             String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
             String moduleName = getModuleNameByPrompt(promptName);
 
-            ClientLogUtils.info("发现ModuleNotFoundError，module=" + moduleName);
+            ClientLogUtils.info("\n发现ModuleNotFoundError，module=" + moduleName,true);
 
             return moduleName;
         }

@@ -16,32 +16,35 @@ import java.io.UnsupportedEncodingException;
  */
 public class ClientExceptionUtils {
 
-    public static void handle(Throwable e,boolean isUpload) {
-        String msg = getMessage(e);
-        /** 网络错误导致的Exception不再上传 */
-        if (isUpload) {
-            printLogAndUpload(msg);
-        }
-    }
+
     public static void handle(Throwable e) {
         /** 默认上传 */
-        handle(e,true);
+        handle(e, true);
     }
 
-    public static void handle(String worningInfo,Throwable e,boolean isUpload) {
-        String msg = worningInfo+"  "+getMessage(e);
+    public static void handle(Throwable e, boolean isUpload) {
+        handle(null, e, isUpload);
+    }
+
+    public static void handle(String worningInfo, Throwable e, boolean isUpload) {
+        String msg;
+        if (worningInfo != null) {
+            msg = worningInfo + "  " + getMessage(e);
+        } else {
+            msg = getMessage(e);
+        }
+
+        ClientLogUtils.error(msg, false);
         if (isUpload) {
-            printLogAndUpload(msg);
+            /** 注意 网络错误导致的Exception不应该上传 */
+            uploadException(msg);
         }
     }
-    public static void handle(String worningInfo,Throwable e) {
-        handle(worningInfo,e,true);
-    }
 
-    private static void printLogAndUpload(String msg){
-        ClientLogUtils.error(msg,true);
+    private static void uploadException(String msg) {
         TcpClient.getInstance().sendMessage(new ClientMessage(Intent.EXCEPTION, msg));
     }
+
 
     /**
      * 解决 e.getMessage()=null
@@ -70,7 +73,7 @@ public class ClientExceptionUtils {
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
-                handle("Exception from thread " + t.getName() + ":",e );
+                handle("Exception from thread " + t.getName() + ":", e, true);
             }
         });
     }

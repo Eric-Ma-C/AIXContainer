@@ -88,6 +88,8 @@ public class ShellTask implements RealtimeProcessListener {
         }
         ClientLogUtils.error("Shell Error :" + newStdErr);
         Intent intent = Intent.SHELL_ERROR_HELP;
+
+
         String moduleName=ClientErrorParser.handleModuleNotFoundError(newStdErr);
         if (moduleName!=null) {
             /** 平台不用尝试解析错误类型了 */
@@ -96,6 +98,8 @@ public class ShellTask implements RealtimeProcessListener {
                 handleShellErrorListener.onHandle(moduleName);
             }
         }
+
+
         TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
 
 

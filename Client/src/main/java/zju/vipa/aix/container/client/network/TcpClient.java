@@ -292,7 +292,7 @@ public class TcpClient {
      * @return: 响应消息
      */
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
-        ClientLogUtils.debug("SEND MSG AndGetResponse:" + msg);
+        ClientLogUtils.debug("\nSEND MSG:" + msg);
 
         StringBuffer response = new StringBuffer();
 
@@ -337,7 +337,7 @@ public class TcpClient {
                     response.append(tmpStr);
                 }
             } catch (SocketTimeoutException e) {
-                ClientExceptionUtils.handle("响应数据读取超时。", e);
+                ClientExceptionUtils.handle("响应数据读取超时。", e,false);
             }
         } catch (Exception e) {
             ClientExceptionUtils.handle(e, false);
@@ -366,7 +366,7 @@ public class TcpClient {
 
         resMsg = JsonUtils.parseObject(response.toString(), Message.class);
 
-        ClientLogUtils.debug("sendMsgAnd GET RESPONSE:" + resMsg);
+        ClientLogUtils.debug("GET RESPONSE:" + resMsg);
         return resMsg;
     }
 

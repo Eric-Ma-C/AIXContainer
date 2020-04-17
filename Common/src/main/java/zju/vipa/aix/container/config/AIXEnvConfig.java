@@ -3,7 +3,7 @@ package zju.vipa.aix.container.config;
 /**
  * @Date: 2020/3/26 18:39
  * @Author: EricMa
- * @Description: conda配置
+ * @Description: python环境配置指令
  */
 public class AIXEnvConfig {
     private static final String CONDA_ENV_NAME = "aix-task";
@@ -12,10 +12,11 @@ public class AIXEnvConfig {
     /**
      * conda源更新指令
      */
-    private static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + NetworkConfig.DEFAULT_CONDA_SOURCE + "\" > /home/aix/.condarc && conda clean -i";
     private static final String CONDA_CREATE_CMD = "conda create -n " + CONDA_ENV_NAME + " python=3.6.2";
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
-    private static final String CONDA_ACTIVATE_CMD = "source " + MINICONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
+
+    public static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + NetworkConfig.DEFAULT_CONDA_SOURCE + "\" > /home/aix/.condarc && conda clean -i";
+    public static final String CONDA_ACTIVATE_CMD = "source " + MINICONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
 
 
 
@@ -23,14 +24,15 @@ public class AIXEnvConfig {
 
 
 
-    //      #阿里云 http://mirrors.aliyun.com/pypi/simple/
+    //      #阿里云 https://mirrors.aliyun.com/pypi/simple/
 //          #中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
-//          #豆瓣(douban) http://pypi.douban.com/simple/
+//          #豆瓣(douban) https://pypi.douban.com/simple/
 //          #清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
-//          #中国科学技术大学 http://pypi.mirrors.ustc.edu.cn/simple/
-    private static final String PIP_SOURCE = "http://mirrors.aliyun.com/pypi/simple/";
+
+    private static final String PIP_SOURCE = "https://pypi.tuna.tsinghua.edu.cn/simple/";
     private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
-    private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
+    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
+//    private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 
 
 
