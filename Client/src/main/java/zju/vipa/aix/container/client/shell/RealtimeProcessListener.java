@@ -5,14 +5,14 @@ package zju.vipa.aix.container.client.shell;
  * @Author: EricMa
  * @Description: shell指令执行回调接口
  */
-interface RealtimeProcessInterface{
+interface RealtimeProcessListener {
     /** shell开始执行 */
     void onProcessBegin(String cmd);
     /** shell标准输出响应 */
-    void onNewStdoutListener(String newStdout);
+    void onNewStdOut(String newStdout);
     /** shell错误输出响应 */
-    void onNewStderrListener(String newStderr);
+    void onNewStdError(String newStderr);
     /** shell结束输出响应 */
-    void onProcessFinish(int resultCode);
+    void onProcessFinished(int resultCode);
     //void execCommand(String ...commands);
 }

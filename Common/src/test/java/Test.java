@@ -1,13 +1,16 @@
 import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.utils.TimeUtils;
 
+import java.io.IOException;
+import java.util.logging.SocketHandler;
+
 /**
  * @Date: 2020/3/29 20:10
  * @Author: EricMa
  * @Description: 测试
  */
 public class Test {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
     }
 

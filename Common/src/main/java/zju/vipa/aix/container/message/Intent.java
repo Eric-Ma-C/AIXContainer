@@ -92,9 +92,13 @@ public enum Intent {
      */
     SHELL_INFO,
     /**
-     * shell指令执行错误信息
+     * shell指令执行错误信息,不需要平台解析，只记录log
      */
     SHELL_ERROR,
+    /**
+     * shell指令执行错误信息,寻求平台解析
+     */
+    SHELL_ERROR_HELP,
     /**
      * shell指令执行结果
      */

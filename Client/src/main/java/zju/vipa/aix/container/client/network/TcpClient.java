@@ -7,7 +7,7 @@ import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.SystemBriefInfo;
-import zju.vipa.aix.container.client.task.custom.SeverCmdsTask;
+import zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import zju.vipa.aix.container.client.thread.Heartbeat;
 import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
@@ -19,6 +19,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.util.Map;
 
 /**
  * @Date: 2020/1/7 15:26
@@ -42,6 +43,9 @@ public class TcpClient {
      */
 //    BufferedReader mReader;
     private TcpClient() {
+        if (ContainerTcpClientHolder.INSTANCE!=null){
+            throw new RuntimeException("单例对象不允许多个实例");
+        }
     }
 
     /**
@@ -84,7 +88,7 @@ public class TcpClient {
                 execTask(msg.getValue());
                 break;
             case SHELL_TASK:
-                execShellTask(msg.getValue());
+                execShellTask(msg);
                 break;
             default:
                 break;
@@ -109,9 +113,15 @@ public class TcpClient {
      * @param:
      * @return:
      */
-    private void execShellTask(String value) {
+    private void execShellTask(Message msg) {
 
-        SeverCmdsTask task = new SeverCmdsTask(value);
+        ClientShellTask task = new ClientShellTask(msg.getValue());
+        String codePath=null;
+        if ((codePath=msg.getCustomData("codePath"))!=null){
+            task.setCodePath(codePath);
+            ClientLogUtils.info("set codePath="+codePath, true);
+        }
+
 //        ClientLogUtils.debug("SeverCmdsTask="+value);
         ClientTaskController.getInstance().addTask(task);
 

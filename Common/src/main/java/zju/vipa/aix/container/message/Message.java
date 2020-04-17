@@ -1,6 +1,9 @@
 package zju.vipa.aix.container.message;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @Date: 2020/1/9 21:59
  * @Author: EricMa
@@ -22,8 +25,15 @@ public class Message {
      * 每个容器的唯一身份标识
      */
     private String token;
+    /**
+     * 自定义数据 键值对
+     */
+    private Map<String, String> customDataMap =null;
 
-    /** fastjson需要 */
+
+    /**
+     * fastjson需要
+     */
     public Message() {
     }
 
@@ -66,12 +76,44 @@ public class Message {
         this.token = token;
     }
 
+    protected Map<String, String> getCustomDataMap() {
+        return customDataMap;
+    }
+
+    protected void setCustomDataMap(Map<String, String> customDataMap) {
+        this.customDataMap = customDataMap;
+    }
+
+    public String getCustomData(String key) {
+        if(customDataMap ==null){
+            return null;
+        }
+        return customDataMap.get(key);
+    }
+
+    public void addCustomData(String k, String v) {
+        if (customDataMap ==null){
+            customDataMap =new HashMap<>();
+        }
+        customDataMap.put(k,v);
+    }
+
     @Override
     public String toString() {
         return "Message{" +
             "intent=" + intent +
             ", value='" + value + '\'' +
             ", token='" + token + '\'' +
+            ", customDataMap=" + customDataMap +
             '}';
     }
+
+    //    @Override
+//    public String toString() {
+//        return "Message{" +
+//            "intent=" + intent +
+//            ", value='" + value + '\'' +
+//            ", token='" + token + '\'' +
+//            '}';
+//    }
 }

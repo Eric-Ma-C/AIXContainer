@@ -1,8 +1,7 @@
 package zju.vipa.aix.container.center.db.entity;
 
-import zju.vipa.aix.container.center.env.AIXEnvConfig;
+import zju.vipa.aix.container.config.AIXEnvConfig;
 import zju.vipa.aix.container.center.env.EnvError;
-import zju.vipa.aix.container.config.NetworkConfig;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -119,41 +118,7 @@ public class Task implements Serializable {
             '}';
     }
 
-    /**
-     * 启动命令
-     */
-    public String getStartCmds() {
-//        return "source /root/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME + " && python " + codePath + "/main.py";
-        return AIXEnvConfig.CONDA_ACTIVATE_CMD + " && cd "+codePath+" && python -u -m recognition.main -name prov_test";
-    }
 
-    /**
-     * conda配置命令
-     */
-    public String getCondaEnvCreateCmds() {
-
-//        return "conda env create -n " + AIXEnvConfig.CONDA_ENV_NAME + " -f " + codePath + "/environment.yaml";//--json
-//        return "conda env create -f " +codePath+"/requirements.txt -n "+ AIXEnvConfig.CONDA_ENV_NAME ;
-        return AIXEnvConfig.CONDA_INSTALL_PIP_CMD+" && " + AIXEnvConfig.CONDA_ACTIVATE_CMD + " && "+AIXEnvConfig.getPipFileInstallCmds(codePath) ;
-    }
-
-    /**
-     * pip配置命令
-     */
-    public String getPipEnvCreateCmds() {
-
-        return "conda create -n " + AIXEnvConfig.CONDA_ENV_NAME + " python=3.6 && source /root/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME + " && pip install -r "+codePath+"/requirements.txt" ;
-    }
-
-
-    /**
-     * pip补充配置命令,一般在conda配置完成后使用
-     */
-    public String getPipComplementCmds(String moduleName) {
-        return "source /root/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME +
-            " && pip install  --prefer-binary --cache-dir \"/root/cache/pip/\" " + moduleName;
-//            " && python " + task.getCodePath() + "/main.py";
-    }
 
 
     public String getCodePath() {

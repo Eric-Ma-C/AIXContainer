@@ -3,15 +3,16 @@ package zju.vipa.aix.container.client.task.custom;
 import zju.vipa.aix.container.client.shell.ShellTask;
 import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
+import zju.vipa.aix.container.config.AIXEnvConfig;
 
 /**
  * @Date: 2020/3/17 22:24
  * @Author: EricMa
- * @Description: 服务器下发的shell指令
+ * @Description: 自定义shell指令
  */
-public class SeverCmdsTask extends BaseTask {
+public class ClientShellTask extends BaseTask {
 
-    public SeverCmdsTask(String cmds) {
+    public ClientShellTask(String cmds) {
         setCommands(new String[]{cmds});
     }
 
@@ -22,8 +23,8 @@ public class SeverCmdsTask extends BaseTask {
 
     @Override
     protected void procedure() {
-        ClientLogUtils.debug("procedure() begin");
+//        ClientLogUtils.debug("ClientShellTask.procedure() begin");
         /** 没有及时退出 */
-        new ShellTask(getCommands()).exec();
+        new ShellTask(getCommands()).exec(shellErrorListener);
     }
 }

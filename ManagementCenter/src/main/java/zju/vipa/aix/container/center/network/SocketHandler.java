@@ -89,6 +89,9 @@ public class SocketHandler implements Runnable {
             case SHELL_ERROR:
                 shellError(msg);
                 break;
+            case SHELL_ERROR_HELP:
+                shellErrorHandle(msg);
+                break;
             case REAL_TIME_LOG:
                 handleRealtimeLog(msg);
                 break;
@@ -192,7 +195,7 @@ public class SocketHandler implements Runnable {
     /**
      * 断开tcp连接
      */
-    public void disconnect() {
+    private void disconnect() {
 
         try {
             if (mWriter != null) {
@@ -299,6 +302,9 @@ public class SocketHandler implements Runnable {
 
     private void shellError(Message message) {
         LogUtils.error(message);
+    }
+    private void shellErrorHandle(Message message) {
+        shellError(message);
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
         TaskManager.getInstance().handleError(message);
 
@@ -312,7 +318,7 @@ public class SocketHandler implements Runnable {
         Message msg;
 //        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
-        msg = new ServerMessage(Intent.CONDA_ENV_FILE_URL, "/root/aix/code/train_client.yml");
+        msg = new ServerMessage(Intent.CONDA_ENV_FILE_URL, "/home/aix/code/train_client.yml");
 
         //写返回报文
         response(msg);
@@ -326,7 +332,7 @@ public class SocketHandler implements Runnable {
         Message msg;
 //        msg = new Message(Intent.condaEnvFileUrl, "/nfs2/mc/docker/aix-container/train_client.yml");
 
-        String pipFile = "/root/aix/code/requirements.txt";
+        String pipFile = "/home/aix/code/requirements.txt";
         msg = new ServerMessage(Intent.CONDA_ENV_FILE_URL, pipFile);
 
         //写返回报文

@@ -23,6 +23,6 @@ public class TrainingTask extends BaseTask {
 
     @Override
     protected void procedure() {
-        new ShellTask(getCommands()).exec();
+        new ShellTask(getCommands()).exec(shellErrorListener);
     }
 }

@@ -7,7 +7,7 @@ package zju.vipa.aix.container.config;
  */
 public class Config {
     /** 容器aix根目录 */
-    public static final String AIX_ROOT_DIR="/root/aix";
+    public static final String AIX_ROOT_DIR="/home/aix";
     /** 容器中token文件位置 */
     public static final String TOKEN_FILE=AIX_ROOT_DIR+"/token";
 

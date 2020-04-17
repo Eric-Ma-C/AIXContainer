@@ -1,6 +1,7 @@
 package zju.vipa.aix.container.client.task;
 
 import zju.vipa.aix.container.client.network.TcpClient;
+import zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.client.utils.TokenUtils;
@@ -56,7 +57,6 @@ public class ClientTaskController {
      * @return:
      */
     public void start() {
-
 
         /** 上传验证容器token */
         boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
@@ -125,6 +125,12 @@ public class ClientTaskController {
                 @Override
                 public void onFinished() {
                     ClientLogUtils.debug("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:" + currentTask.toString(),true);
+                    if (currentTask.getRepairCmds()!=null){
+                        /** 修复运行环境 */
+                        ClientShellTask task = new ClientShellTask(currentTask.getRepairCmds());
+                        addTask(task);
+                    }
+
                     execNewTask();
                 }
             }));

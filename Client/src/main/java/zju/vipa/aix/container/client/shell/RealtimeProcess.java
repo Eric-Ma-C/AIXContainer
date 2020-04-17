@@ -2,6 +2,7 @@ package zju.vipa.aix.container.client.shell;
 
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -38,14 +39,14 @@ public class RealtimeProcess {
     /**
      * 回调用到的接口
      */
-    private RealtimeProcessInterface mInterface = null;
+    private RealtimeProcessListener mInterface = null;
     private int resultCode = 0;
     private String execDir = null;
     private String stdOutTmp = null;
     private String stdErrTmp = null;
 
 
-    public RealtimeProcess(RealtimeProcessInterface mInterface) {
+    public RealtimeProcess(RealtimeProcessListener mInterface) {
         // 实例化接口对象
         this.mInterface = mInterface;
     }
@@ -76,6 +77,8 @@ public class RealtimeProcess {
 
 //        mProcessBuilder = new ProcessBuilder(partitionCommandLine(mRealtimeProcessCommand.getCmdWords()));
         mProcessBuilder = new ProcessBuilder("/bin/bash", "-c", mRealtimeProcessCommand.getCmdWords());
+        /** todo 在当前shell下执行 */
+//        mProcessBuilder = new ProcessBuilder("source", mRealtimeProcessCommand.getCmdWords());
 
         mProcessBuilder.directory(new File(execDir));
 //        mProcessBuilder.directory(new File(System.getenv("HOME")));
@@ -85,7 +88,10 @@ public class RealtimeProcess {
         mProcessBuilder.redirectErrorStream(false);
         /** 启动process */
         exec(mProcessBuilder.start());
-//        }
+
+        ClientLogUtils.info(mProcessBuilder.environment().toString(), true);
+//        ClientLogUtils.info("System.getProperties() "+System.getProperties().toString(), true);
+        ClientLogUtils.info("System.getenv() "+System.getenv().toString(), true);
     }
 
     public static String[] partitionCommandLine(final String command) {
@@ -167,11 +173,11 @@ public class RealtimeProcess {
                         if (stdOutTmp != null) {
                             mStringBuffer.append(stdOutTmp + "\n");
                             // 回调接口方法
-                            mInterface.onNewStdoutListener(stdOutTmp);
+                            mInterface.onNewStdOut(stdOutTmp);
                         }
                         if (stdErrTmp != null) {
                             mStringBuffer.append(stdErrTmp + "\n");
-                            mInterface.onNewStderrListener(stdErrTmp);
+                            mInterface.onNewStdError(stdErrTmp);
                         }
                     }
                 } catch (IOException e) {
@@ -203,6 +209,7 @@ public class RealtimeProcess {
         } catch (InterruptedException e) {
             ClientExceptionUtils.handle(e);
         } finally {
+            /** 关闭IO流 */
             if (readStderr != null) {
                 readStderr.close();
             }
@@ -213,7 +220,7 @@ public class RealtimeProcess {
 
 
         isRunning = false;
-        mInterface.onProcessFinish(resultCode);
+        mInterface.onProcessFinished(resultCode);
     }
 
     public boolean isRunning() {

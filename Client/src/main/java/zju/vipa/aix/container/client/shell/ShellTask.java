@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.shell;
 
+import zju.vipa.aix.container.client.env.ClientErrorParser;
 import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
@@ -13,9 +14,10 @@ import java.io.IOException;
  * @Author: EricMa
  * @Description: 非阻塞 execute shell command
  */
-public class ShellTask implements RealtimeProcessInterface {
+public class ShellTask implements RealtimeProcessListener {
 
     private RealtimeProcess mRealtimeProcess = null;
+    private HandleShellErrorListener handleShellErrorListener;
 //    private String command;
 //    private String cmdDir;
 
@@ -34,11 +36,19 @@ public class ShellTask implements RealtimeProcessInterface {
     public ShellTask(String[] cmds) {
         mRealtimeProcess = new RealtimeProcess(this);
         mRealtimeProcess.setExecDir(System.getProperty("user.home"));
-        String cmdList="";
+        String cmdList = "";
         for (String cmd : cmds) {
-            cmdList=cmdList.concat(cmd+" && ");
+            cmdList = cmdList.concat(cmd + " && ");
         }
-        mRealtimeProcess.setCommand(cmdList.substring(0,cmdList.length()-4));
+        mRealtimeProcess.setCommand(cmdList.substring(0, cmdList.length() - 4));
+    }
+
+    public void exec(HandleShellErrorListener listener) {
+        this.handleShellErrorListener=listener;
+        exec();
+
+        //System.out.println(mRealtimeProcess.getAllResult());
+
     }
 
     public void exec() {
@@ -63,28 +73,43 @@ public class ShellTask implements RealtimeProcessInterface {
      * shell指令执行回调接口实现
      */
     @Override
-    public void onNewStdoutListener(String newStdOut) {
+    public void onNewStdOut(String newStdOut) {
         if ("".equals(newStdOut) || newStdOut == null) {
             return;
         }
         ClientLogUtils.info(newStdOut);
-        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO,newStdOut));
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO, newStdOut));
     }
 
     @Override
-    public void onNewStderrListener(String newStdErr) {
+    public void onNewStdError(String newStdErr) {
         if ("".equals(newStdErr) || newStdErr == null) {
             return;
         }
         ClientLogUtils.error("Shell Error :" + newStdErr);
-        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_ERROR, newStdErr));
+        Intent intent = Intent.SHELL_ERROR_HELP;
+        String moduleName=ClientErrorParser.handleModuleNotFoundError(newStdErr);
+        if (moduleName!=null) {
+            /** 平台不用尝试解析错误类型了 */
+            intent = Intent.SHELL_ERROR;
+            if (handleShellErrorListener!=null) {
+                handleShellErrorListener.onHandle(moduleName);
+            }
+        }
+        TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
+
 
     }
 
     @Override
-    public void onProcessFinish(int resultCode) {
-        ClientLogUtils.debug("Shell Finished :" + resultCode+"\n");
+    public void onProcessFinished(int resultCode) {
+        ClientLogUtils.debug("Shell Finished :" + resultCode + "\n");
         TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
 
+    }
+
+    public interface HandleShellErrorListener{
+        /** 设置修复命令 */
+        void onHandle(String moduleName);
     }
 }

@@ -2,6 +2,7 @@ package zju.vipa.aix.container.center.env;
 
 import zju.vipa.aix.container.center.db.entity.Task;
 import zju.vipa.aix.container.center.util.LogUtils;
+import zju.vipa.aix.container.config.AIXEnvConfig;
 
 /**
  * @Date: 2020/3/26 21:03
@@ -9,23 +10,6 @@ import zju.vipa.aix.container.center.util.LogUtils;
  * @Description: shell错误解析器
  */
 public class ErrorParser {
-//    /**
-//     * 任务运行报错，一般可以通过pip安装对应的库
-//     */
-//    public static final String MODULE_NOT_FOUND_ERROR = "ModuleNotFoundError: No module named";
-//    /**
-//     * 已有同名conda环境
-//     */
-//    public static final String CONDA_PREFIX_ALREADY_EXISTS = "CondaValueError: prefix already exists";
-//    /**
-//     * conda环境未找到
-//     */
-//    public static final String CONDA_PREFIX_NOT_FOUND = "Could not find conda environment";
-//    /**
-//     * cuda内存耗尽
-//     */
-//    public static final String CUDA_OUT_OF_MEMORY = "RuntimeError: CUDA out of memory";
-
 
     public static EnvError handle(String token, String value, Task task) {
         if (value == null) {
@@ -41,7 +25,7 @@ public class ErrorParser {
                 break;
             }
         }
-
+        String startCmds = AIXEnvConfig.getStartCmds(task.getCodePath());
         switch (errorType) {
             case UNKNOWN:
                 /** 可能是一些非关键描述信息，无法提取错误类别 */
@@ -51,27 +35,27 @@ public class ErrorParser {
                 String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
                 String moduleName = getModuleNameByPrompt(promptName);
 
-                repairCmds = task.getPipComplementCmds(moduleName) + " && " + task.getStartCmds();
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " +startCmds;
                 break;
             case CONDA_PREFIX_ALREADY_EXISTS:
                 /** 直接重启 */
-                repairCmds = task.getStartCmds();
+                repairCmds = startCmds;
                 break;
             case CONDA_PREFIX_NOT_FOUND:
                 /** 重新安装conda环境 */
-                repairCmds = task.getCondaEnvCreateCmds() + " && " + task.getStartCmds();
+                repairCmds = AIXEnvConfig.getCondaEnvCreateCmds(task.getCodePath()) + " && " + startCmds;
                 break;
             case CUDA_OUT_OF_MEMORY:
                 /**  内存不够,等一会儿重启任务  */
-                repairCmds = "sleep 30 && " + task.getStartCmds();
+                repairCmds = "sleep 30 && " + startCmds;
                 break;
             case UNICODE_ENCODE_ERROR:
                 /**  编码问题  */
-                repairCmds = task.getStartCmds().replace("python", "PYTHONIOENCODING=utf-8 python");
+                repairCmds = startCmds.replace("python", "PYTHONIOENCODING=utf-8 python");
                 break;
             case NUMPY_RANDOM_HAS_NO_ATTRIBUTE_BIT_GENERATOR:
                 /**  降级安装numpy  */
-                repairCmds = AIXEnvConfig.CONDA_ACTIVATE_CMD + " && pip uninstall numpy -y && pip install -U numpy==1.17.0 && " + task.getStartCmds();
+                repairCmds = AIXEnvConfig.CONDA_ACTIVATE_CMD + " && pip uninstall numpy -y && pip install -U numpy==1.17.0 && " + startCmds;
                 break;
             default:
                 /**  其他错误,什么都不做  */

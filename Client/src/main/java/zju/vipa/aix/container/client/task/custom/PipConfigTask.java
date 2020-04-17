@@ -29,7 +29,7 @@ public class PipConfigTask extends BaseTask {
     private void setCondaSource() {
         String src = TcpClient.getInstance().getCondaSource();
 
-        new ShellTask("tee /root/.condarc << EOF\n" + src + "\nEOF").exec();
+        new ShellTask("tee /home/aix/.condarc << EOF\n" + src + "\nEOF").exec();
 //        FileUtils.write(src, condarcPath);
     }
 
@@ -69,7 +69,7 @@ public class PipConfigTask extends BaseTask {
 
 
 
-        new ShellTask(getCommands()).exec();
+        new ShellTask(getCommands()).exec(shellErrorListener);
     }
 
 

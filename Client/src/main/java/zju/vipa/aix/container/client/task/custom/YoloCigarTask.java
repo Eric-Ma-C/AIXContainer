@@ -29,7 +29,7 @@ public class YoloCigarTask extends BaseTask {
     private void setCondaSource() {
         String src = TcpClient.getInstance().getCondaSource();
 
-        new ShellTask("tee /root/.condarc << EOF\n" + src + "\nEOF").exec();
+        new ShellTask("tee /home/aix/.condarc << EOF\n" + src + "\nEOF").exec();
 //        FileUtils.write(src, condarcPath);
     }
 
@@ -42,7 +42,7 @@ public class YoloCigarTask extends BaseTask {
     private void getCondaYmlPath() {
         condaEnvFilePath = TcpClient.getInstance().getCondaEnvFileByTaskId(mlTaskId);
         ClientLogUtils.debug("yml file path = " + condaEnvFilePath);
-            condaEnvFilePath="/root/aix/code/environment.yaml";
+            condaEnvFilePath="/home/aix/code/environment.yaml";
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }
 
@@ -50,7 +50,7 @@ public class YoloCigarTask extends BaseTask {
     protected String[] initTaskCmds() {
         String[] cmds={
 //            "conda env create -f " + condaEnvFilePath,
-            "source /root/miniconda3/bin/activate clean_yolo",
+            "source /home/aix/miniconda3/bin/activate clean_yolo",
             "python /nfs2/sontal/codes/TrainerProxy/main.py"
         };
         return cmds;
@@ -63,7 +63,7 @@ public class YoloCigarTask extends BaseTask {
         /** 获取yml路径 */
         getCondaYmlPath();
 
-        new ShellTask(getCommands()).exec();
+        new ShellTask(getCommands()).exec(shellErrorListener);
 
     }
 }

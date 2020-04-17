@@ -2,7 +2,7 @@ package zju.vipa.aix.container.center;
 
 import zju.vipa.aix.container.center.db.DbManager;
 import zju.vipa.aix.container.center.db.entity.Task;
-import zju.vipa.aix.container.center.env.AIXEnvConfig;
+import zju.vipa.aix.container.config.AIXEnvConfig;
 import zju.vipa.aix.container.center.env.EnvError;
 import zju.vipa.aix.container.center.env.ErrorParser;
 import zju.vipa.aix.container.center.network.ServerMessage;
@@ -42,6 +42,11 @@ public class TaskManager {
     }
 
     private TaskManager() {
+
+        if (TaskManagerHolder.INSTANCE!=null){
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
+
         messageMap = new ConcurrentHashMap<>();
         taskMap = new ConcurrentHashMap<>();
 //        /** 保证hashset的同步性 */
@@ -49,7 +54,7 @@ public class TaskManager {
 
 
         //test code,to be deleted
-//        Message msg = new Message(Intent.SHELL_TASK, "source /root/miniconda3/bin/activate clean_yolo && python  /nfs2/sontal/codes/TrainerProxy/main.py");
+//        Message msg = new Message(Intent.SHELL_TASK, "source /home/aix/miniconda3/bin/activate clean_yolo && python  /nfs2/sontal/codes/TrainerProxy/main.py");
 //        addMessage(NetworkConfig.TEST_CONTAINER_TOKEN, msg);
     }
 
@@ -90,20 +95,27 @@ public class TaskManager {
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
-
+                String codePath=task.getCodePath();
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
-                String cmds = task.getCondaEnvCreateCmds() + " && " + task.getStartCmds();
+                String cmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath) + " && " + AIXEnvConfig.getStartCmds(codePath);
 
 
                 /** 添加待发送任务至列表 */
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
-                addMessage(token, new ServerMessage(Intent.SHELL_TASK, cmds));
+//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "source /home/aix/.bashrc && echo $PATH"));
+                /** 检查shell */
+                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $PATH"));
+//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $0"));
+//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $-"));
+
+                Message msg=new ServerMessage(Intent.SHELL_TASK, cmds);
+                msg.addCustomData("codePath", codePath);
+                addMessage(token, msg);
 
 
             } else {
                 /**  task ！= null，说明有任务正在配置环境 */
                 LogUtils.info(token, "发现已有任务" + task);
-
 
                 /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
@@ -111,7 +123,7 @@ public class TaskManager {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
                     LogUtils.error("遇到了一些问题，正在尝试重新启动模型训练...");
 
-                    String restartCmds = task.getStartCmds();
+                    String restartCmds = AIXEnvConfig.getStartCmds(task.getCodePath());
 
                     addMessage(token, new ServerMessage(Intent.SHELL_TASK, restartCmds));
 

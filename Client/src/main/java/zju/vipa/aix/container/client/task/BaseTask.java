@@ -1,10 +1,9 @@
 package zju.vipa.aix.container.client.task;
 
 
-import zju.vipa.aix.container.utils.TimeUtils;
-
-import java.util.Arrays;
-import java.util.Date;
+import zju.vipa.aix.container.client.shell.ShellTask;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
+import zju.vipa.aix.container.config.AIXEnvConfig;
 
 /**
  * @Date: 2020/3/10 9:23
@@ -38,6 +37,41 @@ public abstract class BaseTask {
      * 结束运行时间
      */
     private long endTime = 0L;
+
+    /**
+     * （启动训练）指令执行失败后，可能的修复指令，为null则无法离线修复
+     */
+    private String repairCmds = null;
+    /**
+     * 训练代码路径，用于离线修复
+     */
+    private String codePath = null;
+
+    protected ShellTask.HandleShellErrorListener shellErrorListener;
+
+    public String getCodePath() {
+        return codePath;
+    }
+
+    public void setCodePath(String codePath) {
+        this.codePath = codePath;
+        shellErrorListener=new ShellTask.HandleShellErrorListener() {
+            @Override
+            public void onHandle(String moduleName) {
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath);
+                ClientLogUtils.info("repairCmds="+repairCmds,true);
+
+            }
+        };
+    }
+
+    public String getRepairCmds() {
+        return repairCmds;
+    }
+
+    public void setRepairCmds(String repairCmds) {
+        this.repairCmds = repairCmds;
+    }
 
     public TaskState getState() {
         return state;

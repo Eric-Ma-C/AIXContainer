@@ -1,5 +1,5 @@
 import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.client.task.custom.SeverCmdsTask;
+import zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 
 /**
@@ -36,7 +36,7 @@ public class TestClient {
         //System.out.println(ShellUtils.execCommand("ping www.baidu.com").toString());
 //        System.out.println(ShellUtils.execCommand("aapt v").toString());
 //        System.out.println(ShellUtils.execCommand("aapt.exe").toString());
-        SeverCmdsTask task=new SeverCmdsTask("ls");
+        ClientShellTask task=new ClientShellTask("ls");
         task.toString();
         ClientThreadManager.getInstance().startNewTask(task.getRunnable(new BaseTask.TaskStateListener() {
             @Override
@@ -50,7 +50,7 @@ public class TestClient {
             }
         }));
 
-        SeverCmdsTask task2=new SeverCmdsTask("ls");
+        ClientShellTask task2=new ClientShellTask("ls");
         task2.toString();
         ClientThreadManager.getInstance().startNewTask(task2.getRunnable(new BaseTask.TaskStateListener() {
             @Override
