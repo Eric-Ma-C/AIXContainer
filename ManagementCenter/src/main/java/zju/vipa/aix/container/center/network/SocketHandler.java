@@ -19,7 +19,7 @@ import java.util.Date;
 /**
  * @Date: 2020/1/7 16:10
  * @Author: EricMa
- * @Description: 用来处理接收到的Socket请求
+ * @Description: 处理接收到的所有容器请求
  */
 public class SocketHandler implements Runnable {
 
@@ -63,7 +63,7 @@ public class SocketHandler implements Runnable {
         }
         switch (msg.getIntent()) {
             case ASK_FOR_WORK:
-                clientAskForWork(msg.getToken());
+                clientIdleAskForWork(msg.getToken());
                 break;
             case CONDA_SOURCE:
                 getCondaSource();
@@ -114,9 +114,9 @@ public class SocketHandler implements Runnable {
     }
 
     /**
-     * 容器已没有待执行Task
+     * 容器已没有待执行Task，问平台有没有任务
      */
-    private void clientAskForWork(String token) {
+    private void clientIdleAskForWork(String token) {
         Message toSendMsg=TaskManager.getInstance().askForWork(token);
         if (toSendMsg==null){
             /** 使容器开始心跳汇报 */
@@ -291,13 +291,13 @@ public class SocketHandler implements Runnable {
      */
     private void shellResult(Message message) {
         LogUtils.info(message);
-        Message msg = null;
-        if (!"resultCode=0".equals(message.getValue())) {
-            /** 遇到错误尝试获取修复指令，可能会失败 */
-            msg = TaskManager.getInstance().askForWork(message.getToken());
-        }
-        //写返回报文
-        response(msg);
+//        Message msg = null;
+//        if (!"resultCode=0".equals(message.getValue())) {
+//            /** 遇到错误尝试获取修复指令，可能会失败 */
+//            msg = TaskManager.getInstance().askForWork(message.getToken());
+//        }
+//        //写返回报文
+//        response(msg);
     }
 
     private void shellError(Message message) {

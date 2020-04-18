@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.task;
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
@@ -126,16 +127,19 @@ public class ClientTaskController {
 
                 @Override
                 public void onFinished() {
-                    ClientLogUtils.debug("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:" + currentTask.toString(),true);
+                    ClientLogUtils.info("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:\n" + currentTask.toString(),Client.isUploadRealtimeLog);
                     String repairCmds=currentTask.getRepairCmds();
                     if (repairCmds!=null){
-                        ClientLogUtils.info("currentTask.getRepairCmds()="+repairCmds,true);
+                        ClientLogUtils.info("currentTask.getRepairCmds()="+repairCmds, Client.isUploadRealtimeLog);
                         /** 修复运行环境 */
-                        ClientShellTask task = new ClientShellTask(repairCmds);
+                        BaseTask task = new ClientShellTask(repairCmds);
+                        task.setCodePath(currentTask.getCodePath());
                         addTask(task);
+                    }else {
+                        execNewTask();
                     }
 
-                    execNewTask();
+
                 }
             }));
 

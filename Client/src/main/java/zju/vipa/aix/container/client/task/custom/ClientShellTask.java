@@ -15,7 +15,6 @@ public class ClientShellTask extends BaseTask {
     public ClientShellTask(String cmds) {
         setCommands(new String[]{cmds});
     }
-
     @Override
     protected String[] initTaskCmds() {
         return null;

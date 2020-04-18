@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.shell;
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.env.ClientErrorParser;
 import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
@@ -44,7 +45,7 @@ public class ShellTask implements RealtimeProcessListener {
     }
 
     public void exec(HandleShellErrorListener listener) {
-        this.handleShellErrorListener=listener;
+        this.handleShellErrorListener = listener;
         exec();
 
         //System.out.println(mRealtimeProcess.getAllResult());
@@ -66,7 +67,9 @@ public class ShellTask implements RealtimeProcessListener {
     @Override
     public void onProcessBegin(String cmd) {
         ClientLogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
-        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
+        if (Client.isUploadRealtimeLog) {
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
+        }
     }
 
     /**
@@ -78,7 +81,9 @@ public class ShellTask implements RealtimeProcessListener {
             return;
         }
         ClientLogUtils.info(newStdOut);
-        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO, newStdOut));
+        if (Client.isUploadRealtimeLog) {
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO, newStdOut));
+        }
     }
 
     @Override
@@ -87,33 +92,41 @@ public class ShellTask implements RealtimeProcessListener {
             return;
         }
         ClientLogUtils.error("Shell Error :" + newStdErr);
-        Intent intent = Intent.SHELL_ERROR_HELP;
 
-
-        String moduleName=ClientErrorParser.handleModuleNotFoundError(newStdErr);
-        if (moduleName!=null) {
+        String moduleName = ClientErrorParser.handleModuleNotFoundError(newStdErr);
+        if (moduleName != null) {
             /** 平台不用尝试解析错误类型了 */
-            intent = Intent.SHELL_ERROR;
-            if (handleShellErrorListener!=null) {
+            Intent intent = Intent.SHELL_ERROR;
+            if (handleShellErrorListener != null) {
                 handleShellErrorListener.onHandle(moduleName);
             }
+            if (Client.isUploadRealtimeLog) {
+                /** 只报告，平台不做什么处理 */
+                TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
+            }
+        } else {
+            /** 无法解析的错误信息一直需要上传平台解析 */
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_ERROR_HELP, newStdErr));
+
         }
-
-
-        TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
 
 
     }
 
     @Override
     public void onProcessFinished(int resultCode) {
-        ClientLogUtils.debug("Shell Finished :" + resultCode + "\n");
-        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
+        ClientLogUtils.info("Shell Finished :" + resultCode + "\n");
+        if (Client.isUploadRealtimeLog) {
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
+        }
+//        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
 
     }
 
-    public interface HandleShellErrorListener{
-        /** 设置修复命令 */
+    public interface HandleShellErrorListener {
+        /**
+         * 设置修复命令
+         */
         void onHandle(String moduleName);
     }
 }

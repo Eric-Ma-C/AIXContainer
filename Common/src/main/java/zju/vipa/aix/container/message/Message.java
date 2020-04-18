@@ -8,6 +8,10 @@ import java.util.Map;
  * @Date: 2020/1/9 21:59
  * @Author: EricMa
  * @Description: 容器与平台通信的消息体
+ * todo 确认 fastjson 反序列化时，若没有public的getter和setter，则为该变量默认初始值，如0，null
+ *                      无参构造函数和全参构造函数至少有一个，不限制访问修饰符
+ *                      不需要重载tostring
+ *
  */
 public class Message {
     /**
@@ -30,20 +34,23 @@ public class Message {
      */
     private Map<String, String> customDataMap =null;
 
+    private String s;
 
     /**
      * fastjson需要
      */
-    public Message() {
+    private Message() {
     }
 
-    protected Message(Intent intent, String value, String token) {
+
+    public Message(Intent intent, String value, String token) {
         this.intent = intent;
         this.value = value;
         this.token = token;
 
 
     }
+
 
     protected Message(Intent intent, String token) {
         this.intent = intent;
@@ -76,11 +83,11 @@ public class Message {
         this.token = token;
     }
 
-    protected Map<String, String> getCustomDataMap() {
+    public Map<String, String> getCustomDataMap() {
         return customDataMap;
     }
 
-    protected void setCustomDataMap(Map<String, String> customDataMap) {
+    public void setCustomDataMap(Map<String, String> customDataMap) {
         this.customDataMap = customDataMap;
     }
 
@@ -93,7 +100,7 @@ public class Message {
 
     public void addCustomData(String k, String v) {
         if (customDataMap ==null){
-            customDataMap =new HashMap<>();
+            customDataMap =new HashMap<>(2);
         }
         customDataMap.put(k,v);
     }
@@ -108,12 +115,5 @@ public class Message {
             '}';
     }
 
-    //    @Override
-//    public String toString() {
-//        return "Message{" +
-//            "intent=" + intent +
-//            ", value='" + value + '\'' +
-//            ", token='" + token + '\'' +
-//            '}';
-//    }
+
 }

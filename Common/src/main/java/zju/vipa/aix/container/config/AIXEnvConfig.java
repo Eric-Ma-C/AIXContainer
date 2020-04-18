@@ -24,18 +24,27 @@ public class AIXEnvConfig {
 
 
 
-    //      #阿里云 https://mirrors.aliyun.com/pypi/simple/
-//          #中国科技大学 https://pypi.mirrors.ustc.edu.cn/simple/
-//          #豆瓣(douban) https://pypi.douban.com/simple/
-//          #清华大学 https://pypi.tuna.tsinghua.edu.cn/simple/
+    /**
+     * 阿里云
+     */
+    private static final String PIP_SOURCE_ALIYUN = "https://mirrors.aliyun.com/pypi/simple/";
+    /**
+     * 中国科技大学
+     */
+    private static final String PIP_SOURCE_USTC = "https://pypi.mirrors.ustc.edu.cn/simple/";
+    /**
+     * 豆瓣(douban)
+     */
+    private static final String PIP_SOURCE_DOUBAN = "https://pypi.douban.com/simple/";
+    /**
+     * 清华大学
+     */
+    private static final String PIP_SOURCE_TUNA = "https://pypi.tuna.tsinghua.edu.cn/simple/";
 
-    private static final String PIP_SOURCE = "https://pypi.tuna.tsinghua.edu.cn/simple/";
+    private static final String PIP_SOURCE = PIP_SOURCE_USTC;
     private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
     private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 //    private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
-
-
-
 
 
     /**
@@ -55,11 +64,6 @@ public class AIXEnvConfig {
 
         return CONDA_CREATE_PIP_CMD + "  &&  " + CONDA_ACTIVATE_CMD + " && " + getPipEnvFileInstallCmds(codePath);
     }
-
-
-
-
-
 
 
     /**

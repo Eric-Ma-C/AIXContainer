@@ -121,11 +121,12 @@ public class TaskManager {
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error("遇到了一些问题，正在尝试重新启动模型训练...");
+                    LogUtils.error(token,"Client遇到了一些问题，正在尝试重新启动模型训练...");
 
-                    String restartCmds = AIXEnvConfig.getStartCmds(task.getCodePath());
-
-                    addMessage(token, new ServerMessage(Intent.SHELL_TASK, restartCmds));
+                    String codePath=task.getCodePath();
+                    Message msg=new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath));
+                    msg.addCustomData("codePath", codePath);
+                    addMessage(token, msg);
 
 
                 } else {

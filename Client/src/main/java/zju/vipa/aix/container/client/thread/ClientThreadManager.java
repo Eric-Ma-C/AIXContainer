@@ -83,7 +83,7 @@ public class ClientThreadManager {
 
         @Override
         public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, "aix-client-t" + mThreadNum.getAndIncrement());
+            Thread t = new Thread(r, "t" + mThreadNum.getAndIncrement());
             ClientLogUtils.info(t.getName() + " has been created");
             return t;
         }

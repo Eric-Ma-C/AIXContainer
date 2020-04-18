@@ -1,9 +1,12 @@
 package zju.vipa.aix.container.client.task;
 
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.shell.ShellTask;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.config.AIXEnvConfig;
+
+import java.util.Arrays;
 
 /**
  * @Date: 2020/3/10 9:23
@@ -59,7 +62,7 @@ public abstract class BaseTask {
             @Override
             public void onHandle(String moduleName) {
                 repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath);
-                ClientLogUtils.info("repairCmds="+repairCmds,true);
+                ClientLogUtils.info("Auto generate repairCmds="+repairCmds, Client.isUploadRealtimeLog);
 
             }
         };
@@ -163,16 +166,27 @@ public abstract class BaseTask {
         void onFinished();
     }
 
+//    @Override
+//    public String toString() {
+//        String cmds = "";
+//        if (commands != null) {
+//            for (String cmd : commands) {
+//                cmds += cmd + " ";
+//            }
+//        }
+//        return "BaseTask{" +
+//            "commands=" + cmds +
+//            '}';
+//    }
+
+
     @Override
     public String toString() {
-        String cmds = "";
-        if (commands != null) {
-            for (String cmd : commands) {
-                cmds += cmd + " ";
-            }
-        }
         return "BaseTask{" +
-            "commands=" + cmds +
+            "commands=" + Arrays.toString(commands) +
+            ", repairCmds='" + repairCmds + '\'' +
+            ", codePath='" + codePath + '\'' +
+            ", shellErrorListener=" + shellErrorListener +
             '}';
     }
 }

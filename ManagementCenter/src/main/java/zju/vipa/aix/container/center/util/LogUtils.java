@@ -15,7 +15,7 @@ public class LogUtils {
 //    private static final LogLevelEnum LOG_LEVEL=LogLevelEnum.INFO;
 
     private static String getPrefix(String token){
-        return "\n"+token.substring(token.length()-9)+": ";
+        return token.substring(token.length()-9)+": ";
     }
 
 

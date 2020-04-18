@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.client.env;
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.config.AIXEnvConfig;
 
@@ -23,7 +24,7 @@ public class ClientErrorParser {
             String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
             String moduleName = getModuleNameByPrompt(promptName);
 
-            ClientLogUtils.info("\n发现ModuleNotFoundError，module=" + moduleName,true);
+            ClientLogUtils.info("发现ModuleNotFoundError，module=" + moduleName, Client.isUploadRealtimeLog);
 
             return moduleName;
         }

@@ -1,6 +1,7 @@
 package zju.vipa.aix.container.client.network;
 
 
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.task.ClientTaskController;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
@@ -43,7 +44,7 @@ public class TcpClient {
      */
 //    BufferedReader mReader;
     private TcpClient() {
-        if (ContainerTcpClientHolder.INSTANCE!=null){
+        if (ContainerTcpClientHolder.INSTANCE != null) {
             throw new RuntimeException("单例对象不允许多个实例");
         }
     }
@@ -67,7 +68,6 @@ public class TcpClient {
     public static TcpClient getInstance() {
         return ContainerTcpClientHolder.INSTANCE;
     }
-
 
 
     /**
@@ -116,10 +116,10 @@ public class TcpClient {
     private void execShellTask(Message msg) {
 
         ClientShellTask task = new ClientShellTask(msg.getValue());
-        String codePath=null;
-        if ((codePath=msg.getCustomData("codePath"))!=null){
+        String codePath = null;
+        if ((codePath = msg.getCustomData("codePath")) != null) {
             task.setCodePath(codePath);
-            ClientLogUtils.info("set codePath="+codePath, true);
+            ClientLogUtils.info("Set codePath=" + codePath, Client.isUploadRealtimeLog);
         }
 
 //        ClientLogUtils.debug("SeverCmdsTask="+value);
@@ -139,6 +139,7 @@ public class TcpClient {
             taskClass = Class.forName(taskName);
             if (taskClass != null) {
                 BaseTask task = (BaseTask) taskClass.newInstance();
+//                task.setCodePath();
                 ClientTaskController.getInstance().addTask(task);
 //                task.run();
 
@@ -264,6 +265,10 @@ public class TcpClient {
 
     }
 
+    /**
+     * 不需要返回了，有askForWork
+     */
+    @Deprecated
     public void reportShellResult(Message msg) {
         Message body = null;
 
@@ -292,7 +297,7 @@ public class TcpClient {
      * @return: 响应消息
      */
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
-        ClientLogUtils.debug("\nSEND MSG:" + msg);
+        ClientLogUtils.debug("SEND:\n" + msg);
 
         StringBuffer response = new StringBuffer();
 
@@ -337,7 +342,7 @@ public class TcpClient {
                     response.append(tmpStr);
                 }
             } catch (SocketTimeoutException e) {
-                ClientExceptionUtils.handle("响应数据读取超时。", e,false);
+                ClientExceptionUtils.handle("响应数据读取超时。", e, false);
             }
         } catch (Exception e) {
             ClientExceptionUtils.handle(e, false);
@@ -366,7 +371,7 @@ public class TcpClient {
 
         resMsg = JsonUtils.parseObject(response.toString(), Message.class);
 
-        ClientLogUtils.debug("GET RESPONSE:" + resMsg);
+        ClientLogUtils.debug("GET RESPONSE:\n" + resMsg);
         return resMsg;
     }
 
@@ -378,7 +383,7 @@ public class TcpClient {
      * @param: msg
      */
     public void sendMessage(Message msg) {
-        ClientLogUtils.debug("SEND Message:" + msg);
+        ClientLogUtils.debug("SEND:\n" + msg);
 //        StringBuffer response = new StringBuffer();
 
         Writer mWriter = null;
@@ -472,8 +477,6 @@ public class TcpClient {
 //
 //        return sb.toString();
 //    }
-
-
 
 
 //    /**
