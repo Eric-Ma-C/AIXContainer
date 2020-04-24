@@ -16,6 +16,9 @@ public class ClientThreadManager {
     }
 
     private ClientThreadManager() {
+        if (ClientThreadManagerHolder.INSTANCE!=null){
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
         initThreadPool();
     }
 
@@ -32,7 +35,7 @@ public class ClientThreadManager {
      * 执行新任务
      */
     public void startNewTask(Runnable runnable) {
-        ClientLogUtils.debug("ClientThreadManager.startNewTask() runnable="+runnable);
+        ClientLogUtils.debug("ClientThreadManager.startNewTask() runnable={}", runnable);
         mThreadPoolExecutor.execute(runnable);
     }
 
@@ -84,7 +87,7 @@ public class ClientThreadManager {
         @Override
         public Thread newThread(Runnable r) {
             Thread t = new Thread(r, "t" + mThreadNum.getAndIncrement());
-            ClientLogUtils.info(t.getName() + " has been created");
+            ClientLogUtils.info("{} has been created", t.getName());
             return t;
         }
     }
@@ -105,7 +108,7 @@ public class ClientThreadManager {
          */
         private void doLog(Runnable r, ThreadPoolExecutor e) {
             //
-            ClientLogUtils.error(r.toString() + " rejected from " + e.toString(),true);
+            ClientLogUtils.error("{} rejected from {}", r.toString(), e.toString());
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }
     }

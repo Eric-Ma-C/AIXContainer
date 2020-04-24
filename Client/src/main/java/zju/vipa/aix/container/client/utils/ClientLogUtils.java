@@ -2,6 +2,7 @@ package zju.vipa.aix.container.client.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.network.ClientMessage;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.message.Intent;
@@ -19,75 +20,71 @@ public class ClientLogUtils {
 
 //    private static boolean isUpload = true;
 
-
-    private static String getUploadSuffix(){
-//        return "\nRealtime log from "+ TokenUtils.getTokenSuffix()+": ";
+    /**
+     * 上传平台显示前缀
+     */
+    @Deprecated
+    private static String getUploadSuffix() {
         return "Realtime log: ";
     }
 
 
-
-
-    public static void debug(String msg){
-        debug(msg,false);
+    public static void debug(String msg, Object... objs) {
+        debug(Client.isUploadRealtimeLog, msg, objs);
     }
-    public static void debug(Message msg,boolean isUpload){
-        debug(msg.toString(),isUpload);
-    }
-    public static void debug(String msg,boolean isUpload){
-        logger.debug(msg);
+
+    //    public static void debug(Message msg,boolean isUpload){
+//        debug(msg.toString(),isUpload);
+//    }
+    public static void debug(boolean isUpload, String msg, Object... objs) {
+        logger.debug(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, getUploadSuffix() + msg));
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
         }
     }
 
 
-
-
-
-    public static void info(String msg){
-        info(msg,false);
+    public static void info(String msg, Object... objs) {
+        info(Client.isUploadRealtimeLog, msg, objs);
     }
-    public static void info(Message msg,boolean isUpload){
-        info(msg.getValue(),isUpload);
-    }
-    public static void info(String msg,boolean isUpload){
-        logger.info(msg);
+
+    //    public static void info(boolean isUpload,Message msg,Object... objs){
+//        info(isUpload,msg.getValue(),objs);
+//    }
+    public static void info(boolean isUpload, String msg, Object... objs) {
+        logger.info(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, getUploadSuffix() + msg));
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
         }
     }
 
 
-
-
-
-    public static void worning(String msg){
-        worning(msg,false);
+    public static void worning(String msg, Object... objs) {
+        worning(Client.isUploadRealtimeLog, msg, objs);
     }
-    public static void worning(Message msg,boolean isUpload){
-        worning(msg.getValue(),isUpload);
-    }
-    public static void worning(String msg,boolean isUpload){
-        logger.warn(msg);
+
+    //    public static void worning(Message msg,boolean isUpload){
+//        worning(msg.getValue(),isUpload);
+//    }
+    public static void worning(boolean isUpload, String msg, Object... objs) {
+        logger.warn(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, getUploadSuffix() + msg));
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
         }
     }
 
 
-
-
-    public static void error(String msg){
-        error(msg,false);
+    public static void error(String msg, Object... objs) {
+        error(Client.isUploadRealtimeLog, msg, objs);
     }
-    public static void error(Message msg,boolean isUpload){
-        error(msg.getValue(),isUpload);
-    }
-    public static void error(String msg,boolean isUpload){
-        logger.error(msg);
+
+    //    public static void error(Message msg,boolean isUpload){
+//        error(msg.getValue(),isUpload);
+//    }
+    public static void error(boolean isUpload, String msg, Object... objs) {
+        logger.error(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, getUploadSuffix() + msg));
+            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
         }
     }
 }

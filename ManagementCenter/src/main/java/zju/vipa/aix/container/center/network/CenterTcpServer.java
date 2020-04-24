@@ -1,5 +1,6 @@
 package zju.vipa.aix.container.center.network;
 
+import zju.vipa.aix.container.center.ManagementCenter;
 import zju.vipa.aix.container.center.util.LogUtils;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * @Date: 2020/1/7 15:44
  * @Author: EricMa
- * @Description: 启动socket监听 todo NIO
+ * @Description: 启动socket监听 todo NIO netty
  */
 public class CenterTcpServer {
     /**
@@ -33,6 +34,9 @@ public class CenterTcpServer {
     }
 
     private CenterTcpServer() {
+        if (CenterTcpServerHolder.INSTANCE!=null){
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
     }
 
     public static CenterTcpServer getInstance() {
@@ -47,14 +51,14 @@ public class CenterTcpServer {
      */
     private static void initThreadPool() {
         /** 核心线程池大小 */
-        int corePoolSize = 4;
+        int corePoolSize = 10;
         /** 最大线程池大小 */
-        int maximumPoolSize = 20;
+        int maximumPoolSize = 50;
         /** 线程最大空闲时间 */
         long keepAliveTime = 20;
         TimeUnit unit = TimeUnit.SECONDS;
         /** 线程等待队列 */
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(300);
+        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(20);
         /** 线程创建工厂 */
         ThreadFactory threadFactory = new AIXThreadFactory();
         /** 拒绝策略 */
@@ -80,10 +84,11 @@ public class CenterTcpServer {
 
         while (true) {
             //server尝试接收其他Socket的连接请求，accept方法是阻塞式的
-            /** 短连接方式,类似http 2.0 */
             Socket socket = mServerSocket.accept();
             //每接收到一个Socket请求就建立一个新的线程来处理它
+            //todo 抽离业务代码
             mThreadPoolExecutor.execute(new SocketHandler(socket));
+            LogUtils.info("Handle new request: {}", socket.toString());
         }
 
     }
@@ -97,8 +102,8 @@ public class CenterTcpServer {
 
         @Override
         public Thread newThread(Runnable r) {
-            Thread t = new Thread(r, "aix-t" + mThreadNum.getAndIncrement());
-            LogUtils.info(t.getName() + " has been created");
+            Thread t = new Thread(r, "st" + mThreadNum.getAndIncrement());
+            LogUtils.info("{} has been created", t.getName());
             return t;
         }
     }
@@ -118,8 +123,8 @@ public class CenterTcpServer {
          * 可做日志记录等
          */
         private void doLog(Runnable r, ThreadPoolExecutor e) {
-            //
-            LogUtils.error(r.toString() + " rejected from " + e.toString());
+            /** 服务器处理线程池满了，压测的时候注意一下 */
+            LogUtils.error("\n\n/***************** THREADPOOL WORNING *****************/\n{} rejected from {}\n\n\n", r.toString(), e.toString());
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }
     }

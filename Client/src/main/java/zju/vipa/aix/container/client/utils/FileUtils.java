@@ -39,7 +39,7 @@ public class FileUtils {
     }
 
     /**
-     * 将内容写人文件中
+     * 将内容写入文件中
      *
      * @param content 写入内容
      * @param path    文件路径（如：/a/b/test.txt）

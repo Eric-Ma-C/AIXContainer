@@ -16,8 +16,11 @@ import java.util.Map;
 public class Message {
     /**
      * 结束字符串
+     * 不用了，改为前两字节表示长度
      */
-    public static final String END_STRING = "EOF-AIX-MESSAGE";
+//    public static final String END_STRING = "EOF-AIX-MESSAGE";
+
+
     /**
      * 消息字符编码格式
      */
@@ -34,7 +37,7 @@ public class Message {
      */
     private Map<String, String> customDataMap =null;
 
-    private String s;
+//    private String s;
 
     /**
      * fastjson需要

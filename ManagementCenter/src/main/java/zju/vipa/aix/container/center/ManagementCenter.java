@@ -25,6 +25,9 @@ public class ManagementCenter {
     }
 
     private ManagementCenter() {
+        if (ManagementCenterHolder.INSTANCE!=null){
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
         init();
     }
 

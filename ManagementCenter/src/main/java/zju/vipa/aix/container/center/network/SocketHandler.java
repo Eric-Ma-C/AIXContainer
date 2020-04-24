@@ -2,17 +2,20 @@ package zju.vipa.aix.container.center.network;
 
 import zju.vipa.aix.container.center.ManagementCenter;
 import zju.vipa.aix.container.center.TaskManager;
+import zju.vipa.aix.container.center.log.ClientLogManager;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
 import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.center.util.ExceptionUtils;
+import zju.vipa.aix.container.utils.ByteUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
 import zju.vipa.aix.container.center.util.JwtUtils;
 import zju.vipa.aix.container.center.util.LogUtils;
 
 import java.io.*;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -27,14 +30,6 @@ public class SocketHandler implements Runnable {
      * socket对象
      */
     private Socket mSocket;
-    /**
-     * socket输出OutputStreamWriter
-     */
-    private Writer mWriter;
-    /**
-     * socket输入
-     */
-    BufferedReader mReader;
 
     public SocketHandler(Socket mSocket) {
         this.mSocket = mSocket;
@@ -43,7 +38,7 @@ public class SocketHandler implements Runnable {
     @Override
     public void run() {
 
-        handleRequest();
+        handle();
 
     }
 
@@ -53,12 +48,13 @@ public class SocketHandler implements Runnable {
      *
      * @throws Exception
      */
-    private void handleRequest() {
-
+    private void handle() {
+//        LogUtils.debug("handle()");
         Message msg = readRequests();
 
         if (msg == null) {
             LogUtils.worning("Requests body is null!");
+            disconnect();
             return;
         }
         switch (msg.getIntent()) {
@@ -77,6 +73,8 @@ public class SocketHandler implements Runnable {
             case HEARTBEAT:
                 handleHeartbeat(msg);
                 break;
+
+
             case SHELL_BEGIN:
                 shellBegin(msg);
                 break;
@@ -95,6 +93,8 @@ public class SocketHandler implements Runnable {
             case REAL_TIME_LOG:
                 handleRealtimeLog(msg);
                 break;
+
+
             case REGISTER:
                 registerContainer(msg.getValue());
                 break;
@@ -104,23 +104,68 @@ public class SocketHandler implements Runnable {
             case EXCEPTION:
                 handleException(msg);
                 break;
+
+            case REQUEST_UPLOAD:
+                isAcceptUpload();
+                break;
+            case UPLOAD_DATA:
+                saveData(msg);
+                break;
             default:
                 break;
         }
 
-
-        /** 关闭socket,短连接 */
+        /** 关闭socket,短连接方式 */
         disconnect();
+    }
+
+    /**
+     * 保存数据
+     */
+    private void saveData(Message msg) {
+
+        File saveFile = ClientLogManager.getInstence().getSavePath(msg.getToken(), msg.getValue());
+
+        try {
+            // 封装通道内流
+            BufferedInputStream inputStream = new BufferedInputStream(mSocket.getInputStream());
+            // 封装文件
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(saveFile));
+
+            byte[] bys = new byte[1024 * 4];
+            int len;
+            while ((len = inputStream.read(bys)) != -1) {
+                bos.write(bys, 0, len);
+                bos.flush();
+            }
+
+//            bis.close();
+            bos.close();
+        } catch (IOException e) {
+            ExceptionUtils.handle(e);
+        }
+
+        LogUtils.info("文件{}接收成功。", saveFile.getPath());
+        // 反馈上传成功
+        response(new ServerMessage(Intent.UPLOAD_SUCCESS));
+
+    }
+
+    /**
+     * 是否接受上传
+     */
+    private void isAcceptUpload() {
+        response(new ServerMessage(Intent.UPLOAD_PERMITTED,ClientLogManager.getInstence().getFilePathByDate("2020-04-19")));
     }
 
     /**
      * 容器已没有待执行Task，问平台有没有任务
      */
     private void clientIdleAskForWork(String token) {
-        Message toSendMsg=TaskManager.getInstance().askForWork(token);
-        if (toSendMsg==null){
+        Message toSendMsg = TaskManager.getInstance().askForWork(token);
+        if (toSendMsg == null) {
             /** 使容器开始心跳汇报 */
-           toSendMsg=new ServerMessage(Intent.NULL);
+            toSendMsg = new ServerMessage(Intent.NULL);
         }
         response(toSendMsg);
     }
@@ -129,7 +174,7 @@ public class SocketHandler implements Runnable {
      * 容器实时日志处理
      */
     private void handleRealtimeLog(Message msg) {
-        LogUtils.debug(msg);
+        LogUtils.debug("Realtime log from {}:{}", msg.getToken().substring(msg.getToken().length() - 7), msg.getValue());
     }
 
     /**
@@ -140,7 +185,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleGpuInfo(Message message) {
-        LogUtils.info(message.getToken(), "GPU info:" + message.getValue());
+        LogUtils.info("{}:\nGPU info:{}", message.getToken(), message.getValue());
     }
 
     /**
@@ -150,7 +195,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleException(Message message) {
-        LogUtils.error(message);
+        LogUtils.error("{}:\n{}" + message.getValue(), message.getToken());
     }
 
 
@@ -162,19 +207,23 @@ public class SocketHandler implements Runnable {
      */
     private void registerContainer(String token) {
         boolean ok = JwtUtils.verify(token);
-        Message msg = new ServerMessage(Intent.REGISTER, "DENIED");
+        Message msg;
 
         if (ok) {
+            msg = new ServerMessage(Intent.REGISTER, "OK");
+            //写返回报文
+            response(msg);
             /** 获取id号并缓存下来 */
             String id = ManagementCenter.getInstance().getIdByToken(token);
 
-            msg = new ServerMessage(Intent.REGISTER, "OK");
-            LogUtils.info("Container " + id + " registered successfully! token=" + token);
+            LogUtils.info("Container id={} registered successfully! token={}", id, token);
         } else {
-            LogUtils.error("Container registered failed! token:" + token);
+            msg = new ServerMessage(Intent.REGISTER, "DENIED");
+            //写返回报文
+            response(msg);
+            LogUtils.error("Container registered failed! token:{}", token);
         }
-        //写返回报文
-        response(msg);
+
     }
 
 
@@ -198,12 +247,6 @@ public class SocketHandler implements Runnable {
     private void disconnect() {
 
         try {
-            if (mWriter != null) {
-                mWriter.close();
-            }
-            if (mReader != null) {
-                mReader.close();
-            }
             if (mSocket != null) {
                 mSocket.close();
             }
@@ -228,21 +271,22 @@ public class SocketHandler implements Runnable {
         String id = ManagementCenter.getInstance().getIdByToken(token);
 
         if (id == null) {
-            LogUtils.error("No such a device:" + msg);
+            LogUtils.error("No such a device:{}", msg.getToken());
             disconnect();
             return;
         }
 
         SystemBriefInfo info = JsonUtils.parseObject(msg.getValue(), SystemBriefInfo.class);
         if (info == null) {
-            LogUtils.error("Heartbeat info error:" + msg);
+            LogUtils.error("Heartbeat info error:{}", msg);
             disconnect();
             return;
         }
 
 
-        LogUtils.info(token, "Heartbeats from client (id=" + id + "): IP" + mSocket.getInetAddress() + " CPU=" + info.getCpuRate() +
-            "%  RAM=" + info.getRamRate() + "%  time=" + new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
+        LogUtils.info("{}:\nHeartbeats from client (id={}): IP{} CPU={}%  RAM={}%  time={}",
+            token, id, mSocket.getInetAddress(), info.getCpuRate(), info.getRamRate(),
+            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
 
         //尝试取出一条待发送消息
@@ -274,12 +318,12 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellBegin(Message message) {
-        LogUtils.info(message.getToken(), "\n****************************\nexec: " + message.getValue() + "\n****************************");
+        LogUtils.debug("{} shellBegin: {}", message.getToken(), message.getValue());
     }
 
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
-        LogUtils.info(message);
+        LogUtils.debug("{} shellInfo: {}", message.getToken(), message.getValue());
     }
 
 
@@ -290,7 +334,7 @@ public class SocketHandler implements Runnable {
      * @return: void
      */
     private void shellResult(Message message) {
-        LogUtils.info(message);
+        LogUtils.debug("{} shellResult: {}", message.getToken(), message.getValue());
 //        Message msg = null;
 //        if (!"resultCode=0".equals(message.getValue())) {
 //            /** 遇到错误尝试获取修复指令，可能会失败 */
@@ -301,8 +345,9 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellError(Message message) {
-        LogUtils.error(message);
+        LogUtils.error("{} shellError: {}", message.getToken(), message.getValue());
     }
+
     private void shellErrorHandle(Message message) {
         shellError(message);
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
@@ -346,29 +391,15 @@ public class SocketHandler implements Runnable {
      * @return: 可能为null
      */
     private Message readRequests() {
-        StringBuilder response = new StringBuilder();
+        String request = null;
 
         try {
-            mReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), Message.CHARSET_NAME));
-
-            String temp;
-            int index;
-            while ((temp = mReader.readLine()) != null) {
-                /** 遇到eof时就结束接收 */
-                //todo 改为读取前两个字节为报文长度,确定结束位置
-                if ((index = temp.indexOf(Message.END_STRING)) != -1) {
-                    response.append(temp.substring(0, index));
-                    break;
-                }
-                response.append(temp);
-            }
-        } catch (Exception e) {
+            request = new String(readData(mSocket), Message.CHARSET_NAME);
+        } catch (UnsupportedEncodingException e) {
             ExceptionUtils.handle(e);
         }
-//        LogUtils.debug("Receive from client " + mSocket.getInetAddress() + ":" + mSocket.getPort() + " :" + response);
-//        LogUtils.info(mSocket.getInetAddress() + ":" + response);
 
-        Message msg = JsonUtils.parseObject(response.toString(), Message.class);
+        Message msg = JsonUtils.parseObject(request, Message.class);
         return msg;
     }
 
@@ -383,19 +414,55 @@ public class SocketHandler implements Runnable {
             LogUtils.worning("Response messags is null!");
             return;
         }
-        OutputStream outputStream = null;
+
+//        LogUtils.info("SEND RESPONSE:{}",msg);
         try {
-            outputStream = mSocket.getOutputStream();
-
-            mWriter = new OutputStreamWriter(outputStream, Message.CHARSET_NAME);
-            mWriter.write(JsonUtils.toJSONString(msg));
-//                writer.write("hello，client      server time:"+ TimeUtils.getTimeStr());
-            mWriter.write(Message.END_STRING + "\n");
-            mWriter.flush();
-
-        } catch (Exception e) {
+            sendData(mSocket, JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME));
+        } catch (UnsupportedEncodingException e) {
             ExceptionUtils.handle(e);
         }
+
+    }
+
+    /**
+     * 返回数据
+     */
+    private void sendData(Socket socket, byte[] data) {
+        OutputStream outputStream = null;
+        try {
+            outputStream = socket.getOutputStream();
+            int len = data.length;
+            //两字节数据段长度数据
+            outputStream.write(ByteUtils.intToByte4(len));
+            outputStream.write(data);
+            outputStream.flush();
+
+        } catch (IOException e) {
+            ExceptionUtils.handle(e);
+        }
+    }
+
+
+    /**
+     * 读请求字节流
+     */
+    private byte[] readData(Socket socket) {
+
+        byte[] reciveBytes = new byte[0];
+        InputStream inputStream = null;
+        try {
+            inputStream = socket.getInputStream();
+            ByteBuffer buffer = ByteBuffer.allocate(4);
+            inputStream.read(buffer.array(), 0, 4);
+            /** 字节流的长度 */
+            int len = buffer.getInt();
+            reciveBytes = new byte[len];
+            inputStream.read(reciveBytes, 0, len);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return reciveBytes;
     }
 }
 

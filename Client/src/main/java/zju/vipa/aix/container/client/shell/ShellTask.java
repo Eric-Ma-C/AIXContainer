@@ -66,7 +66,6 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessBegin(String cmd) {
-        ClientLogUtils.info("ShellTask: " + cmd + "  execDir: " + mRealtimeProcess.getExecDir());
         if (Client.isUploadRealtimeLog) {
             TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
         }
@@ -91,7 +90,7 @@ public class ShellTask implements RealtimeProcessListener {
         if ("".equals(newStdErr) || newStdErr == null) {
             return;
         }
-        ClientLogUtils.error("Shell Error :" + newStdErr);
+        ClientLogUtils.error(newStdErr);
 
         String moduleName = ClientErrorParser.handleModuleNotFoundError(newStdErr);
         if (moduleName != null) {
@@ -101,7 +100,7 @@ public class ShellTask implements RealtimeProcessListener {
                 handleShellErrorListener.onHandle(moduleName);
             }
             if (Client.isUploadRealtimeLog) {
-                /** 只报告，平台不做什么处理 */
+                /** 只报告shell error，平台不做什么处理 */
                 TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
             }
         } else {
@@ -115,7 +114,6 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessFinished(int resultCode) {
-        ClientLogUtils.info("Shell Finished :" + resultCode + "\n");
         if (Client.isUploadRealtimeLog) {
             TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
         }

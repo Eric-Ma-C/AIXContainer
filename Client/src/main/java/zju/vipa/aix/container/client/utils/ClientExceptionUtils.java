@@ -33,8 +33,9 @@ public class ClientExceptionUtils {
         } else {
             msg = getMessage(e);
         }
+        /** 异常不通过日志上传，自己上传 */
+        ClientLogUtils.error(false,msg);
 
-        ClientLogUtils.error(msg, false);
         if (isUpload) {
             /** 注意 网络错误导致的Exception不应该上传 */
             uploadException(msg);

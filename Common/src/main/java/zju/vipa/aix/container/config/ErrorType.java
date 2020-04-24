@@ -1,4 +1,4 @@
-package zju.vipa.aix.container.center.env;
+package zju.vipa.aix.container.config;
 
 /**
  * @Date: 2020/3/31 18:20
@@ -41,7 +41,25 @@ public enum ErrorType {
      * "pip uninstall numpy -y",
      *         "pip install -U numpy==1.17.0",
      */
-    NUMPY_RANDOM_HAS_NO_ATTRIBUTE_BIT_GENERATOR("AttributeError: module 'numpy.random' has no attribute 'bit_generator'");
+    NUMPY_LEVEL_TOO_HIGH("AttributeError: module 'numpy.random' has no attribute 'bit_generator'"),
+    /**
+     * tensorflow版本太高，2.0以上没有contrib
+     * 降级安装
+     * "pip uninstall tensorflow -y",
+     *         "pip install -U tensorflow==1.13.1",
+     */
+    TENSORFLOW_LEVEL_TOO_HIGH("AttributeError: module 'tensorflow' has no attribute 'contrib'"),
+    /**
+     * pip源失效
+     * 换源
+     */
+    PIP_SOURCE_NO_MATCHING_DISTRIBUTION("No matching distribution found for"),
+    /**
+     * pip源失效
+     * 换源
+     */
+    PIP_SOURCE_READ_TIMED_OUT("HTTPSConnectionPool(host=");
+
 
 
 
@@ -101,5 +119,19 @@ public enum ErrorType {
 //    'Connection to files.pythonhosted.org timed out. (connect timeout=15)'))
 //        22:19:36,435 [INFO] (aix-t1):
 //    IpoM8-nAs: resultCode=1
+
+
+
+
+
+
+//    2020-04-18 13:03:54,858 [ERROR] (t5): Shell Error :ERROR: Could not find a version that satisfies the requirement imgaug==0.3.0 (from -r /nfs/mc/docker/plate-recognition/requirements.txt (line 1)) (from versions: none)
+//        2020-04-18 13:03:54,858 [DEBUG] (t5): SEND:
+//    Message{intent=SHELL_ERROR_HELP, value='ERROR: Could not find a version that satisfies the requirement imgaug==0.3.0 (from -r /nfs/mc/docker/plate-recognition/requirements.txt (line 1)) (from versions: none)', token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTExMTExMTExMTExMTExMTExMTEifQ.it6iBaBmEkYIkJ49_2dCUL6nSqH7SHTJJ2IpoM8-nAs', customDataMap=null}
+//2020-04-18 13:03:54,863 [ERROR] (t5): Shell Error :ERROR: No matching distribution found for imgaug==0.3.0 (from -r /nfs/mc/docker/plate-recognition/requirements.txt (line 1))
+//        2020-04-18 13:03:54,864 [DEBUG] (t5): SEND:
+//    Message{intent=SHELL_ERROR_HELP, value='ERROR: No matching distribution found for imgaug==0.3.0 (from -r /nfs/mc/docker/plate-recognition/requirements.txt (line 1))', token='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTExMTExMTExMTExMTExMTExMTEifQ.it6iBaBmEkYIkJ49_2dCUL6nSqH7SHTJJ2IpoM8-nAs', customDataMap=null}
+//2020-04-18 13:03:54,875 [INFO] (t2): Shell Finished :1
+
 
 }

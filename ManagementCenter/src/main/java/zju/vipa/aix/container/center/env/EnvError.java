@@ -1,5 +1,7 @@
 package zju.vipa.aix.container.center.env;
 
+import zju.vipa.aix.container.config.ErrorType;
+
 /**
  * @Date: 2020/3/17 22:46
  * @Author: EricMa

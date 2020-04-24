@@ -77,7 +77,7 @@ public class RealtimeProcess {
 
 //        mProcessBuilder = new ProcessBuilder(partitionCommandLine(mRealtimeProcessCommand.getCmdWords()));
         mProcessBuilder = new ProcessBuilder("/bin/bash", "-c", mRealtimeProcessCommand.getCmdWords());
-        /** todo 在当前shell下执行 */
+        /** todo 在当前shell下执行,不启动子shell */
 //        mProcessBuilder = new ProcessBuilder("source", mRealtimeProcessCommand.getCmdWords());
 
         mProcessBuilder.directory(new File(execDir));

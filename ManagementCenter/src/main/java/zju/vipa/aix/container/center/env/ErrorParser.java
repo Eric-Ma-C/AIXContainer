@@ -3,6 +3,7 @@ package zju.vipa.aix.container.center.env;
 import zju.vipa.aix.container.center.db.entity.Task;
 import zju.vipa.aix.container.center.util.LogUtils;
 import zju.vipa.aix.container.config.AIXEnvConfig;
+import zju.vipa.aix.container.config.ErrorType;
 
 /**
  * @Date: 2020/3/26 21:03
@@ -35,7 +36,7 @@ public class ErrorParser {
                 String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
                 String moduleName = getModuleNameByPrompt(promptName);
 
-                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " +startCmds;
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + startCmds;
                 break;
             case CONDA_PREFIX_ALREADY_EXISTS:
                 /** 直接重启 */
@@ -53,16 +54,26 @@ public class ErrorParser {
                 /**  编码问题  */
                 repairCmds = startCmds.replace("python", "PYTHONIOENCODING=utf-8 python");
                 break;
-            case NUMPY_RANDOM_HAS_NO_ATTRIBUTE_BIT_GENERATOR:
+            case NUMPY_LEVEL_TOO_HIGH:
                 /**  降级安装numpy  */
-                repairCmds = AIXEnvConfig.CONDA_ACTIVATE_CMD + " && pip uninstall numpy -y && pip install -U numpy==1.17.0 && " + startCmds;
+                repairCmds = AIXEnvConfig.getPipUninstallCmds("numpy") + " && " + AIXEnvConfig.getPipInstallCmds("numpy==1.17.0") + " && " + startCmds;
+                break;
+            case TENSORFLOW_LEVEL_TOO_HIGH:
+                /**  降级安装numpy  */
+                repairCmds = AIXEnvConfig.getPipUninstallCmds("tensorflow") + " && " + AIXEnvConfig.getPipInstallCmds("tensorflow-gpu==1.13.1") + " && " + startCmds;
+                break;
+            case PIP_SOURCE_READ_TIMED_OUT:
+            case PIP_SOURCE_NO_MATCHING_DISTRIBUTION:
+                /** pip换源 */
+                AIXEnvConfig.changePipSource();
+                repairCmds=startCmds;
                 break;
             default:
                 /**  其他错误,什么都不做  */
                 break;
         }
 
-        LogUtils.info(token, "'" + errorType.name() + "'添加至error列表中，repairCmds=" + repairCmds);
+        LogUtils.info("{}:\n'{}'添加至error列表中，repairCmds={}", token, errorType.name(), repairCmds);
 
         return new EnvError(errorType, value, repairCmds);
     }

@@ -62,7 +62,7 @@ public abstract class BaseTask {
             @Override
             public void onHandle(String moduleName) {
                 repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath);
-                ClientLogUtils.info("Auto generate repairCmds="+repairCmds, Client.isUploadRealtimeLog);
+                ClientLogUtils.info("Auto generate repairCmds={}",repairCmds);
 
             }
         };

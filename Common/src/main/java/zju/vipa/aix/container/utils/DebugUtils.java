@@ -8,7 +8,7 @@ package zju.vipa.aix.container.utils;
 
 public class DebugUtils {
     /** 使用 */
-//    public static final boolean isLocalDebug=true;
+//    public static final boolean IS_LOCAL_DEBUG=true;
     public static final boolean IS_LOCAL_DEBUG =false;
 
 

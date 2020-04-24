@@ -24,7 +24,7 @@ public class ClientErrorParser {
             String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
             String moduleName = getModuleNameByPrompt(promptName);
 
-            ClientLogUtils.info("发现ModuleNotFoundError，module=" + moduleName, Client.isUploadRealtimeLog);
+            ClientLogUtils.info("发现ModuleNotFoundError，module={}", moduleName);
 
             return moduleName;
         }

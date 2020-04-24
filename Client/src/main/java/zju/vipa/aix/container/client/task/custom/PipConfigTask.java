@@ -41,7 +41,7 @@ public class PipConfigTask extends BaseTask {
      */
     private void getPipEnvFilePath() {
         pipEnvFilePath = TcpClient.getInstance().getPipEnvFileByTaskId(mlTaskId);
-        ClientLogUtils.debug("pip file path = " + pipEnvFilePath);
+        ClientLogUtils.debug("pip file path = {}" , pipEnvFilePath);
 //            path="/root/tmp/tf-gpu.yml";
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }

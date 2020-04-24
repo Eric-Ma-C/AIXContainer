@@ -14,35 +14,23 @@ import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
+import zju.vipa.aix.container.utils.ByteUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
+import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
  * @Date: 2020/1/7 15:26
  * @Author: EricMa
- * @Description: 容器端主动发起tcp请求 todo NIO
+ * @Description: 容器端主动发起tcp请求 todo NIO netty
  */
 public class TcpClient {
 
-
-    /**
-     * socket对象
-     */
-//    private Socket mSocket;
-    /**
-     * socket输出OutputStreamWriter
-     */
-//    private Writer mWriter;
-
-    /**
-     * socket输入
-     */
-//    BufferedReader mReader;
     private TcpClient() {
         if (ContainerTcpClientHolder.INSTANCE != null) {
             throw new RuntimeException("单例对象不允许多个实例");
@@ -119,7 +107,7 @@ public class TcpClient {
         String codePath = null;
         if ((codePath = msg.getCustomData("codePath")) != null) {
             task.setCodePath(codePath);
-            ClientLogUtils.info("Set codePath=" + codePath, Client.isUploadRealtimeLog);
+            ClientLogUtils.info("Set codePath={}", codePath);
         }
 
 //        ClientLogUtils.debug("SeverCmdsTask="+value);
@@ -156,8 +144,6 @@ public class TcpClient {
         } catch (Exception e) {
             ClientExceptionUtils.handle(e);
         }
-
-
     }
 
 
@@ -169,11 +155,12 @@ public class TcpClient {
      */
     public boolean registerContainer(String containerToken) {
         Message message = new ClientMessage(Intent.REGISTER, containerToken);
-        String response = "";
 
-        response = sendMsgAndGetResponse(message).getValue();
 
-        if ("OK".equals(response)) {
+        Message response = sendMsgAndGetResponse(message, 15 * 1000);
+
+        String state = response == null ? "" : response.getValue();
+        if ("OK".equals(state)) {
             return true;
         } else {
             return false;
@@ -241,6 +228,26 @@ public class TcpClient {
         handleResponseMsg(resMsg);
     }
 
+
+    /**
+     * 向平台请求上传文件
+     */
+    public boolean requestUpload(String path, UploadDataListener listener) {
+        Message message = new ClientMessage(Intent.REQUEST_UPLOAD);
+
+        Message resMsg = sendMsgAndGetResponse(message);
+
+        if (resMsg == null || resMsg.getIntent() != Intent.UPLOAD_PERMITTED) {
+            return false;
+        }
+        String serverWanted=resMsg.getValue();
+        if (serverWanted!=null||!"".equals(serverWanted)){
+            path=serverWanted;
+        }
+        return upLoadData(path, listener);
+
+    }
+
     /**
      * 心跳汇报
      * 定时询问服务器有无连接需求，同时汇报容器状态（cpu，gpu，内存占用率等等）
@@ -297,66 +304,33 @@ public class TcpClient {
      * @return: 响应消息
      */
     private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
-        ClientLogUtils.debug("SEND:\n" + msg);
-
-        StringBuffer response = new StringBuffer();
-
-        Writer mWriter = null;
-        Socket mSocket = null;
-        BufferedReader mReader = null;
+        ClientLogUtils.debug("SEND:\n{}\n", msg);
+        Socket socket = null;
+        String response = null;
         try {
-            /** 短连接方式 */
-
             //创建Socket对象
-
-            mSocket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
-
-
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
             //设置读取超时时间
-            mSocket.setSoTimeout(readTimeOut);
+            socket.setSoTimeout(readTimeOut);
 
+            byte[] sendBytes = JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME);
 
-//            }
+            /** 发送数据 */
+            sendData(socket, sendBytes);
 
-            mWriter = new OutputStreamWriter(mSocket.getOutputStream(), Message.CHARSET_NAME);
+            /** 通过shutdownOutput已经发送完数据，后续只能接受数据，半关闭 */
+            socket.shutdownOutput();
 
-            mWriter.write(JsonUtils.toJSONString(msg));
-            mWriter.write(Message.END_STRING + "\n");
-            mWriter.flush();
+            /** 写完以后进行读操作 */
+            response = new String(readData(socket), Message.CHARSET_NAME);
 
-            //通过shutdownOutput已经发送完数据，后续只能接受数据
-//            mSocket.shutdownOutput();
-
-            //写完以后进行读操作
-
-            mReader = new BufferedReader(new InputStreamReader(mSocket.getInputStream(), Message.CHARSET_NAME));
-
-            String tmpStr;
-            int index;
-            try {
-                while ((tmpStr = mReader.readLine()) != null) {
-                    if ((index = tmpStr.indexOf(Message.END_STRING)) != -1) {
-                        response.append(tmpStr.substring(0, index));
-                        break;
-                    }
-                    response.append(tmpStr);
-                }
-            } catch (SocketTimeoutException e) {
-                ClientExceptionUtils.handle("响应数据读取超时。", e, false);
-            }
         } catch (Exception e) {
             ClientExceptionUtils.handle(e, false);
         } finally {
             /** 及时断开连接 */
             try {
-                if (mWriter != null) {
-                    mWriter.close();
-                }
-                if (mReader != null) {
-                    mReader.close();
-                }
-                if (mSocket != null) {
-                    mSocket.close();
+                if (socket != null) {
+                    socket.close();
                 }
             } catch (IOException e) {
                 ClientExceptionUtils.handle(e);
@@ -368,10 +342,10 @@ public class TcpClient {
         if ("".equals(response) || response == null) {
             return resMsg;
         }
+        resMsg = JsonUtils.parseObject(response, Message.class);
 
-        resMsg = JsonUtils.parseObject(response.toString(), Message.class);
+        ClientLogUtils.debug("GET RESPONSE:\n{}\n", resMsg);
 
-        ClientLogUtils.debug("GET RESPONSE:\n" + resMsg);
         return resMsg;
     }
 
@@ -383,42 +357,162 @@ public class TcpClient {
      * @param: msg
      */
     public void sendMessage(Message msg) {
-        ClientLogUtils.debug("SEND:\n" + msg);
-//        StringBuffer response = new StringBuffer();
+        ClientLogUtils.debug("SEND:\n{}\n", msg);
 
-        Writer mWriter = null;
-        Socket mSocket = null;
+        Socket socket = null;
         try {
             /** 短连接方式 */
             //创建Socket对象
-            mSocket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
-
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
             //设置读取超时时间
-//            mSocket.setSoTimeout(5000);
+            socket.setSoTimeout(NetworkConfig.SOCKET_READ_TIMEOUT_DEFAULT);
 
-            mWriter = new OutputStreamWriter(mSocket.getOutputStream(), Message.CHARSET_NAME);
+            byte[] sendBytes = JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME);
+            /** 发送数据 */
+            sendData(socket, sendBytes);
 
-            mWriter.write(JsonUtils.toJSONString(msg));
-            mWriter.write(Message.END_STRING + "\n");
-            mWriter.flush();
-
+            /** 通过shutdownOutput已经发送完数据，后续只能接受数据，半关闭 */
+            socket.shutdownOutput();
 
         } catch (Exception e) {
             ClientExceptionUtils.handle(e, false);
         } finally {
             try {
-                if (mWriter != null) {
-                    mWriter.close();
-                }
-                if (mSocket != null) {
-                    mSocket.close();
+                if (socket != null) {
+                    socket.close();
                 }
             } catch (IOException e) {
                 ClientExceptionUtils.handle(e);
             }
         }
+    }
+
+    /**
+     * 发送数据
+     * outputStream是socket中的，关闭socket会关闭它
+     */
+    private void sendData(Socket socket, byte[] data) {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            int len = data.length;
+            //两字节数据段长度数据
+            outputStream.write(ByteUtils.intToByte4(len));
+            outputStream.write(data);
+            outputStream.flush();
+
+        } catch (IOException e) {
+            ClientExceptionUtils.handle(e);
+        }
+    }
 
 
+    /**
+     * 读返回字节流
+     */
+    private byte[] readData(Socket socket) {
+
+        byte[] reciveBytes = new byte[0];
+        try {
+            InputStream inputStream = socket.getInputStream();
+            ByteBuffer buffer = ByteBuffer.allocate(4);
+            inputStream.read(buffer.array(), 0, 4);
+            /** 字节流的长度 */
+            int len = buffer.getInt();
+            reciveBytes = new byte[len];
+            inputStream.read(reciveBytes, 0, len);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return reciveBytes;
+    }
+
+    /**
+     * 通过tcp连接,发送data,获取响应信息
+     *
+     * @return:
+     */
+    private boolean upLoadData(String path, UploadDataListener listener) {
+
+        InputStream dataInput = null;
+        try {
+            dataInput = new FileInputStream(path);
+        } catch (FileNotFoundException e) {
+            ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
+            return false;
+        }
+        /** 读取文件到内存缓冲区 */
+        BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
+
+        String response = null;
+        Socket socket = null;
+        try {
+            //创建Socket对象
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+            /** 设置读取超时时间,上传不容易，多等一下成功确认 */
+            socket.setSoTimeout(30 * 1000);
+
+            /** 先发一个Message */
+            Message msg = new ClientMessage(Intent.UPLOAD_DATA, path);
+            sendData(socket, JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME));
+
+
+            ClientLogUtils.info("开始上传文件：{}", path);
+            /** 发送缓冲区 */
+            BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
+
+            /** tcp MSS=1460 */
+            byte[] bys = new byte[1460];
+            int len;
+            while ((len = dataInputStream.read(bys)) != -1) {
+                outputStream.write(bys, 0, len);
+                outputStream.flush();
+            }
+            dataInputStream.close();
+            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
+
+
+            /** 关闭socket输出流 */
+            socket.shutdownOutput();
+
+            // 读取反馈
+            response = new String(readData(socket), Message.CHARSET_NAME);
+
+        } catch (Exception e) {
+            ClientExceptionUtils.handle(e, false);
+        } finally {
+            /** 及时断开连接 */
+            try {
+                if (socket != null) {
+                    socket.close();
+                }
+            } catch (IOException e) {
+                ClientExceptionUtils.handle(e);
+            }
+        }
+        /** 服务端没有回应 */
+        if ("".equals(response) || response == null) {
+//            listener.onError("上传完成后,服务端没有回应");
+            return false;
+        }
+
+        Message resMsg = JsonUtils.parseObject(response, Message.class);
+
+        if (resMsg.getIntent() == Intent.UPLOAD_SUCCESS) {
+            listener.onFinished();
+        }
+        return true;
+    }
+
+
+    public interface UploadDataListener {
+        /**
+         * 更新进度
+         */
+        void onProgress(int progress);
+
+        //        void onError(String msg);
+        void onFinished();
     }
 
 

@@ -41,7 +41,7 @@ public class YoloCigarTask extends BaseTask {
      */
     private void getCondaYmlPath() {
         condaEnvFilePath = TcpClient.getInstance().getCondaEnvFileByTaskId(mlTaskId);
-        ClientLogUtils.debug("yml file path = " + condaEnvFilePath);
+        ClientLogUtils.debug("yml file path = {}" , condaEnvFilePath);
             condaEnvFilePath="/home/aix/code/environment.yaml";
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }

@@ -88,10 +88,10 @@ public class TaskManager {
                 task = DbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
-                    LogUtils.info(token, "暂未抢到任务，请耐心等待...");
+                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...",token);
                     return null;
                 }
-                LogUtils.info(token, "抢到任务" + task);
+                LogUtils.info( "{}:\n抢到任务{}",token,task);
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
@@ -115,13 +115,13 @@ public class TaskManager {
 
             } else {
                 /**  task ！= null，说明有任务正在配置环境 */
-                LogUtils.info(token, "发现已有任务" + task);
+                LogUtils.info("{}发现已有任务{}" ,token, task);
 
                 /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error(token,"Client遇到了一些问题，正在尝试重新启动模型训练...");
+                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...",token);
 
                     String codePath=task.getCodePath();
                     Message msg=new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath));
@@ -163,7 +163,7 @@ public class TaskManager {
             return null;
         }
 
-        LogUtils.info(token, "从队列中获取待发送消息：" + message);
+        LogUtils.info( "{}:\n从队列中获取待发送消息：{}" ,token,message);
         return message;
     }
 
@@ -182,7 +182,7 @@ public class TaskManager {
             messageList.offer(msg);
 //            messageMap.put(token, messageList);
         }
-        LogUtils.info(token, "添加待发送消息：" + msg);
+        LogUtils.info("{}:\n添加待发送消息{}" ,token,  msg);
     }
 
 

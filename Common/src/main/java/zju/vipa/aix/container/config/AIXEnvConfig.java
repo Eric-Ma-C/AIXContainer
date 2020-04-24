@@ -1,5 +1,7 @@
 package zju.vipa.aix.container.config;
 
+import java.util.Random;
+
 /**
  * @Date: 2020/3/26 18:39
  * @Author: EricMa
@@ -19,11 +21,6 @@ public class AIXEnvConfig {
     public static final String CONDA_ACTIVATE_CMD = "source " + MINICONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
 
 
-
-
-
-
-
     /**
      * 阿里云
      */
@@ -41,11 +38,20 @@ public class AIXEnvConfig {
      */
     private static final String PIP_SOURCE_TUNA = "https://pypi.tuna.tsinghua.edu.cn/simple/";
 
-    private static final String PIP_SOURCE = PIP_SOURCE_USTC;
+    private static String PIP_SOURCE = PIP_SOURCE_USTC;
     private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
-    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
-//    private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
+    //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
+    private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 
+
+    /**
+     * 换一个pip源
+     */
+    public static void changePipSource() {
+        String[] pipUrls = new String[]{PIP_SOURCE_ALIYUN, PIP_SOURCE_USTC, PIP_SOURCE_DOUBAN, PIP_SOURCE_TUNA};
+        int newId = (new Random().nextInt(100)) % pipUrls.length;
+        PIP_SOURCE = pipUrls[newId];
+    }
 
     /**
      * conda配置创建命令
@@ -87,6 +93,15 @@ public class AIXEnvConfig {
      */
     public static String getPipInstallCmds(String moduleName) {
         return CONDA_ACTIVATE_CMD + " && " + PIP_INSTALL + moduleName;
+//            " && python " + task.getCodePath() + "/main.py";
+
+    }
+
+    /**
+     * pip拆卸命令
+     */
+    public static String getPipUninstallCmds(String moduleName) {
+        return CONDA_ACTIVATE_CMD + " && pip uninstall " + moduleName+" -y";
 //            " && python " + task.getCodePath() + "/main.py";
 
     }

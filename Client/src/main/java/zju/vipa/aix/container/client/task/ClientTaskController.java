@@ -1,12 +1,12 @@
 package zju.vipa.aix.container.client.task;
 
-import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.network.TcpClient;
 import zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.client.utils.TokenUtils;
 import zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import zju.vipa.aix.container.client.utils.UploadUtils;
 import zju.vipa.aix.container.utils.TimeUtils;
 
 import java.util.Queue;
@@ -34,16 +34,19 @@ public class ClientTaskController {
 //    private String condarcPath = "/root/.condarc";
 
 
-    private static class TaskControllerHolder {
+    private static class ClientTaskControllerHolder {
         private static final ClientTaskController INSTANCE = new ClientTaskController();
     }
 
     private ClientTaskController() {
+        if (ClientTaskControllerHolder.INSTANCE!=null){
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
         init();
     }
 
     public static ClientTaskController getInstance() {
-        return TaskControllerHolder.INSTANCE;
+        return ClientTaskControllerHolder.INSTANCE;
     }
 
     private void init() {
@@ -65,7 +68,9 @@ public class ClientTaskController {
         if (isSuccessful) {
             /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
-            ClientThreadManager.getInstance().startHeartbeat();
+//          todo   ClientThreadManager.getInstance().startHeartbeat();
+//            UploadUtils.uploadFile("/log/aixlog/debug.log4j.2020-04-20");
+            UploadUtils.uploadFile("/log/aixlog/test.txt");
 
         } else {
             ClientLogUtils.error("容器注册失败，请检查token配置。");
@@ -85,7 +90,7 @@ public class ClientTaskController {
         }
 
         taskQueue.add(task);
-        ClientLogUtils.debug("Task added:" + task);
+        ClientLogUtils.debug("Task added:{}" , task);
 
         execNewTask();
     }
@@ -98,7 +103,7 @@ public class ClientTaskController {
         boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
 
         if (!noTaskRunning) {
-            ClientLogUtils.worning("Current task has not finished.Wait for execution.");
+            ClientLogUtils.info("Current task has not finished.Wait for execution.");
             return;
 
         } else if (noTaskRunning && taskQueue.isEmpty()) {
@@ -116,21 +121,22 @@ public class ClientTaskController {
 
             /** 给currentTask赋新值，保证poll()不返回null */
             currentTask = taskQueue.poll();
-            ClientLogUtils.debug("ClientTaskController.execNewTask:" + currentTask.toString());
+            ClientLogUtils.debug("ClientTaskController.execNewTask:{}" , currentTask);
 
             /** 在新线程执行新任务 */
             ClientThreadManager.getInstance().startNewTask(currentTask.getRunnable(new BaseTask.TaskStateListener() {
                 @Override
                 public void onBegin() {
-//                    ClientLogUtils.debug("****** Task begin ******:" + currentTask.toString());
+                    ClientLogUtils.info("----- Task begin -----:\n{}\n", currentTask);
+
                 }
 
                 @Override
                 public void onFinished() {
-                    ClientLogUtils.info("----  Task finished in "+ TimeUtils.getInterval(currentTask.getExecTime()) +" ----:\n" + currentTask.toString(),Client.isUploadRealtimeLog);
+                    ClientLogUtils.info("-----  Task finished in {}  -----:\n{}\n",TimeUtils.getInterval(currentTask.getExecTime()),currentTask);
                     String repairCmds=currentTask.getRepairCmds();
                     if (repairCmds!=null){
-                        ClientLogUtils.info("currentTask.getRepairCmds()="+repairCmds, Client.isUploadRealtimeLog);
+                        ClientLogUtils.debug("currentTask.getRepairCmds()={}",repairCmds);
                         /** 修复运行环境 */
                         BaseTask task = new ClientShellTask(repairCmds);
                         task.setCodePath(currentTask.getCodePath());

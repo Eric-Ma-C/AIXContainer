@@ -2,6 +2,7 @@ package zju.vipa.aix.container.client.utils;
 
 import zju.vipa.aix.container.config.Config;
 import zju.vipa.aix.container.config.NetworkConfig;
+import zju.vipa.aix.container.utils.DebugUtils;
 
 /**
  * @Date: 2020/3/27 9:17
@@ -14,6 +15,12 @@ public class TokenUtils {
      * 如果是容器，则获取当前容器token
      */
     public static String  getDeviceToken() {
+
+        if (DebugUtils.IS_LOCAL_DEBUG){
+            return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTExMTExMTExMTExMTExMTExMTEifQ.it6iBaBmEkYIkJ49_2dCUL6nSqH7SHTJJ2IpoM8-nAs";
+        }
+
+
         String token = FileUtils.getContent(Config.TOKEN_FILE);
         if (token==null) {
              token = NetworkConfig.CENTER_TOKEN;
@@ -26,8 +33,15 @@ public class TokenUtils {
     /**
      * 获取token后缀
      */
-    public static String getTokenSuffix() {
+    public static String getSuffix() {
         String token = getDeviceToken();
+        return token.substring(token.length() - 9);
+    }
+
+    /**
+     * 获取token后缀
+     */
+    public static String getSuffix(String token) {
         return token.substring(token.length() - 9);
     }
 }

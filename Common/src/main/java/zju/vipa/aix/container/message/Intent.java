@@ -116,7 +116,28 @@ public enum Intent {
     /**
      * 容器实时日志上传
      */
-    REAL_TIME_LOG;
+    REAL_TIME_LOG,
+
+
+
+
+
+    /**
+     * 容器请求上传
+     */
+    REQUEST_UPLOAD,
+    /**
+     * 允许容器上传
+     */
+    UPLOAD_PERMITTED,
+    /**
+     * 容器上传数据的连接
+     */
+    UPLOAD_DATA,
+    /**
+     * 容器（日志）文件上传成功
+     */
+    UPLOAD_SUCCESS;
 
     @Override
     public String toString() {
