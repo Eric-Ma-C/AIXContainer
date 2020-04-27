@@ -39,7 +39,7 @@ public class ClientTaskController {
     }
 
     private ClientTaskController() {
-        if (ClientTaskControllerHolder.INSTANCE!=null){
+        if (ClientTaskControllerHolder.INSTANCE != null) {
             throw new RuntimeException("单例模式不可以创建多个对象");
         }
         init();
@@ -68,9 +68,9 @@ public class ClientTaskController {
         if (isSuccessful) {
             /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
-//          todo   ClientThreadManager.getInstance().startHeartbeat();
+            ClientThreadManager.getInstance().startHeartbeat();
 //            UploadUtils.uploadFile("/log/aixlog/debug.log4j.2020-04-20");
-            UploadUtils.uploadFile("/log/aixlog/test.txt");
+//            UploadUtils.uploadFile("/log/aixlog/test.txt");
 
         } else {
             ClientLogUtils.error("容器注册失败，请检查token配置。");
@@ -90,7 +90,7 @@ public class ClientTaskController {
         }
 
         taskQueue.add(task);
-        ClientLogUtils.debug("Task added:{}" , task);
+        ClientLogUtils.debug("Task added:{}", task);
 
         execNewTask();
     }
@@ -121,7 +121,7 @@ public class ClientTaskController {
 
             /** 给currentTask赋新值，保证poll()不返回null */
             currentTask = taskQueue.poll();
-            ClientLogUtils.debug("ClientTaskController.execNewTask:{}" , currentTask);
+            ClientLogUtils.debug("ClientTaskController.execNewTask:{}", currentTask);
 
             /** 在新线程执行新任务 */
             ClientThreadManager.getInstance().startNewTask(currentTask.getRunnable(new BaseTask.TaskStateListener() {
@@ -133,15 +133,15 @@ public class ClientTaskController {
 
                 @Override
                 public void onFinished() {
-                    ClientLogUtils.info("-----  Task finished in {}  -----:\n{}\n",TimeUtils.getInterval(currentTask.getExecTime()),currentTask);
-                    String repairCmds=currentTask.getRepairCmds();
-                    if (repairCmds!=null){
-                        ClientLogUtils.debug("currentTask.getRepairCmds()={}",repairCmds);
+                    ClientLogUtils.info("-----  Task finished in {}  -----:\n{}\n", TimeUtils.getInterval(currentTask.getExecTime()), currentTask);
+                    String repairCmds = currentTask.getRepairCmds();
+                    if (repairCmds != null) {
+                        ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
                         /** 修复运行环境 */
                         BaseTask task = new ClientShellTask(repairCmds);
                         task.setCodePath(currentTask.getCodePath());
                         addTask(task);
-                    }else {
+                    } else {
                         execNewTask();
                     }
 

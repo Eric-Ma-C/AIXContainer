@@ -19,4 +19,13 @@ public class ClientMessage extends Message {
     public ClientMessage(Intent intent) {
         super(intent, Client.TOKEN);
     }
+
+    @Override
+    public String toString() {
+        return "Message{" +
+            "intent=" + intent +
+            ", value='" + value + '\'' +
+            ", customDataMap=" + customDataMap +
+            '}';
+    }
 }

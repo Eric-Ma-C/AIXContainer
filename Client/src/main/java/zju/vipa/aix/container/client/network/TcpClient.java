@@ -44,7 +44,7 @@ public class TcpClient {
      * @return:
      */
     public void uploadGpuInfo(GpuInfo gpuInfo) {
-        Message msg = new ClientMessage(Intent.GPU_INFO, JsonUtils.toJSONString(gpuInfo));
+        ClientMessage msg = new ClientMessage(Intent.GPU_INFO, JsonUtils.toJSONString(gpuInfo));
         sendMessage(msg);
     }
 
@@ -154,7 +154,7 @@ public class TcpClient {
      * @return:
      */
     public boolean registerContainer(String containerToken) {
-        Message message = new ClientMessage(Intent.REGISTER, containerToken);
+        ClientMessage message = new ClientMessage(Intent.REGISTER, containerToken);
 
 
         Message response = sendMsgAndGetResponse(message, 15 * 1000);
@@ -175,7 +175,7 @@ public class TcpClient {
      */
     public String getCondaEnvFileByTaskId(String taskId) {
 
-        Message message = new ClientMessage(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
+        ClientMessage message = new ClientMessage(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
         String response = "";
 
         response = sendMsgAndGetResponse(message).getValue();
@@ -193,7 +193,7 @@ public class TcpClient {
      */
     public String getPipEnvFileByTaskId(String taskId) {
 
-        Message message = new ClientMessage(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
+        ClientMessage message = new ClientMessage(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
         String response = "";
 
         response = sendMsgAndGetResponse(message).getValue();
@@ -207,7 +207,7 @@ public class TcpClient {
      * 重新设置conda国内源
      */
     public String getCondaSource() {
-        Message message = new ClientMessage(Intent.CONDA_SOURCE);
+        ClientMessage message = new ClientMessage(Intent.CONDA_SOURCE);
 
         Message resMsg = sendMsgAndGetResponse(message);
         if (resMsg == null) {
@@ -221,7 +221,7 @@ public class TcpClient {
      * 向平台请求任务
      */
     public void askForWork() {
-        Message message = new ClientMessage(Intent.ASK_FOR_WORK);
+        ClientMessage message = new ClientMessage(Intent.ASK_FOR_WORK);
 
         Message resMsg = sendMsgAndGetResponse(message);
 
@@ -233,7 +233,7 @@ public class TcpClient {
      * 向平台请求上传文件
      */
     public boolean requestUpload(String path, UploadDataListener listener) {
-        Message message = new ClientMessage(Intent.REQUEST_UPLOAD);
+        ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD);
 
         Message resMsg = sendMsgAndGetResponse(message);
 
@@ -257,7 +257,7 @@ public class TcpClient {
      */
     public void heartbeatReport(SystemBriefInfo info) {
 
-        Message message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
+        ClientMessage message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
         Message resMsg = null;
 
         /** 10s读超时，抢任务并发多时可能会比较慢？ */
@@ -276,7 +276,7 @@ public class TcpClient {
      * 不需要返回了，有askForWork
      */
     @Deprecated
-    public void reportShellResult(Message msg) {
+    public void reportShellResult(ClientMessage msg) {
         Message body = null;
 
         /** 5000ms读超时 */
@@ -292,7 +292,7 @@ public class TcpClient {
      * @param: msg
      * @return: 响应消息
      */
-    private Message sendMsgAndGetResponse(Message msg) {
+    private Message sendMsgAndGetResponse(ClientMessage msg) {
         return sendMsgAndGetResponse(msg, NetworkConfig.SOCKET_READ_TIMEOUT_DEFAULT);
     }
 
@@ -303,7 +303,7 @@ public class TcpClient {
      * @param: msg
      * @return: 响应消息
      */
-    private Message sendMsgAndGetResponse(Message msg, int readTimeOut) {
+    private Message sendMsgAndGetResponse(ClientMessage msg, int readTimeOut) {
         ClientLogUtils.debug("SEND:\n{}\n", msg);
         Socket socket = null;
         String response = null;
@@ -356,7 +356,7 @@ public class TcpClient {
      *
      * @param: msg
      */
-    public void sendMessage(Message msg) {
+    public void sendMessage(ClientMessage msg) {
         ClientLogUtils.debug("SEND:\n{}\n", msg);
 
         Socket socket = null;

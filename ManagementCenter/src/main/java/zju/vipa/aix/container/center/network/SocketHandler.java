@@ -174,7 +174,7 @@ public class SocketHandler implements Runnable {
      * 容器实时日志处理
      */
     private void handleRealtimeLog(Message msg) {
-        LogUtils.debug("Realtime log from {}:{}", msg.getToken().substring(msg.getToken().length() - 7), msg.getValue());
+        LogUtils.debug("Realtime log from {}:{}", msg.getTokenSuffix(), msg.getValue());
     }
 
     /**
@@ -185,7 +185,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleGpuInfo(Message message) {
-        LogUtils.info("{}:\nGPU info:{}", message.getToken(), message.getValue());
+        LogUtils.info("{}:\nGPU info:{}", message.getTokenSuffix(), message.getValue());
     }
 
     /**
@@ -195,7 +195,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleException(Message message) {
-        LogUtils.error("{}:\n{}" + message.getValue(), message.getToken());
+        LogUtils.error("{}:\n{}" , message.getTokenSuffix(),message.getValue());
     }
 
 
@@ -318,12 +318,12 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellBegin(Message message) {
-        LogUtils.debug("{} shellBegin: {}", message.getToken(), message.getValue());
+        LogUtils.debug("{} shellBegin: {}", message.getTokenSuffix(), message.getValue());
     }
 
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
-        LogUtils.debug("{} shellInfo: {}", message.getToken(), message.getValue());
+        LogUtils.debug("{} shellInfo: {}", message.getTokenSuffix(), message.getValue());
     }
 
 
@@ -334,7 +334,7 @@ public class SocketHandler implements Runnable {
      * @return: void
      */
     private void shellResult(Message message) {
-        LogUtils.debug("{} shellResult: {}", message.getToken(), message.getValue());
+        LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
 //        Message msg = null;
 //        if (!"resultCode=0".equals(message.getValue())) {
 //            /** 遇到错误尝试获取修复指令，可能会失败 */
@@ -345,7 +345,9 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellError(Message message) {
-        LogUtils.error("{} shellError: {}", message.getToken(), message.getValue());
+
+        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
+
     }
 
     private void shellErrorHandle(Message message) {

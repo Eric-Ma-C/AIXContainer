@@ -88,7 +88,7 @@ public class CenterTcpServer {
             //每接收到一个Socket请求就建立一个新的线程来处理它
             //todo 抽离业务代码
             mThreadPoolExecutor.execute(new SocketHandler(socket));
-            LogUtils.info("Handle new request: {}", socket.toString());
+//            LogUtils.debug("Handle new request: {}", socket.toString());
         }
 
     }

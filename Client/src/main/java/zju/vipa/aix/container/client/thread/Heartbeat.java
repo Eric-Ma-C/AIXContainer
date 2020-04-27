@@ -35,6 +35,7 @@ public class Heartbeat {
      */
     public static void stop() {
         exit = true;
+        ClientThreadManager.getInstance().cancelUploadLog();
     }
 
     public static boolean isRunning(){

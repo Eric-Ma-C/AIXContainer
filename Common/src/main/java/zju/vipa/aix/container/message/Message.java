@@ -26,8 +26,8 @@ public class Message {
      */
     public static final String CHARSET_NAME = "UTF-8";
 
-    private Intent intent;
-    private String value;
+    protected Intent intent;
+    protected String value;
     /**
      * 每个容器的唯一身份标识
      */
@@ -35,7 +35,7 @@ public class Message {
     /**
      * 自定义数据 键值对
      */
-    private Map<String, String> customDataMap =null;
+    protected Map<String, String> customDataMap =null;
 
 //    private String s;
 
@@ -80,6 +80,9 @@ public class Message {
 
     public String getToken() {
         return token;
+    }
+    public String getTokenSuffix() {
+        return token.substring(token.length()-9);
     }
 
     public void setToken(String token) {

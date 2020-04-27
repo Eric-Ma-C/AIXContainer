@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Date: 2020/4/20 21:13
@@ -12,6 +9,8 @@ public class Test {
     public static void main(String[] args) {
         int a=0,b=3;
         Integer c=add(a,b);
+        HashMap<String,Integer> hashMap=new HashMap<>(13);
+        hashMap.put("dsa",32);
 //        System.out.println(new Byte(c));
 //        int[] li=new int[]{1,2,3};
 //要转换的list集合

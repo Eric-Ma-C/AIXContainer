@@ -1,7 +1,11 @@
 package zju.vipa.aix.container.client.thread;
 
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
+import zju.vipa.aix.container.client.utils.UploadUtils;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -11,12 +15,18 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description: 容器线程管理器，线程池实现
  */
 public class ClientThreadManager {
+    /**
+     * 上次上传日志的时间
+     */
+    private long lastUploadTime = 0;
+    ScheduledExecutorService uploadLogService;
+
     private static class ClientThreadManagerHolder {
         private static final ClientThreadManager INSTANCE = new ClientThreadManager();
     }
 
     private ClientThreadManager() {
-        if (ClientThreadManagerHolder.INSTANCE!=null){
+        if (ClientThreadManagerHolder.INSTANCE != null) {
             throw new RuntimeException("单例模式不可以创建多个对象");
         }
         initThreadPool();
@@ -44,7 +54,45 @@ public class ClientThreadManager {
      */
     public void startHeartbeat() {
         if (!Heartbeat.isRunning()) {
+            lastUploadTime = System.currentTimeMillis();
+
+            /** 延时上传日志，若停止心跳（不空闲）会暂停本任务 */
+            if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
+                uploadLogFilePerDay();
+            }
+
             mThreadPoolExecutor.execute(Heartbeat.getRunnable());
+        }
+    }
+
+    /**
+     * 空闲时上传前一天的日志
+     */
+    private void uploadLogFilePerDay() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        String yesterday = new SimpleDateFormat("yyyy-MM-dd ").format(cal.getTime());
+        final File file = new File("/log/aixlog/debug.log4j." + yesterday);
+        if (file.exists()) {
+            uploadLogService = Executors.newScheduledThreadPool(1);
+            //延时30*60秒执行
+            uploadLogService.schedule(new Runnable() {
+                @Override
+                public void run() {
+
+                    /** 停止心跳线程,执行日志上传 */
+                    Heartbeat.stop();
+                    UploadUtils.uploadFile(file.getPath());
+                }
+            },30 * 60, TimeUnit.SECONDS);
+        }
+    }
+
+
+
+    public void cancelUploadLog() {
+        if (uploadLogService != null && !uploadLogService.isShutdown()) {
+            uploadLogService.shutdown();
         }
     }
 

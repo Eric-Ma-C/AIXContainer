@@ -14,7 +14,9 @@ public class AIXEnvConfig {
     /**
      * conda源更新指令
      */
-    private static final String CONDA_CREATE_CMD = "conda create -n " + CONDA_ENV_NAME + " python=3.6.2";
+//    private static final String CONDA_CREATE_CMD = "conda env create -n " + CONDA_ENV_NAME + " python=3.6.2";
+    private static final String CONDA_CREATE_CMD = "conda env create -n " + CONDA_ENV_NAME;
+//    private static final String CONDA_CREATE_FROM_FILE_CMD =CONDA_CREATE_CMD + " python=3.6.2";
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
 
     public static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + NetworkConfig.DEFAULT_CONDA_SOURCE + "\" > /home/aix/.condarc && conda clean -i";
@@ -58,9 +60,8 @@ public class AIXEnvConfig {
      */
     public static String getCondaEnvCreateCmds(String codePath) {
 
-//        return "conda env create -n " + AIXEnvConfig.CONDA_ENV_NAME + " -f " + codePath + "/environment.yaml";//--json
-//        return "conda env create -f " +codePath+"/requirements.txt -n "+ AIXEnvConfig.CONDA_ENV_NAME ;
-        return getPipEnvCreateCmds(codePath);
+        return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yaml";//--json
+//        return getPipEnvCreateCmds(codePath);
     }
 
     /**
@@ -83,8 +84,8 @@ public class AIXEnvConfig {
      * 启动命令
      */
     public static String getStartCmds(String codePath) {
-//        return "source /home/aix/miniconda3/bin/activate " + AIXEnvConfig.CONDA_ENV_NAME + " && python " + codePath + "/main.py";
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python -u -m recognition.main -name prov_test";
+        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py";
+//        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python -u -m recognition.main -name prov_test";
     }
 
 
