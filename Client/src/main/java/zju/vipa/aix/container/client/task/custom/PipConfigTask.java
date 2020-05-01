@@ -46,21 +46,21 @@ public class PipConfigTask extends BaseTask {
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }
 
-    @Override
-    protected String[] initTaskCmds() {
-        String[] cmds={
-            "conda create -n pip-env python=3.6 -y",
-            "conda env list",
-            "source /root/miniconda3/bin/activate pip-env",
-            "conda env list",
-            "conda install pip -y",
-            "pip install -r " + pipEnvFilePath};
+//    @Override
+//    protected String[] initTaskCmds() {
+//        String[] cmds={
+//            "conda create -n pip-env python=3.6 -y",
+//            "conda env list",
+//            "source /root/miniconda3/bin/activate pip-env",
+//            "conda env list",
+//            "conda install pip -y",
+//            "pip install -r " + pipEnvFilePath};
+//
+//        return cmds;
+//    }
 
-        return cmds;
-    }
-
     @Override
-    protected void procedure() {
+    protected void run() {
         /** 更新conda源 */
         setCondaSource();
 

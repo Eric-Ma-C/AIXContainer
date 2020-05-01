@@ -1,11 +1,13 @@
 package zju.vipa.aix.container.center.db;
 
 import org.apache.ibatis.session.SqlSession;
-import zju.vipa.aix.container.center.db.dao.*;
-import zju.vipa.aix.container.center.db.entity.Device;
-import zju.vipa.aix.container.center.db.entity.Model;
-import zju.vipa.aix.container.center.db.entity.Task;
+import zju.vipa.aix.container.center.db.dao.DataturksUserDAO;
+import zju.vipa.aix.container.center.db.dao.DeviceDAO;
+import zju.vipa.aix.container.center.db.dao.TaskDAO;
 import zju.vipa.aix.container.center.db.entity.DataturksUser;
+import zju.vipa.aix.container.center.db.entity.Device;
+import zju.vipa.aix.container.center.db.entity.Task;
+import zju.vipa.aix.container.config.Config;
 
 import java.util.List;
 
@@ -118,11 +120,15 @@ public class DbManager {
                 //TODO 方便测试用
                 taskDAO.updateTask(task.getId(), "WAITING", clientId);
 //                taskDAO.updateTask(task.getId(), "TRAINING", clientId);
-                // 获取映射类
-                ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
-                Model model = modelDAO.findModelById(task.getModelId());
-                String codePath = model.getCodePath();
-                task.setCodePath(codePath);
+
+
+//                // 获取code path
+//                ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
+//                Model model = modelDAO.findModelById(task.getModelId());
+//                String codePath = model.getCodePath();
+//                task.setCodePath(codePath);
+                task.setCodePath(Config.MODEL_UNZIP_PATH);
+
 
                 return task;
             }

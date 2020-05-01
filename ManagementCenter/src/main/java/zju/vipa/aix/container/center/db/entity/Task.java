@@ -1,6 +1,5 @@
 package zju.vipa.aix.container.center.db.entity;
 
-import zju.vipa.aix.container.config.AIXEnvConfig;
 import zju.vipa.aix.container.center.env.EnvError;
 
 import java.io.Serializable;
@@ -16,77 +15,51 @@ public class Task implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 任务id     primary key
-     */
+    /**任务id**/
     private String id;
 
-    /**
-     * 任务名
-     */
+    /**任务名**/
     private String name;
 
-    /**
-     * 创建人
-     */
-    private String createdby;
+    /**创建人**/
+    private String createdBy;
 
-    /**
-     * 任务类型
-     */
+    /**任务类型**/
     private String type;
 
-    /**
-     * 是否为公开任务
-     */
-    private String accesstype;
+    /**是否为公开任务**/
+    private String accessType;
 
-    /**
-     * 数据集id
-     */
-    private String datasetid;
+    /**数据集id**/
+    private String datasetId;
 
-    /**
-     * 任务的备注信息，可以用于指明任务要求
-     */
+    /**任务的备注信息，可以用于指明任务要求**/
     private String info;
 
-    /**
-     * 更新时间
-     */
-    private Date updatedtime;
+    /**更新时间**/
+    private java.util.Date updatedTime;
 
-    /**
-     * 创建时间
-     */
-    private Date createdtime;
+    /**创建时间**/
+    private java.util.Date createdTime;
 
-    /**
-     * 任务状态
-     */
+    /**任务状态**/
     private String status;
 
-    /**
-     * 模型id
-     */
+    /**模型id**/
     private String modelId;
 
-    /**
-     * 模型提供者id
-     */
-    private String modelprovider;
+    /**模型提供者id**/
+    private String modelProvider;
+    /** 自定义启动参数 */
+    private String modelArgs;
 
-    /**
-     * 设备id
-     */
-    private String trainby;
+    /**设备id**/
+    private String trainBy;
 
+    /**训练细节**/
+    private String trainDetail;
     /**
-     * 训练细节
-     */
-    private String traindetail;
-    /**
-     * 代码路径
+     * 代码路径,一般在下载model解压后路径，也可能自定义
      */
     private transient String codePath;
     /**
@@ -102,24 +75,22 @@ public class Task implements Serializable {
         return "Task{" +
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
-            ", createdby='" + createdby + '\'' +
+            ", createdBy='" + createdBy + '\'' +
             ", type='" + type + '\'' +
-            ", accesstype='" + accesstype + '\'' +
-            ", datasetid='" + datasetid + '\'' +
+            ", accessType='" + accessType + '\'' +
+            ", datasetId='" + datasetId + '\'' +
             ", info='" + info + '\'' +
-            ", updatedtime=" + updatedtime +
-            ", createdtime=" + createdtime +
+            ", updatedTime=" + updatedTime +
+            ", createdTime=" + createdTime +
             ", status='" + status + '\'' +
             ", modelId='" + modelId + '\'' +
-            ", modelprovider='" + modelprovider + '\'' +
-            ", trainby='" + trainby + '\'' +
-            ", traindetail='" + traindetail + '\'' +
+            ", modelProvider='" + modelProvider + '\'' +
+            ", modelArgs='" + modelArgs + '\'' +
+            ", trainBy='" + trainBy + '\'' +
+            ", trainDetail='" + trainDetail + '\'' +
             ", codePath='" + codePath + '\'' +
             '}';
     }
-
-
-
 
     public String getCodePath() {
         return codePath;
@@ -160,12 +131,12 @@ public class Task implements Serializable {
         this.name = name;
     }
 
-    public String getCreatedby() {
-        return createdby;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setCreatedby(String createdby) {
-        this.createdby = createdby;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
     }
 
     public String getType() {
@@ -176,20 +147,20 @@ public class Task implements Serializable {
         this.type = type;
     }
 
-    public String getAccesstype() {
-        return accesstype;
+    public String getAccessType() {
+        return accessType;
     }
 
-    public void setAccesstype(String accesstype) {
-        this.accesstype = accesstype;
+    public void setAccessType(String accessType) {
+        this.accessType = accessType;
     }
 
-    public String getDatasetid() {
-        return datasetid;
+    public String getDatasetId() {
+        return datasetId;
     }
 
-    public void setDatasetid(String datasetid) {
-        this.datasetid = datasetid;
+    public void setDatasetId(String datasetId) {
+        this.datasetId = datasetId;
     }
 
     public String getInfo() {
@@ -200,20 +171,20 @@ public class Task implements Serializable {
         this.info = info;
     }
 
-    public Date getUpdatedtime() {
-        return updatedtime;
+    public Date getUpdatedTime() {
+        return updatedTime;
     }
 
-    public void setUpdatedtime(Date updatedtime) {
-        this.updatedtime = updatedtime;
+    public void setUpdatedTime(Date updatedTime) {
+        this.updatedTime = updatedTime;
     }
 
-    public Date getCreatedtime() {
-        return createdtime;
+    public Date getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreatedtime(Date createdtime) {
-        this.createdtime = createdtime;
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
     }
 
     public String getStatus() {
@@ -232,27 +203,35 @@ public class Task implements Serializable {
         this.modelId = modelId;
     }
 
-    public String getModelprovider() {
-        return modelprovider;
+    public String getModelProvider() {
+        return modelProvider;
     }
 
-    public void setModelprovider(String modelprovider) {
-        this.modelprovider = modelprovider;
+    public void setModelProvider(String modelProvider) {
+        this.modelProvider = modelProvider;
     }
 
-    public String getTrainby() {
-        return trainby;
+    public String getModelArgs() {
+        return modelArgs;
     }
 
-    public void setTrainby(String trainby) {
-        this.trainby = trainby;
+    public void setModelArgs(String modelArgs) {
+        this.modelArgs = modelArgs;
     }
 
-    public String getTraindetail() {
-        return traindetail;
+    public String getTrainBy() {
+        return trainBy;
     }
 
-    public void setTraindetail(String traindetail) {
-        this.traindetail = traindetail;
+    public void setTrainBy(String trainBy) {
+        this.trainBy = trainBy;
+    }
+
+    public String getTrainDetail() {
+        return trainDetail;
+    }
+
+    public void setTrainDetail(String trainDetail) {
+        this.trainDetail = trainDetail;
     }
 }

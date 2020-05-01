@@ -1,4 +1,3 @@
-import zju.vipa.aix.container.center.ManagementCenter;
 import zju.vipa.aix.container.center.util.JwtUtils;
 import zju.vipa.aix.container.config.NetworkConfig;
 
@@ -9,7 +8,8 @@ import zju.vipa.aix.container.config.NetworkConfig;
  */
 public class Test {
     public static void main(String[] args) {
-        ManagementCenter.getInstance().getIdByToken(NetworkConfig.TEST_CONTAINER_TOKEN);
+//        ManagementCenter.getInstance().getIdByToken(NetworkConfig.TEST_CONTAINER_TOKEN);
+        generateToken();
     }
 
     private static void generateToken(){
@@ -19,6 +19,7 @@ public class Test {
             "333333333333333333333",
             "4444444444444444444444",
             "55555555555555555555",
+            "bfeb717242c94d60b73ad6dd695164e3",
             NetworkConfig.CENTER_ID,
             "null"
         };

@@ -46,18 +46,18 @@ public class YoloCigarTask extends BaseTask {
 //            path="/nfs2/mc/docker/aix-container/train_client.yml";
     }
 
-    @Override
-    protected String[] initTaskCmds() {
-        String[] cmds={
-//            "conda env create -f " + condaEnvFilePath,
-            "source /home/aix/miniconda3/bin/activate clean_yolo",
-            "python /nfs2/sontal/codes/TrainerProxy/main.py"
-        };
-        return cmds;
-    }
+//    @Override
+//    protected String[] initTaskCmds() {
+//        String[] cmds={
+////            "conda env create -f " + condaEnvFilePath,
+//            "source /home/aix/miniconda3/bin/activate clean_yolo",
+//            "python /nfs2/sontal/codes/TrainerProxy/main.py"
+//        };
+//        return cmds;
+//    }
 
     @Override
-    protected  void procedure() {
+    protected  void run() {
         /** 更新conda源 */
 //        setCondaSource();
         /** 获取yml路径 */

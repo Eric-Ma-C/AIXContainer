@@ -25,8 +25,10 @@ public class NetworkConfig {
      */
     public static final String DEBUG_SERVER_IP = "127.0.0.1";
 
-    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
-//    public static String SERVER_IP = VIPA_205_IP;
+    //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
+    public static String SERVER_IP = VIPA_205_IP;
+    public static String DOWNLOAD_SERVER_IP = VIPA_205_IP;
+    public static int DOWNLOAD_SERVER_PORT = 8080;
 
     static {
         if (DebugUtils.IS_LOCAL_DEBUG) {

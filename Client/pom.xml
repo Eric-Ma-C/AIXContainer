@@ -77,7 +77,9 @@
                             <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
                             <!-- 要上传到服务器的文件，一般来说是jar或者war包 -->
 <!--                            <url>scp://10.214.211.205/disk2/mc/docker/aix-container/train_client2/</url>-->
-                            <url>scp://10.214.211.205/nfs2/mc/docker</url>
+                           <!-- <url>scp://10.214.211.205/nfs2/mc/docker</url>-->
+                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-client</url>
+
 <!--                            <url>scp://10.214.211.205/disk2/mc/</url>-->
                             <!-- 配置服务器的地址以及文件上传的目录。 -->
                         </configuration>

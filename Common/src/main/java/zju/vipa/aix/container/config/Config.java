@@ -12,6 +12,18 @@ public class Config {
     public static final String TOKEN_FILE=AIX_ROOT_DIR+"/token";
 
 
+    /** 容器中model.zip文件下载位置 */
+    public static final String MODEL_SAVE_PATH =AIX_ROOT_DIR+"/model.zip";
+    /** 容器中model.zip文件解压位置 */
+    public static final String MODEL_UNZIP_PATH =AIX_ROOT_DIR+"/model";
+
+    /** 容器中dataset文件下载位置 */
+    public static final String DATASET_SAVE_PATH =AIX_ROOT_DIR+"/annotations.json";
+//    /** 容器中model.zip文件解压位置 */
+//    public static final String DATASET_UNZIP_PATH =AIX_ROOT_DIR+"/model";
+
+
+
 
     public static final String NULL_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJudWxsIn0.rgzK-LqCRYGoUfrbLvqv0lqveUD_0raqOV-2TXjq_ig";
 }

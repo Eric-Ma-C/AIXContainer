@@ -96,20 +96,29 @@ public class TaskManager {
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
                 String codePath=task.getCodePath();
+                String modelArgs=task.getModelArgs();
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
-                String cmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath) + " && " + AIXEnvConfig.getStartCmds(codePath);
+                String cmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath) + " && " + AIXEnvConfig.getStartCmds(codePath,modelArgs);
 
 
                 /** 添加待发送任务至列表 */
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "source /home/aix/.bashrc && echo $PATH"));
                 /** 检查shell */
-                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $PATH"));
+//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $PATH"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $0"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $-"));
 
+                /** 告诉容器下载model */
+                addMessage(token,new ServerMessage(Intent.DOWNLOAD_MODEL,task.getModelId()));
+
+                /** 告诉容器下载dataset */
+                addMessage(token,new ServerMessage(Intent.DOWNLOAD_DATASET,task.getDatasetId()));
+
+
                 Message msg=new ServerMessage(Intent.SHELL_TASK, cmds);
                 msg.addCustomData("codePath", codePath);
+                msg.addCustomData("modelArgs", modelArgs);
                 addMessage(token, msg);
 
 
@@ -124,8 +133,10 @@ public class TaskManager {
                     LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...",token);
 
                     String codePath=task.getCodePath();
-                    Message msg=new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath));
+                    String modelArgs=task.getModelArgs();
+                    Message msg=new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath,modelArgs));
                     msg.addCustomData("codePath", codePath);
+                    msg.addCustomData("modelArgs", modelArgs);
                     addMessage(token, msg);
 
 

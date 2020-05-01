@@ -72,20 +72,18 @@
                         </goals>
                         <configuration>
 <!--                            <serverId>vipa-aliyun</serverId>-->
-<!--                            &lt;!&ndash; serverId即上一步中在settings.xml中配置的service的id &ndash;&gt;-->
 <!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
-<!--                            &lt;!&ndash; 要上传到服务器的文件，一般来说是jar或者war包 &ndash;&gt;-->
 <!--                            <url>scp://120.55.242.132/home/aix/downloads/</url>-->
-<!--                            &lt;!&ndash; 配置服务器的地址以及文件上传的目录。 &ndash;&gt;-->
 
-                            <serverId>my-aliyun</serverId>
+
+                          <!--  <serverId>my-aliyun</serverId>
                             <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <url>scp://112.124.46.179/home/maven_upload/</url>
+                            <url>scp://112.124.46.179/home/maven_upload/</url>-->
 
 
-<!--                            <serverId>vipa-205</serverId>-->
-<!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
-<!--                            <url>scp://10.214.211.205/nfs2/mc/docker</url>-->
+                            <serverId>vipa-205</serverId>
+                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
+                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-center</url>
 
                         </configuration>
                     </execution>

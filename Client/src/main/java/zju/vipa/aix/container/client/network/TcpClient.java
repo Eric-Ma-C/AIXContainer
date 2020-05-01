@@ -1,28 +1,27 @@
 package zju.vipa.aix.container.client.network;
 
 
-import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.task.BaseTask;
 import zju.vipa.aix.container.client.task.ClientTaskController;
-import zju.vipa.aix.container.client.thread.ClientThreadManager;
-import zju.vipa.aix.container.client.utils.ClientLogUtils;
-import zju.vipa.aix.container.message.GpuInfo;
-import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.client.task.custom.ClientShellTask;
+import zju.vipa.aix.container.client.task.custom.DownloadDatasetTask;
+import zju.vipa.aix.container.client.task.custom.DownloadModelTask;
+import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.thread.Heartbeat;
-import zju.vipa.aix.container.config.NetworkConfig;
 import zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import zju.vipa.aix.container.client.utils.ClientLogUtils;
+import zju.vipa.aix.container.config.NetworkConfig;
+import zju.vipa.aix.container.message.GpuInfo;
 import zju.vipa.aix.container.message.Intent;
 import zju.vipa.aix.container.message.Message;
+import zju.vipa.aix.container.message.SystemBriefInfo;
 import zju.vipa.aix.container.utils.ByteUtils;
 import zju.vipa.aix.container.utils.JsonUtils;
 
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.ByteBuffer;
-import java.util.Map;
 
 /**
  * @Date: 2020/1/7 15:26
@@ -78,9 +77,30 @@ public class TcpClient {
             case SHELL_TASK:
                 execShellTask(msg);
                 break;
+            case DOWNLOAD_MODEL:
+                downloadModel(msg);
+                break;
+            case DOWNLOAD_DATASET:
+                downloadDataset(msg);
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 下载模型
+     */
+    private void downloadModel(Message msg) {
+
+        ClientTaskController.getInstance().addTask(new DownloadModelTask(msg.getValue()));
+    }
+
+    /**
+     * 下载模型
+     */
+    private void downloadDataset(Message msg) {
+        ClientTaskController.getInstance().addTask(new DownloadDatasetTask(msg.getValue()));
     }
 ///**
 // *   开始执行新训练
@@ -105,9 +125,10 @@ public class TcpClient {
 
         ClientShellTask task = new ClientShellTask(msg.getValue());
         String codePath = null;
-        if ((codePath = msg.getCustomData("codePath")) != null) {
-            task.setCodePath(codePath);
-            ClientLogUtils.info("Set codePath={}", codePath);
+        String modelArgs = null;
+        if ((codePath = msg.getCustomData("codePath")) != null&&(modelArgs = msg.getCustomData("modelArgs")) != null) {
+            task.setTaskInfo(codePath,modelArgs);
+            ClientLogUtils.info("Set codePath={} modelArgs={}", codePath,modelArgs);
         }
 
 //        ClientLogUtils.debug("SeverCmdsTask="+value);
@@ -240,9 +261,9 @@ public class TcpClient {
         if (resMsg == null || resMsg.getIntent() != Intent.UPLOAD_PERMITTED) {
             return false;
         }
-        String serverWanted=resMsg.getValue();
-        if (serverWanted!=null||!"".equals(serverWanted)){
-            path=serverWanted;
+        String serverWanted = resMsg.getValue();
+        if (serverWanted != null || !"".equals(serverWanted)) {
+            path = serverWanted;
         }
         return upLoadData(path, listener);
 

@@ -6,7 +6,6 @@ import zju.vipa.aix.container.client.thread.ClientThreadManager;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.client.utils.TokenUtils;
 import zju.vipa.aix.container.client.utils.SystemInfoUtils;
-import zju.vipa.aix.container.client.utils.UploadUtils;
 import zju.vipa.aix.container.utils.TimeUtils;
 
 import java.util.Queue;
@@ -139,7 +138,7 @@ public class ClientTaskController {
                         ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
                         /** 修复运行环境 */
                         BaseTask task = new ClientShellTask(repairCmds);
-                        task.setCodePath(currentTask.getCodePath());
+                        task.setTaskInfo(currentTask.getCodePath(),currentTask.getModelArgs());
                         addTask(task);
                     } else {
                         execNewTask();

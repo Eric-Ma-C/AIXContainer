@@ -137,7 +137,17 @@ public enum Intent {
     /**
      * 容器（日志）文件上传成功
      */
-    UPLOAD_SUCCESS;
+    UPLOAD_SUCCESS,
+
+
+    /**
+     * 容器下载model
+     */
+    DOWNLOAD_MODEL,
+    /**
+     * 容器下载dataset
+     */
+    DOWNLOAD_DATASET;
 
     @Override
     public String toString() {

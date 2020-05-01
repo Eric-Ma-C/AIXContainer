@@ -9,20 +9,20 @@ import zju.vipa.aix.container.client.task.BaseTask;
  * @Description: aix平台中用户上传的训练任务
  */
 public class TrainingTask extends BaseTask {
-    @Override
-    protected String[] initTaskCmds() {
-        return new String[]{
-            "cd /root/aix/code",
-            "pwd",
-            "source /root/miniconda3/bin/activate pip-env",
-            "pip uninstall numpy -y",
-            "pip install -U numpy==1.17.0",
-            "PYTHONIOENCODING=utf-8 python -u -m  recognition.main -name prov_test"
-        };
-    }
+//    @Override
+//    protected String[] initTaskCmds() {
+//        return new String[]{
+//            "cd /root/aix/code",
+//            "pwd",
+//            "source /root/miniconda3/bin/activate pip-env",
+//            "pip uninstall numpy -y",
+//            "pip install -U numpy==1.17.0",
+//            "PYTHONIOENCODING=utf-8 python -u -m  recognition.main -name prov_test"
+//        };
+//    }
 
     @Override
-    protected void procedure() {
+    protected void run() {
         new ShellTask(getCommands()).exec(shellErrorListener);
     }
 }

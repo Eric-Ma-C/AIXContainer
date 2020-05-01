@@ -21,7 +21,16 @@ import java.net.URI;
  * @Description: 基于netty的http clint
  */
 public class HttpClient {
+    private static class HttpClientHolder {
+        private static final HttpClient INSTANCE = new HttpClient();
+    }
 
+    private HttpClient() {
+    }
+
+    public static HttpClient getInstance() {
+        return HttpClientHolder.INSTANCE;
+    }
 
     public void get(String host, int port) throws Exception {
         EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -120,9 +129,9 @@ public class HttpClient {
      * （↑↑↑建议只使用字母和数字对特殊字符对字符进行部分过滤可能导致异常↑↑↑）
      * 向互联网下载输入完整路径
      *
-     * @param host  目的主机ip或域名
-     * @param port  目标主机端口
-     * @param url   文件路径
+     * @param host     目的主机ip或域名
+     * @param port     目标主机端口
+     * @param url      文件路径
      * @param savePath 本地存储路径
      * @throws Exception
      */
@@ -154,11 +163,14 @@ public class HttpClient {
                 HttpVersion.HTTP_1_1, HttpMethod.GET, uri.toASCIIString());
 
             // 构建http请求
-            request.headers().set(HttpHeaderNames.HOST, host);
+            request.headers().set(HttpHeaderNames.HOST, host + ":" + port);
             request.headers().set(HttpHeaderNames.CONNECTION,
                 HttpHeaderValues.KEEP_ALIVE);
-            request.headers().set(HttpHeaderNames.CONTENT_LENGTH,
-                request.content().readableBytes());
+            request.headers().set(HttpHeaderNames.ACCEPT,
+                "*/*");
+
+            request.headers().set("Authorization", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTExMTExMTExMTExMTExMTExMTEifQ.it6iBaBmEkYIkJ49_2dCUL6nSqH7SHTJJ2IpoM8-nAs");
+
             // 发送http请求
             f.channel().write(request);
             f.channel().flush();
@@ -170,14 +182,15 @@ public class HttpClient {
     }
 
 
-    public static void main(String[] args) throws Exception {
-        HttpClient client = new HttpClient();
-//        client.connect("www.baidu.com", 80);
-//        client.connect("https://cs.nju.edu.cn/shiyh/DM2017/parts/28.pdf");
-//        client.getDownload("cs.nju.edu.cn", 80, "https://cs.nju.edu.cn/shiyh/DM2017/parts/28.pdf", "欧拉图.pdf");
-        client.getDownload("techforum-img.cn-hangzhou.oss-pub.aliyun-inc.com", 80, "http://techforum-img.cn-hangzhou.oss-pub.aliyun-inc.com/1523849261680/AliTech101_RD.pdf", "AliTech101_RD.pdf");
-        //client.connect("zlysix.gree.com", 80, "http://zlysix.gree.com/HelloWeb/download/20m.apk", "20m.apk");
-
-
-    }
+//    public static void main(String[] args) throws Exception {
+//        HttpClient client = new HttpClient();
+////        client.connect("www.baidu.com", 80);
+////        client.connect("https://cs.nju.edu.cn/shiyh/DM2017/parts/28.pdf");
+////        client.getDownload("cs.nju.edu.cn", 80, "https://cs.nju.edu.cn/shiyh/DM2017/parts/28.pdf", "欧拉图.pdf");
+////        client.getDownload("techforum-img.cn-hangzhou.oss-pub.aliyun-inc.com", 80, "http://techforum-img.cn-hangzhou.oss-pub.aliyun-inc.com/1523849261680/AliTech101_RD.pdf", "AliTech101_RD.pdf");
+//        client.getDownload("10.214.211.205", 8080, "http://10.214.211.205:8080/model/36e0a2906cd642438e83f7bf9443855c/file", "model.zip");
+////        client.connect("zlysix.gree.com", 80, "http://zlysix.gree.com/HelloWeb/download/20m.apk", "20m.apk");
+//
+//
+//    }
 }

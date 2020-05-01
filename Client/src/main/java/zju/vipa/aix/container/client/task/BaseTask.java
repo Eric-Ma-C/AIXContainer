@@ -1,7 +1,6 @@
 package zju.vipa.aix.container.client.task;
 
 
-import zju.vipa.aix.container.client.Client;
 import zju.vipa.aix.container.client.shell.ShellTask;
 import zju.vipa.aix.container.client.utils.ClientLogUtils;
 import zju.vipa.aix.container.config.AIXEnvConfig;
@@ -49,6 +48,10 @@ public abstract class BaseTask {
      * 训练代码路径，用于离线修复
      */
     private String codePath = null;
+    /**
+     * 训练代码自定义启动参数，用于离线修复
+     */
+    private String modelArgs = null;
 
     protected ShellTask.HandleShellErrorListener shellErrorListener;
 
@@ -56,12 +59,17 @@ public abstract class BaseTask {
         return codePath;
     }
 
-    public void setCodePath(String codePath) {
+    public String getModelArgs() {
+        return modelArgs;
+    }
+
+    public void setTaskInfo(String codePath, String modelArgs) {
         this.codePath = codePath;
+        this.modelArgs = modelArgs;
         shellErrorListener=new ShellTask.HandleShellErrorListener() {
             @Override
             public void onHandle(String moduleName) {
-                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath);
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath,BaseTask.this.modelArgs);
                 ClientLogUtils.info("Auto generate repairCmds={}",repairCmds);
 
             }
@@ -85,9 +93,9 @@ public abstract class BaseTask {
 //    }
 
     public String[] getCommands() {
-        if (commands == null) {
-            setCommands(initTaskCmds());
-        }
+//        if (commands == null) {
+//            setCommands(initTaskCmds());
+//        }
         return commands;
     }
 
@@ -117,7 +125,7 @@ public abstract class BaseTask {
                 listener.onBegin();
                 beginTime = System.currentTimeMillis();
                 state = TaskState.RUNNING;
-                procedure();
+                BaseTask.this.run();
                 state = TaskState.FINISHED;
                 endTime = System.currentTimeMillis();
                 listener.onFinished();
@@ -141,21 +149,21 @@ public abstract class BaseTask {
         }
     }
 
-    /**
-     * 定义Task的shell命令
-     *
-     * @param:
-     * @return:
-     */
-    abstract protected String[] initTaskCmds();
+//    /**
+//     * 定义Task的shell命令
+//     *
+//     * @param:
+//     * @return:
+//     */
+//    abstract protected String[] initTaskCmds();
 
     /**
-     * 定义执行流程
+     * 定义执行内容
      *
      * @param:
      * @return:
      */
-    abstract protected void procedure();
+    abstract protected void run();
 
     /**
      * 任务执行完毕回调
