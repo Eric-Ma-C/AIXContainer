@@ -19,7 +19,11 @@ public class DownloadDatasetTask extends BaseTask {
 
     @Override
     protected void run() {
-        HttpDownloadUtils.download(NetworkConfig.DOWNLOAD_SERVER_IP, NetworkConfig.DOWNLOAD_SERVER_PORT, "http://" + NetworkConfig.DOWNLOAD_SERVER_IP + ":" + NetworkConfig.DOWNLOAD_SERVER_PORT + "/dataset/" + datasetId + "/deviceSnapshot", Config.DATASET_SAVE_PATH);
+        HttpDownloadUtils.download(NetworkConfig.DOWNLOAD_SERVER_IP, NetworkConfig.DOWNLOAD_SERVER_PORT,
+            "http://" + NetworkConfig.DOWNLOAD_SERVER_IP + ":" + NetworkConfig.DOWNLOAD_SERVER_PORT
+                + "/dataset/" + datasetId + "/deviceSnapshot", Config.DATASET_SAVE_PATH);
+
+        //todo 成功的反馈  下载失败的处理
 //        /** 解压 */
 //        new ShellTask("unzip -o -d "+Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener);
     }

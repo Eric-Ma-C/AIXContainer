@@ -14,8 +14,6 @@ public class HttpDownloadUtils {
         } catch (Exception e) {
 
             ClientExceptionUtils.handle(e, true);
-
         }
-
     }
 }

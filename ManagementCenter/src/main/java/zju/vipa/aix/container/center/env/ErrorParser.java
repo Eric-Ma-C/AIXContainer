@@ -68,6 +68,9 @@ public class ErrorParser {
                 AIXEnvConfig.changePipSource();
                 repairCmds=startCmds;
                 break;
+            case IMPORTERROR_LIBSM_SO_6:
+                repairCmds="sudo apt-get update &&sudo apt-get install -y libsm6 libxext6 && " + startCmds;
+                break;
             default:
                 /**  其他错误,什么都不做  */
                 break;

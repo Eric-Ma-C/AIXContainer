@@ -20,7 +20,9 @@ public class DownloadModelTask extends BaseTask {
 
     @Override
     protected void run() {
-        HttpDownloadUtils.download(NetworkConfig.DOWNLOAD_SERVER_IP,NetworkConfig.DOWNLOAD_SERVER_PORT,"http://"+NetworkConfig.DOWNLOAD_SERVER_IP+":"+NetworkConfig.DOWNLOAD_SERVER_PORT+"/model/"+modelId+"/file", Config.MODEL_SAVE_PATH);
+        HttpDownloadUtils.download(NetworkConfig.DOWNLOAD_SERVER_IP,NetworkConfig.DOWNLOAD_SERVER_PORT,
+            "http://"+NetworkConfig.DOWNLOAD_SERVER_IP+":"+NetworkConfig.DOWNLOAD_SERVER_PORT+
+                "/model/"+modelId+"/file", Config.MODEL_SAVE_PATH);
         /** 解压 */
         new ShellTask("unzip -o -d "+Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener);
     }

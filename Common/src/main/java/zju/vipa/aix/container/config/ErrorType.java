@@ -58,7 +58,15 @@ public enum ErrorType {
      * pip源失效
      * 换源
      */
-    PIP_SOURCE_READ_TIMED_OUT("HTTPSConnectionPool(host=");
+    PIP_SOURCE_READ_TIMED_OUT("HTTPSConnectionPool(host="),
+
+    /**
+     * cv2缺少c库
+     *
+     * apt update && apt install -y libsm6 libxext6
+     */
+    IMPORTERROR_LIBSM_SO_6("ImportError: libSM.so.6: cannot open shared object file: No such file or directory");
+
 
 
 

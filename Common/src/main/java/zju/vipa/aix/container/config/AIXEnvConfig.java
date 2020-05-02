@@ -85,7 +85,7 @@ public class AIXEnvConfig {
      */
     public static String getStartCmds(String codePath,String modelArgs) {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
-        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py annotation="+Config.DATASET_SAVE_PATH+" "+modelArgs;
+        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation "+Config.DATASET_SAVE_PATH+" "+modelArgs;
 
 
 //        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python -u -m recognition.main -name prov_test";

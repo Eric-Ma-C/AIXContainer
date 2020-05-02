@@ -82,7 +82,7 @@ public class Message {
         return token;
     }
     public String getTokenSuffix() {
-        return token.substring(token.length()-9);
+        return token.substring(token.length()-9,token.length()-1);
     }
 
     public void setToken(String token) {

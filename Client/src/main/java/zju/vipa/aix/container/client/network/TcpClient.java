@@ -378,7 +378,7 @@ public class TcpClient {
      * @param: msg
      */
     public void sendMessage(ClientMessage msg) {
-        ClientLogUtils.debug("SEND:\n{}\n", msg);
+//        ClientLogUtils.debug("SEND:\n{}\n", msg);
 
         Socket socket = null;
         try {
