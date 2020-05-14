@@ -6,7 +6,7 @@
     </settings>
 
     <typeAliases>
-<!--        <typeAlias alias="User" type="zju.vipa.aix.container.center.db.entity.DataturksUser" />-->
+<!--        <typeAlias alias="User" type="DataturksUser" />-->
 <!--    <typeAliases>标签内指定的是你定义的实体类的别名，方便之后使用。-->
     </typeAliases>
 

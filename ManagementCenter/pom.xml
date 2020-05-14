@@ -35,7 +35,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>zju.vipa.aix.container.center.ManagementCenter</mainClass>
+                            <mainClass>org.zju.vipa.aix.container.center.ManagementCenter</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
@@ -76,9 +76,9 @@
 <!--                            <url>scp://120.55.242.132/home/aix/downloads/</url>-->
 
 
-                          <!--  <serverId>my-aliyun</serverId>
-                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <url>scp://112.124.46.179/home/maven_upload/</url>-->
+<!--                            <serverId>my-aliyun</serverId>-->
+<!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
+<!--                            <url>scp://112.124.46.179/home/maven_upload/</url>-->
 
 
                             <serverId>vipa-205</serverId>

@@ -1,5 +1,5 @@
-import zju.vipa.aix.container.center.util.JwtUtils;
-import zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.center.util.JwtUtils;
+import org.zju.vipa.aix.container.config.NetworkConfig;
 
 /**
  * @Date: 2020/3/29 22:53

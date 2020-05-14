@@ -1,6 +1,6 @@
-import zju.vipa.aix.container.client.task.BaseTask;
-import zju.vipa.aix.container.client.task.custom.ClientShellTask;
-import zju.vipa.aix.container.client.thread.ClientThreadManager;
+import org.zju.vipa.aix.container.client.task.BaseTask;
+import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
+import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 
 /**
  * @Date: 2020/1/11 19:49
