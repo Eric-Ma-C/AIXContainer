@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.client.utils;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.utils.DebugUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -42,7 +42,7 @@ public class ClientExceptionUtils {
             uploadException(msg);
         }
 
-        if (DebugUtils.IS_LOCAL_DEBUG){
+        if (DebugConfig.IS_LOCAL_DEBUG){
             e.printStackTrace();
         }
     }

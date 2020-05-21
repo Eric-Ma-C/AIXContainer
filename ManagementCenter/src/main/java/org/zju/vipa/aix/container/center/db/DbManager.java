@@ -2,12 +2,15 @@ package org.zju.vipa.aix.container.center.db;
 
 import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.DataturksUserDAO;
+import org.zju.vipa.aix.container.center.db.dao.DeviceDAO;
+import org.zju.vipa.aix.container.center.db.dao.ModelDAO;
 import org.zju.vipa.aix.container.center.db.dao.TaskDAO;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
-import org.zju.vipa.aix.container.center.db.dao.DeviceDAO;
 import org.zju.vipa.aix.container.center.db.entity.Device;
+import org.zju.vipa.aix.container.center.db.entity.Model;
 import org.zju.vipa.aix.container.center.db.entity.Task;
 import org.zju.vipa.aix.container.config.Config;
+import org.zju.vipa.aix.container.config.DebugConfig;
 
 import java.util.List;
 
@@ -19,7 +22,7 @@ import java.util.List;
 public class DbManager {
 
 //    private SqlSessionFactory sqlSessionFactory;
-//    private SqlSessionManager sqlSessionManager;
+//    private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
 
 
     private static class DbManagerHolder {
@@ -27,7 +30,7 @@ public class DbManager {
     }
 
     private DbManager() {
-        if (DbManagerHolder.INSTANCE!=null){
+        if (DbManagerHolder.INSTANCE != null) {
             throw new RuntimeException("单例模式不可以创建多个对象");
         }
 
@@ -56,6 +59,8 @@ public class DbManager {
                 return dataturksUserDao.getUserList();
             }
         });
+
+//        List<DataturksUser> users= SqlSessionManager.getSession().getMapper()
     }
 
     /**
@@ -122,12 +127,17 @@ public class DbManager {
 //                taskDAO.updateTask(task.getId(), "TRAINING", clientId);
 
 
-//                // 获取code path
-//                ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
-//                Model model = modelDAO.findModelById(task.getModelId());
-//                String codePath = model.getCodePath();
-//                task.setCodePath(codePath);
-                task.setCodePath(Config.MODEL_UNZIP_PATH);
+//                //  获取code path
+                if (DebugConfig.IS_DOWNLOAD_MODULE) {
+                    //下载模型,路径为模型解压目录
+                    task.setCodePath(Config.MODEL_UNZIP_PATH);
+                } else {
+                    //数据库中的路径
+                    ModelDAO modelDAO = sqlSession.getMapper(ModelDAO.class);
+                    Model model = modelDAO.findModelById(task.getModelId());
+                    String codePath = model.getCodePath();
+                    task.setCodePath(codePath);
+                }
 
 
                 return task;

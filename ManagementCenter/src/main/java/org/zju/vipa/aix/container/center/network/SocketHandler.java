@@ -299,15 +299,14 @@ public class SocketHandler implements Runnable {
 
     private void shellError(Message message) {
 
-        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
-
+//        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
+        LogUtils.error("shellError: {}",  message.getValue());
     }
 
     private void shellErrorHandle(Message message) {
         shellError(message);
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
         TaskManager.getInstance().handleError(message);
-
     }
 
     /**

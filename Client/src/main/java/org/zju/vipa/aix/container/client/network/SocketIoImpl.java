@@ -6,7 +6,7 @@ import org.zju.vipa.aix.container.config.NetworkConfig;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.ByteUtils;
-import org.zju.vipa.aix.container.utils.DebugUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 import java.io.*;
@@ -34,8 +34,8 @@ public class SocketIoImpl implements ClientIO {
      */
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
-        if (DebugUtils.IS_LOCAL_DEBUG){
-            readTimeOut= DebugUtils.SOCKET_READ_TIMEOUT_DEBUG;
+        if (DebugConfig.IS_LOCAL_DEBUG){
+            readTimeOut= DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
 
         ClientLogUtils.debug("SEND:\n{}\n", message);
@@ -86,7 +86,10 @@ public class SocketIoImpl implements ClientIO {
 
     @Override
     public void sendMessage(ClientMessage message) {
-//        ClientLogUtils.debug("SEND:\n{}\n", msg);
+
+        if (message.getIntent()!=Intent.SHELL_ERROR_HELP){
+            ClientLogUtils.debug("SEND:\n{}\n", message);
+        }
 
         Socket socket = null;
         try {

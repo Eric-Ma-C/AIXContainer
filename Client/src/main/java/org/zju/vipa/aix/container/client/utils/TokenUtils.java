@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.client.utils;
 
 import org.zju.vipa.aix.container.config.Config;
 import org.zju.vipa.aix.container.config.NetworkConfig;
-import org.zju.vipa.aix.container.utils.DebugUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 
 /**
  * @Date: 2020/3/27 9:17
@@ -16,7 +16,7 @@ public class TokenUtils {
      */
     public static String  getDeviceToken() {
 
-        if (DebugUtils.IS_LOCAL_DEBUG){
+        if (DebugConfig.IS_LOCAL_DEBUG){
             return "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxMTExMTExMTExMTExMTExMTExMTEifQ.it6iBaBmEkYIkJ49_2dCUL6nSqH7SHTJJ2IpoM8-nAs";
         }
 

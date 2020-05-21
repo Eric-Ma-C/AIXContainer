@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.client.network;
 import org.zju.vipa.aix.container.message.Message;
 
 /**
- * @Date 2020/5/6 17:20
+ * @Date 2020/5/12 17:20
  * @Author EricMa
  * @Description 定义大妈机通信接口
  */
@@ -17,7 +17,6 @@ public interface ClientIO {
      */
     Message sendMsgAndGetResponse(ClientMessage message);
 
-
     /**
      * 通过tcp连接,发送msg,获取响应信息
      * 短连接方式
@@ -28,16 +27,12 @@ public interface ClientIO {
      */
     Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut);
 
-
     /**
      * 发送消息
      * @param message
      * @return: void
      */
     void sendMessage(ClientMessage message);
-
-
-
 
     /**
      *  上传（日志）

@@ -1,7 +1,6 @@
 package org.zju.vipa.aix.container.center.db;
 
 import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
@@ -9,21 +8,41 @@ import org.zju.vipa.aix.container.center.db.dao.*;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 
 import java.io.Reader;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
- * @Date: 2020/3/24 17:37
+ * @Date: 2020/5/21 19:14
  * @Author: EricMa
- * @Description: 封装 sql session
+ * @Description: 管理自动事务SqlSession
  */
-public class SqlSessionProxy {
-
+public class SqlSessionManager {
     private static SqlSessionFactory sqlSessionFactory;
+    private final SqlSession sqlSessionProxy;
+
     /**
      * 保证每个线程一个session
      */
     private static ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
 
-    private SqlSessionProxy() {
+    private static class SqlSessionManagerHolder {
+        private static final SqlSessionManager INSTANCE = new SqlSessionManager();
+    }
+
+//    public static SqlSession getSession() {
+////        return SqlSessionManagerHolder.INSTANCE.;
+//    }
+
+    private SqlSessionManager() {
+        if (SqlSessionManagerHolder.INSTANCE != null) {
+            throw new RuntimeException("单例模式不可以创建多个对象");
+        }
+
+        sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
+            SqlSessionFactory.class.getClassLoader(),
+            new Class[]{SqlSession.class},
+            new SqlSessionInterceptor());
     }
 
     static {
@@ -40,17 +59,6 @@ public class SqlSessionProxy {
             sqlSessionFactory.getConfiguration().addMapper(ModelDAO.class);
 
 
-//            // 改为SqlSessionManager，看好不好用
-//            sqlSessionManager = SqlSessionManager.newInstance(reader);
-//
-//            // 如果配置文件中没有注册接口，可以在代码里注册
-//            sqlSessionManager.getConfiguration().addMapper(DataturksUserDAO.class);
-//            sqlSessionManager.getConfiguration().addMapper(TaskDAO.class);
-//            sqlSessionManager.getConfiguration().addMapper(UserDAO.class);
-//            sqlSessionManager.getConfiguration().addMapper(DeviceDAO.class);
-//            sqlSessionManager.getConfiguration().addMapper(ModelDAO.class);
-
-
         } catch (Exception e) {
             ExceptionUtils.handle(e);
         }
@@ -63,7 +71,7 @@ public class SqlSessionProxy {
      * @param
      * @return: org.apache.ibatis.session.SqlSession
      */
-    private static SqlSession getSession() {
+    private SqlSession getLocalSession() {
         SqlSession session = localSqlSession.get();
         if (session == null) {
             session = sqlSessionFactory.openSession();
@@ -76,7 +84,7 @@ public class SqlSessionProxy {
     /**
      * 关闭Session
      */
-    private static void closeSession() {
+    private void closeSession() {
         //从当前线程变量获取
         SqlSession sqlSession = localSqlSession.get();
         if (sqlSession != null) {
@@ -87,25 +95,25 @@ public class SqlSessionProxy {
 
 
     /**
-     * 执行自定义的sql任务，自动处理回滚
-     *
-     * @param task 要执行的任务
-     * @return: T 外部接口的返回值
+     * 自动处理回滚
      */
-    public static <T> T start(SqlTask<T> task) {
-        SqlSession sqlSession = getSession();
-        try {
-            T obj = task.exec(sqlSession);
+    private class SqlSessionInterceptor implements InvocationHandler {
+        @Override
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+            SqlSession autoSqlSession = getLocalSession();
+            Object obj = null;
+            try {
+                obj = method.invoke(autoSqlSession, args);
 
-            sqlSession.commit();
+                autoSqlSession.commit();
+            } catch (Throwable t) {
+                autoSqlSession.rollback();
+                throw t;
+
+            } finally {
+                closeSession();
+            }
             return obj;
-        } catch (Throwable t) {
-            sqlSession.rollback();
-            ExceptionUtils.handle(ExceptionUtil.unwrapThrowable(t));
-
-            return null;
-        } finally {
-            closeSession();
         }
     }
 }

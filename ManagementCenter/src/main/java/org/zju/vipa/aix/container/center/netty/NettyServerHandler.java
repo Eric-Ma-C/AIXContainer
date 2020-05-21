@@ -6,6 +6,7 @@ import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.message.Message;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 /**
@@ -46,7 +47,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
         NettyTcpServer.group.add(ctx.channel());
-        LogUtils.info("客户端channel:{}与服务端连接开启", ctx.channel().id());
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            LogUtils.info("客户端channel:{}与服务端连接开启", ctx.channel().id());
+        }
     }
 
     /**
@@ -55,7 +58,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter{
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
         NettyTcpServer.group.remove(ctx.channel());
-        LogUtils.info("客户端channel:{}与服务端连接断开", ctx.channel().id());
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            LogUtils.info("客户端channel:{}与服务端连接断开", ctx.channel().id());
+        }
     }
 
     /**

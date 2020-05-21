@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.center.util;
 
-import org.zju.vipa.aix.container.utils.DebugUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -39,7 +39,7 @@ public class ExceptionUtils {
         String msg = getMessage(e);
         LogUtils.error(msg);
 
-        if (DebugUtils.IS_LOCAL_DEBUG){
+        if (DebugConfig.IS_LOCAL_DEBUG){
            e.printStackTrace();
         }
     }

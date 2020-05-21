@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.message.Message;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +31,9 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelActive(ChannelHandlerContext ctx) {
 //        NettyTcpClient.channelGroup.add(ctx.channel());
-        ClientLogUtils.debug("channel:{}连接开启", ctx.channel().id());
+        if (DebugConfig.OPEN_NETTY_LOG){
+            ClientLogUtils.debug("channel:{}连接开启", ctx.channel().id());
+        }
     }
 
     /**
@@ -39,14 +42,13 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<String> {
     @Override
     public void channelInactive(ChannelHandlerContext ctx) {
 //        NettyTcpClient.channelGroup.remove(ctx.channel());
-        ClientLogUtils.debug("channel:{}连接关闭", ctx.channel().id());
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            ClientLogUtils.debug("channel:{}连接关闭", ctx.channel().id());
+        }
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, String msg) throws Exception {
-//        if (channelListener !=null){
-//            channelListener.onChannelRead((Message) msg);
-//        }
 
         response = JsonUtils.parseObject(msg,Message.class);
 

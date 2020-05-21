@@ -23,14 +23,13 @@ public class NettyTcpClient {
     //    private EventLoopGroup group;
     private static Bootstrap bootstrap = getBootstrap();
 //    private static Channel channel;
+
     /**
      * 客户端与服务端已建立的所有连接，由于串行处理事务，通常情况下只有一个
      */
 //    public static ChannelGroup channelGroup;
-
     protected NettyTcpClient() {
 //        init();
-
     }
 
 
@@ -63,8 +62,12 @@ public class NettyTcpClient {
 
     /**
      * 同步方法，向服务器发送消息
+     *
+     * @param sendData 待发送字符串
+     * @param doLog    是否记录日志
+     * @return: void
      */
-    public void sendMsg(String sendData) throws InterruptedException {
+    public void sendMsg(String sendData, boolean doLog) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT);
 
         try {
@@ -73,7 +76,9 @@ public class NettyTcpClient {
                 return;
             }
             channel.writeAndFlush(sendData).sync();
-            ClientLogUtils.info("SEND MSG:{}", sendData);
+            if (doLog){
+                ClientLogUtils.info("SEND MSG:{}", sendData);
+            }
         } finally {
             channel.close().sync();
         }
@@ -99,7 +104,7 @@ public class NettyTcpClient {
             /** 写数据 */
             try {
                 channel.writeAndFlush(sendData).sync();
-            }catch (Exception e){
+            } catch (Exception e) {
                 ClientExceptionUtils.handle(e);
             }
 

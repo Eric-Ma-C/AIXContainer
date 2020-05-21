@@ -4,8 +4,9 @@ import org.zju.vipa.aix.container.client.network.ClientIO;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
 import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.utils.DebugUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 /**
@@ -16,8 +17,9 @@ import org.zju.vipa.aix.container.utils.JsonUtils;
 public class NettyIoImpl implements ClientIO {
 
     NettyTcpClient client;
+
     public NettyIoImpl() {
-        client=new NettyTcpClient();
+        client = new NettyTcpClient();
     }
 
     @Override
@@ -27,15 +29,15 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
-        if (DebugUtils.IS_LOCAL_DEBUG){
-            readTimeOut= DebugUtils.SOCKET_READ_TIMEOUT_DEBUG;
+        if (DebugConfig.IS_LOCAL_DEBUG) {
+            readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
-        Message response=null;
+        Message response = null;
 
-        String sendData= JsonUtils.toJSONString(message);
+        String sendData = JsonUtils.toJSONString(message);
 
         try {
-            response=client.sendMsgAndGetResponse(sendData,readTimeOut);
+            response = client.sendMsgAndGetResponse(sendData, readTimeOut);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -45,10 +47,11 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public void sendMessage(ClientMessage message) {
-        String sendData= JsonUtils.toJSONString(message);
+        String sendData = JsonUtils.toJSONString(message);
 
+        boolean doLog = message.getIntent() != Intent.SHELL_ERROR_HELP;
         try {
-            client.sendMsg(sendData);
+            client.sendMsg(sendData, doLog);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -62,7 +65,6 @@ public class NettyIoImpl implements ClientIO {
 
         return false;
     }
-
 
 
 ////    private Channel channel;

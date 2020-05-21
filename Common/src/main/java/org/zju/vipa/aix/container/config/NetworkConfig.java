@@ -1,7 +1,5 @@
 package org.zju.vipa.aix.container.config;
 
-import org.zju.vipa.aix.container.utils.DebugUtils;
-
 /**
  * @Date: 2020/2/8 22:18
  * @Author: EricMa
@@ -25,13 +23,23 @@ public class NetworkConfig {
      */
     public static final String DEBUG_SERVER_IP = "127.0.0.1";
 
+    /**
+     * redis服务器地址
+     */
+    public static final String REDIS_SERVER_IP = "127.0.0.1";
+    /**
+     * redis服务器端口
+     */
+    public static final int REDIS_SERVER_PORT = 6379;
+
     //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static String SERVER_IP = VIPA_205_IP;
     public static String DOWNLOAD_SERVER_IP = VIPA_205_IP;
+//    public static String DOWNLOAD_SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static int DOWNLOAD_SERVER_PORT = 8080;
 
     static {
-        if (DebugUtils.IS_LOCAL_DEBUG) {
+        if (DebugConfig.IS_LOCAL_DEBUG) {
             SERVER_IP = DEBUG_SERVER_IP;
         }
     }
@@ -52,8 +60,8 @@ public class NetworkConfig {
     public static int SOCKET_READ_TIMEOUT_DEFAULT;
 
     static {
-        if (DebugUtils.IS_LOCAL_DEBUG) {
-            SOCKET_READ_TIMEOUT_DEFAULT = DebugUtils.SOCKET_READ_TIMEOUT_DEBUG;
+        if (DebugConfig.IS_LOCAL_DEBUG) {
+            SOCKET_READ_TIMEOUT_DEFAULT = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         } else {
             SOCKET_READ_TIMEOUT_DEFAULT = 5 * 1000;
         }

@@ -7,6 +7,7 @@ import org.zju.vipa.aix.container.center.env.ErrorParser;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.AIXEnvConfig;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 
@@ -43,7 +44,7 @@ public class TaskManager {
 
     private TaskManager() {
 
-        if (TaskManagerHolder.INSTANCE!=null){
+        if (TaskManagerHolder.INSTANCE != null) {
             throw new RuntimeException("单例模式不可以创建多个对象");
         }
 
@@ -73,8 +74,8 @@ public class TaskManager {
      */
     public Message askForWork(String token) {
 
-        Message message=getMessageByToken(token);
-        if (message!=null){
+        Message message = getMessageByToken(token);
+        if (message != null) {
             /** 消息队列中有待发送消息，直接取出 */
             return message;
         }
@@ -88,18 +89,19 @@ public class TaskManager {
                 task = DbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
-                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...",token.substring(token.length()-9));
+                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...", token.substring(token.length() - 9));
                     return null;
                 }
-                LogUtils.info( "{}:\n抢到任务{}",token.substring(token.length()-9),task);
+                LogUtils.info("{}:\n抢到任务{}", token.substring(token.length() - 9), task);
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
-                String codePath=task.getCodePath();
-                String modelArgs=task.getModelArgs();
+                String codePath = task.getCodePath();
+                String modelArgs = task.getModelArgs();
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
-//         todo 测试 跳过配conda环境     String cmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath) + " && " + AIXEnvConfig.getStartCmds(codePath,modelArgs);
-                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
+//         todo 测试 跳过配conda环境
+                String cmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath) + " && " + AIXEnvConfig.getStartCmds(codePath, modelArgs);
+//                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
 
                 /** 添加待发送任务至列表 */
@@ -110,14 +112,15 @@ public class TaskManager {
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $0"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $-"));
 
-                /** 告诉容器下载model */
-                addMessage(token,new ServerMessage(Intent.DOWNLOAD_MODEL,task.getModelId()));
+                //如果不通过下载,一般将模型挂载进容器,在数据库写入路径
+                if (DebugConfig.IS_DOWNLOAD_MODULE) {
+                    /** 告诉容器下载model */
+                    addMessage(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
+                    /** 告诉容器下载dataset */
+                    addMessage(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
+                }
 
-                /** 告诉容器下载dataset */
-                addMessage(token,new ServerMessage(Intent.DOWNLOAD_DATASET,task.getDatasetId()));
-
-
-                Message msg=new ServerMessage(Intent.SHELL_TASK, cmds);
+                Message msg = new ServerMessage(Intent.SHELL_TASK, cmds);
                 msg.addCustomData("codePath", codePath);
                 msg.addCustomData("modelArgs", modelArgs);
                 addMessage(token, msg);
@@ -125,17 +128,17 @@ public class TaskManager {
 
             } else {
                 /**  task ！= null，说明有任务正在配置环境 */
-                LogUtils.info("{}发现已有任务{}" ,token.substring(token.length()-9), task);
+                LogUtils.info("{}发现已有任务{}", token.substring(token.length() - 9), task);
 
                 /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...",token.substring(token.length()-9));
+                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...", token.substring(token.length() - 9));
 
-                    String codePath=task.getCodePath();
-                    String modelArgs=task.getModelArgs();
-                    Message msg=new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath,modelArgs));
+                    String codePath = task.getCodePath();
+                    String modelArgs = task.getModelArgs();
+                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath, modelArgs));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
                     addMessage(token, msg);
@@ -160,6 +163,7 @@ public class TaskManager {
 
     /**
      * 从队列中获取
+     *
      * @return 若token对应容器没有待发送消息，返回null
      */
     private Message getMessageByToken(String token) {
@@ -171,11 +175,11 @@ public class TaskManager {
                 message = messageList.poll();
             }
         }
-        if (message==null){
+        if (message == null) {
             return null;
         }
 
-        LogUtils.info( "{}:\n从队列中获取待发送消息：{}" ,token.substring(token.length()-9),message);
+        LogUtils.info("{}:\n从队列中获取待发送消息：{}", token.substring(token.length() - 9), message);
         return message;
     }
 
@@ -194,7 +198,7 @@ public class TaskManager {
             messageList.offer(msg);
 //            messageMap.put(token, messageList);
         }
-        LogUtils.info("{}:\n添加待发送消息{}" ,token.substring(token.length()-9),  msg);
+        LogUtils.info("{}:\n添加待发送消息{}", token.substring(token.length() - 9), msg);
     }
 
 
@@ -211,7 +215,7 @@ public class TaskManager {
 
         synchronized (token.intern()) {
             Task task = taskMap.get(token);
-            EnvError error = ErrorParser.handle(token,value, task);
+            EnvError error = ErrorParser.handle(token, value, task);
 
             /** 目前容器仅支持单任务，可以直接添加至容器Task对象的error列表中 */
             if (task != null && error != null) {
