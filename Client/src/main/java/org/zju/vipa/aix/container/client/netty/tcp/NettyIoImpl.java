@@ -70,9 +70,10 @@ public class NettyIoImpl implements ClientIO {
         }
     }
 
+
     @Override
-    public boolean upLoadData(String path, UploadDataListener listener) {
-        /** 设置读取超时时间,上传不容易，多等一下成功确认 */
+    public void upLoadData(String path, UploadDataListener listener) {
+        /** todo 设置读取超时时间,上传不容易，多等一下成功确认 */
         int readTimeOut = 30 * 1000;
 
         if (DebugConfig.IS_LOCAL_DEBUG) {
@@ -86,7 +87,7 @@ public class NettyIoImpl implements ClientIO {
             dataInput = new FileInputStream(file);
         } catch (FileNotFoundException e) {
             ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
-            return false;
+            return;
         }
 
         FileRegion region=new DefaultFileRegion(dataInput.getChannel(),0,file.length());
@@ -100,7 +101,6 @@ public class NettyIoImpl implements ClientIO {
         Message uploadMsg = new ClientMessage(Intent.UPLOAD_DATA, path);
         String uploadMsgData = JsonUtils.toJSONString(uploadMsg);
 
-        Message response = null;
         try {
 
             client.sendMsg(uploadMsgData);
@@ -108,41 +108,13 @@ public class NettyIoImpl implements ClientIO {
             ClientLogUtils.info("开始上传文件：{}", path);
 
 
-            response = client.uploadData(region,listener);
+            client.uploadData(region,listener);
 
-            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
+//            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
-
-        if (response == null) {
-            /** 若服务端没有回应 */
-//            listener.onError("上传完成后,服务端没有回应");
-            return false;
-        }
-        if (Intent.UPLOAD_SUCCESS.match(response)) {
-            listener.onSuccess();
-        }
-        return true;
-
-
-
-
-
-        /** 发送缓冲区 */
-//            BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
-
-//            /** tcp MSS=1460 */
-//            byte[] bys = new byte[1460];
-//            int len;
-//            while ((len = dataInputStream.read(bys)) != -1) {
-//                outputStream.write(bys, 0, len);
-//                outputStream.flush();
-//            }
-//            dataInputStream.close();
-
 
     }
 

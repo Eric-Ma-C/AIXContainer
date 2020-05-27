@@ -14,6 +14,12 @@ public class DebugConfig {
     public static final boolean IS_LOCAL_DEBUG = false;
 
     /**
+     * 是否打开Server网络消息收发日志
+     * 警告：由于服务器网络IO日志量较大，仅可在测试时打开
+     */
+    public static final boolean SERVER_NET_IO_LOG = true;
+
+    /**
      * socket响应数据读取超时时间500s
      */
     public static int SOCKET_READ_TIMEOUT_DEBUG = 500 * 1000;

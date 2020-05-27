@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.center.network;
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.TaskManager;
-import org.zju.vipa.aix.container.center.log.ClientLogManager;
+import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
@@ -28,18 +28,18 @@ public class SocketHandler implements Runnable {
     private ServerIO serverIO;
 
     public SocketHandler(Socket mSocket) {
-        serverIO=new SocketIoImpl(mSocket);
+        serverIO = new SocketIoImpl(mSocket);
     }
 
     public SocketHandler(ChannelHandlerContext context) {
-        serverIO=new NettyIoImpl(context);
+        serverIO = new NettyIoImpl(context);
     }
 
     @Override
     public void run() {
 
 
-        handle(((SocketIoImpl)serverIO).readRequests());
+        handle(((SocketIoImpl) serverIO).readRequests());
 
     }
 
@@ -50,11 +50,14 @@ public class SocketHandler implements Runnable {
      * @throws Exception
      */
     public void handle(Message msg) {
-
         if (msg == null) {
             LogUtils.worning("Requests body is null!");
             return;
         }
+
+
+
+
         switch (msg.getIntent()) {
             case ASK_FOR_WORK:
                 clientIdleAskForWork(msg.getToken());
@@ -104,7 +107,7 @@ public class SocketHandler implements Runnable {
                 break;
 
             case REQUEST_UPLOAD:
-                isAcceptUpload();
+                isAcceptUpload(msg.getValue());
                 break;
             case UPLOAD_DATA:
                 serverIO.saveData(msg);
@@ -116,12 +119,18 @@ public class SocketHandler implements Runnable {
     }
 
 
-
     /**
      * 是否接受上传
      */
-    private void isAcceptUpload() {
-        serverIO.response(new ServerMessage(Intent.UPLOAD_PERMITTED,ClientLogManager.getInstence().getFilePathByDate("2020-04-19")));
+    private void isAcceptUpload(String fileName) {
+        String serverSpecifiedFileName = fileName;
+        if (fileName == null) {
+            //平台指定一个日志文件
+//            serverSpecifiedFileName = ClientLogFileManager.getInstence().getFilePathByDate("2020-04-19");
+            serverSpecifiedFileName = ClientLogFileManager.getInstence().getFilePathByDate(null);
+        }
+        /** 注意这里不要关闭连接 */
+        serverIO.response(new ServerMessage(Intent.UPLOAD_PERMITTED, serverSpecifiedFileName),false);
     }
 
     /**
@@ -161,7 +170,7 @@ public class SocketHandler implements Runnable {
      * @return:
      */
     private void handleException(Message message) {
-        LogUtils.error("{}:\n{}" , message.getTokenSuffix(),message.getValue());
+        LogUtils.error("{}:\n{}", message.getTokenSuffix(), message.getValue());
     }
 
 
@@ -171,7 +180,7 @@ public class SocketHandler implements Runnable {
      * @param token 容器上传的token，无法伪造
      * @return: void
      */
-    private void  registerContainer(String token) {
+    private void registerContainer(String token) {
         boolean ok = JwtUtils.verify(token);
         Message msg;
 
@@ -208,8 +217,6 @@ public class SocketHandler implements Runnable {
     }
 
 
-
-
     /**
      * 心跳消息处理
      * 平台有任务则下发任务执行
@@ -241,7 +248,7 @@ public class SocketHandler implements Runnable {
 //            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
         LogUtils.info("{}:\nHeartbeats from client (id={}): CPU={}%  RAM={}%  time={}",
-            token, id,  info.getCpuRate(), info.getRamRate(),
+            token, id, info.getCpuRate(), info.getRamRate(),
             new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
 
@@ -300,7 +307,7 @@ public class SocketHandler implements Runnable {
     private void shellError(Message message) {
 
 //        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
-        LogUtils.error("shellError: {}",  message.getValue());
+        LogUtils.error("shellError: {}", message.getValue());
     }
 
     private void shellErrorHandle(Message message) {
@@ -337,8 +344,6 @@ public class SocketHandler implements Runnable {
         //写返回报文
         serverIO.response(msg);
     }
-
-
 
 
 }

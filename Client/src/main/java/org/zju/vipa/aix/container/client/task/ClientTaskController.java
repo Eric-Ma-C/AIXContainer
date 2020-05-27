@@ -4,8 +4,11 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.client.utils.TokenUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import org.zju.vipa.aix.container.client.utils.TokenUtils;
+import org.zju.vipa.aix.container.client.utils.UploadUtils;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.utils.TimeUtils;
 
 import java.util.Queue;
@@ -39,7 +42,7 @@ public class ClientTaskController {
 
     private ClientTaskController() {
         if (ClientTaskControllerHolder.INSTANCE != null) {
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
         init();
     }
@@ -68,7 +71,7 @@ public class ClientTaskController {
             /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
             ClientThreadManager.getInstance().startHeartbeat();
-//            UploadUtils.uploadFile("/log/aixlog/debug.log4j.2020-04-20");
+            UploadUtils.uploadFile("/log/aixlog/debug.log4j");
 //            UploadUtils.uploadFile("/log/aixlog/test.txt");
 
         } else {

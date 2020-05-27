@@ -6,6 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.zju.vipa.aix.container.center.db.dao.*;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
 import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
@@ -36,7 +38,7 @@ public class SqlSessionManager {
 
     private SqlSessionManager() {
         if (SqlSessionManagerHolder.INSTANCE != null) {
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
         sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(

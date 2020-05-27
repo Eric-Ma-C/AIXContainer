@@ -8,10 +8,12 @@ import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 
-import java.util.*;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -45,7 +47,7 @@ public class TaskManager {
     private TaskManager() {
 
         if (TaskManagerHolder.INSTANCE != null) {
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
         messageMap = new ConcurrentHashMap<>();

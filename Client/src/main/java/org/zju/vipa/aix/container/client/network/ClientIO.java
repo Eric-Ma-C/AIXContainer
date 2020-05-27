@@ -38,7 +38,7 @@ public interface ClientIO {
      *  上传（日志）
      * @param path 待上传文件路径
      * @param listener 回调
-     * @return boolean
+     * @return NIO异步操作，结果在回调返回
      */
-    boolean upLoadData(String path, UploadDataListener listener);
+    void upLoadData(String path, UploadDataListener listener);
 }

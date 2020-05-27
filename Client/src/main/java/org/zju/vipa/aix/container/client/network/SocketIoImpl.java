@@ -3,6 +3,8 @@ package org.zju.vipa.aix.container.client.network;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.ByteUtils;
@@ -165,14 +167,15 @@ public class SocketIoImpl implements ClientIO {
      * @return:
      */
     @Override
-    public boolean upLoadData(String path, UploadDataListener listener) {
+    public void upLoadData(String path, UploadDataListener listener) {
 
         InputStream dataInput = null;
         try {
             dataInput = new FileInputStream(path);
         } catch (FileNotFoundException e) {
             ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
-            return false;
+            listener.onError(e);
+            return;
         }
         /** 读取文件到jvm堆内存中缓冲 */
         BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
@@ -205,7 +208,7 @@ public class SocketIoImpl implements ClientIO {
             ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
 
 
-            /** 关闭socket输出流 */
+            /** 关闭socket输出流，通知服务器发送完了 */
             socket.shutdownOutput();
 
             // 读取反馈
@@ -225,8 +228,8 @@ public class SocketIoImpl implements ClientIO {
         }
         /** 服务端没有回应 */
         if ("".equals(response) || response == null) {
-            listener.onError(new );
-            return false;
+            listener.onError(new AIXBaseException(ExceptionCodeEnum.SERVER_NOT_RESPONSE));
+            return ;
         }
 
         Message resMsg = JsonUtils.parseObject(response, Message.class);
@@ -234,6 +237,5 @@ public class SocketIoImpl implements ClientIO {
         if (Intent.UPLOAD_SUCCESS.match(resMsg)) {
             listener.onSuccess();
         }
-        return true;
     }
 }

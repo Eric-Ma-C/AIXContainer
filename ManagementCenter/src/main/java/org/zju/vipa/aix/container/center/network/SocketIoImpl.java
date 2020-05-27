@@ -1,8 +1,9 @@
 package org.zju.vipa.aix.container.center.network;
 
-import org.zju.vipa.aix.container.center.log.ClientLogManager;
+import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.ByteUtils;
@@ -17,7 +18,7 @@ import java.nio.ByteBuffer;
  * @Author: EricMa
  * @Description: socketIO 实现类
  */
-public class SocketIoImpl implements ServerIO{
+public class SocketIoImpl implements ServerIO {
     /**
      * socket对象
      */
@@ -46,6 +47,11 @@ public class SocketIoImpl implements ServerIO{
 
         if (msg == null) {
             disconnect();
+            return null;
+        }
+        if (DebugConfig.SERVER_NET_IO_LOG) {
+            /** 收到客户端日志 */
+            LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", mSocket.getInetAddress(), msg.getTokenSuffix(), msg);
         }
         return msg;
     }
@@ -57,22 +63,37 @@ public class SocketIoImpl implements ServerIO{
      * @return:
      */
     @Override
-    public void response(Message msg) {
+    public void response(Message msg,boolean isClose) {
         if (msg == null) {
             LogUtils.worning("Response messags is null!");
             return;
         }
 
-//        LogUtils.info("SEND RESPONSE:{}",msg);
+        if (DebugConfig.SERVER_NET_IO_LOG) {
+            LogUtils.debug("RESPONSE TO {}:\n{}\n", mSocket.getInetAddress(), msg);
+        }
+
         try {
             sendData(JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME));
         } catch (UnsupportedEncodingException e) {
             ExceptionUtils.handle(e);
-        }finally {
+        } finally {
             /** 返回报文发送后，关闭连接 */
-            disconnect();
+            if (isClose) {
+                disconnect();
+            }
         }
 
+    }
+    /**
+     * 写返回消息，并关闭连接
+     *
+     * @param: msg
+     * @return:
+     */
+    @Override
+    public void response(Message msg) {
+        response(msg,true);
     }
 
 
@@ -82,7 +103,7 @@ public class SocketIoImpl implements ServerIO{
     @Override
     public void saveData(Message msg) {
 
-        File saveFile = ClientLogManager.getInstence().getSavePath(msg.getToken(), msg.getValue());
+        File saveFile = ClientLogFileManager.getInstence().getSavePath(msg.getToken(), msg.getValue());
 
         try {
             // 封装通道内流
@@ -90,10 +111,10 @@ public class SocketIoImpl implements ServerIO{
             // 封装文件
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(saveFile));
 
-            byte[] bys = new byte[1024 * 4];
+            byte[] bytes = new byte[1024 * 4];
             int len;
-            while ((len = inputStream.read(bys)) != -1) {
-                bos.write(bys, 0, len);
+            while ((len = inputStream.read(bytes)) != -1) {
+                bos.write(bytes, 0, len);
                 bos.flush();
             }
 

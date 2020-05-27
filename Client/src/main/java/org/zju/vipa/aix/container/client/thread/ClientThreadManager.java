@@ -2,6 +2,8 @@ package org.zju.vipa.aix.container.client.thread;
 
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
@@ -27,7 +29,7 @@ public class ClientThreadManager {
 
     private ClientThreadManager() {
         if (ClientThreadManagerHolder.INSTANCE != null) {
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
         initThreadPool();
     }
@@ -56,7 +58,7 @@ public class ClientThreadManager {
         if (!Heartbeat.isRunning()) {
             lastUploadTime = System.currentTimeMillis();
 
-            /** 延时上传日志，若停止心跳（不空闲）会暂停本任务 */
+            /** todo 延时上传日志，若停止心跳（不空闲）会暂停本任务 */
             if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
                 uploadLogFilePerDay();
             }

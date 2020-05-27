@@ -11,6 +11,8 @@ import org.zju.vipa.aix.container.center.db.entity.Model;
 import org.zju.vipa.aix.container.center.db.entity.Task;
 import org.zju.vipa.aix.container.config.Config;
 import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
 import java.util.List;
 
@@ -31,7 +33,7 @@ public class DbManager {
 
     private DbManager() {
         if (DbManagerHolder.INSTANCE != null) {
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
         init();

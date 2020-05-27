@@ -9,7 +9,10 @@ import java.io.IOException;
  */
 public class Test {
     public static void main(String[] args) throws IOException {
+//        TestSin sin= (TestSin) TestSin.getInstance();
+//        sin.haha();
 
+//        Singleton singleton=Singleton.getInstance();
     }
 
     private static void TimeUtilsTest(){

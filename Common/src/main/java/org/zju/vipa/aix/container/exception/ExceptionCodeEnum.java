@@ -5,10 +5,19 @@ package org.zju.vipa.aix.container.exception;
  * @Author: EricMa
  * @Description: 业务错误码
  */
-public enum  ErrorCodeEnum implements ErrorCode{
+public enum ExceptionCodeEnum implements ExceptionCode {
 
     /** 未指明的异常 */
-    UNSPECIFIED("-1", "未知异常，请稍后再试"),
+    UNSPECIFIED("-1", "未定义异常"),
+
+
+    /** 单例异常 */
+    SINGLETON_MULTI_INSTANCE("10001", "单例模式不可以创建多个对象"),
+    FILE_UPLOAD_FAILED("10002", "文件上传失败"),
+    UPLOAD_NOT_PERMITTED("10003", "服务器忙，文件上传被拒绝"),
+    SERVER_NOT_RESPONSE("10004", "服务器没有响应，文件上传失败"),
+
+
 
     SERVER_ERROR("500", "网络异常，请稍后再试"),
     NO_SERVICE("404", "网络异常, 服务器熔断"),
@@ -30,7 +39,7 @@ public enum  ErrorCodeEnum implements ErrorCode{
      * @param code 错误码
      * @param description 描述
      */
-    private ErrorCodeEnum(final String code, final String description) {
+    private ExceptionCodeEnum(final String code, final String description) {
         this.code = code;
         this.description = description;
     }
@@ -41,8 +50,8 @@ public enum  ErrorCodeEnum implements ErrorCode{
      * @param code 编码。
      * @return 枚举。
      */
-    public static ErrorCodeEnum getByCode(String code) {
-        for (ErrorCodeEnum value : ErrorCodeEnum.values()) {
+    public static ExceptionCodeEnum getByCode(String code) {
+        for (ExceptionCodeEnum value : ExceptionCodeEnum.values()) {
             if (value.getCode().equals(code )) {
                 return value;
             }
@@ -60,7 +69,7 @@ public enum  ErrorCodeEnum implements ErrorCode{
      * @return 是否包含
      */
     public static Boolean contains(String code){
-        for (ErrorCodeEnum value : ErrorCodeEnum.values()) {
+        for (ExceptionCodeEnum value : ExceptionCodeEnum.values()) {
             if (value.getCode().equals(code)) {
                 return true;
             }

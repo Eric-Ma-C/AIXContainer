@@ -124,63 +124,30 @@ public class NettyTcpClient {
     /**
      * 同步方法，向服务器上传文件
      */
-    public Message uploadData(FileRegion fileRegion, final UploadDataListener listener) throws InterruptedException {
+    public void uploadData(FileRegion fileRegion, final UploadDataListener listener) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT);
         if (channel == null) {
             ClientLogUtils.error("Netty建立连接失败!");
-            return null;
+            return;
         }
 
 
-        channel.writeAndFlush(fileRegion).addListener(new ChannelFutureListener() {
+        ChannelFuture future = channel.writeAndFlush(fileRegion);
+//        future.addListener(new tim)
+        future.addListener(new ChannelFutureListener() {
             @Override
             public void operationComplete(ChannelFuture future) throws Exception {
+                /** todo 啥时候超时 */
                 if (future.isSuccess()) {
+
+                   //todo 收到服务器确认才成功
                     listener.onSuccess();
-                }else {
+                } else {
                     listener.onError(future.cause());
                 }
             }
         });
 
-
-
-
-
-
-
-
-
-
-
-        Message message = null;
-        try {
-
-            /** 初始化阻塞拦截器 */
-            CountDownLatch latch = new CountDownLatch(1);
-            TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get("tcpClientHandler");
-            handler.setLatch(latch);
-
-            /** 写数据 */
-            try {
-                channel.writeAndFlush(sendData).sync();
-            } catch (Exception e) {
-                ClientExceptionUtils.handle(e);
-            }
-
-//            ClientLogUtils.info("SEND MSG:{}", sendData);
-
-            /** 阻塞等待 */
-            latch.await(timeout, TimeUnit.MILLISECONDS);
-
-            /** 收到返回数据，或者超时 */
-            message = handler.getResponse();
-
-        } finally {
-            channel.close().sync();
-        }
-
-        return message;
     }
 
 

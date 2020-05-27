@@ -2,6 +2,8 @@ package org.zju.vipa.aix.container.center.network;
 
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,7 +17,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Author: EricMa
  * @Description: 启动socket监听
  */
-public class CenterTcpServer {
+public class SocketServer {
     /**
      * 最大同时处理socket数量,即线程池的大小
      */
@@ -30,16 +32,16 @@ public class CenterTcpServer {
     private static ServerSocket mServerSocket;
 
     private static class CenterTcpServerHolder {
-        private static final CenterTcpServer INSTANCE = new CenterTcpServer();
+        private static final SocketServer INSTANCE = new SocketServer();
     }
 
-    private CenterTcpServer() {
+    private SocketServer() {
         if (CenterTcpServerHolder.INSTANCE!=null){
-            throw new RuntimeException("单例模式不可以创建多个对象");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
     }
 
-    public static CenterTcpServer getInstance() {
+    public static SocketServer getInstance() {
         return CenterTcpServerHolder.INSTANCE;
     }
 

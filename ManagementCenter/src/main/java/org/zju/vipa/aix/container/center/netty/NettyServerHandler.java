@@ -2,11 +2,13 @@ package org.zju.vipa.aix.container.center.netty;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.FileRegion;
+import io.netty.util.ReferenceCountUtil;
 import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
-import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 /**
@@ -14,19 +16,35 @@ import org.zju.vipa.aix.container.utils.JsonUtils;
  * @Author: EricMa
  * @Description:
  */
-public class NettyServerHandler extends ChannelInboundHandlerAdapter{
+public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 处理客户端发来的消息
      */
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg)  {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         if (msg instanceof String) {
             /** 处理客户端请求 */
-            Message receivedMessage = JsonUtils.parseObject((String) msg,Message.class);
+            Message receivedMessage = JsonUtils.parseObject((String) msg, Message.class);
+            if (DebugConfig.SERVER_NET_IO_LOG) {
+                /** 收到客户端日志 */
+                LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
+            }
 
             new SocketHandler(ctx).handle(receivedMessage);
+
+        } else if (msg instanceof FileRegion) {
+
+            FileRegion region = (FileRegion) msg;
+
+            LogUtils.info("\n\nmsg instanceof FileRegion\n\n");
+
+        } else {
+            LogUtils.error("\n\nUnknown msg {}\n\n", msg);
         }
+
+        /** todo 验证是否需要释放资源 */
+        ReferenceCountUtil.release(msg);
 
 
     }
@@ -71,7 +89,6 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter{
         ExceptionUtils.handle(cause);
         ctx.close();
     }
-
 
 
 //    private int counter=0;

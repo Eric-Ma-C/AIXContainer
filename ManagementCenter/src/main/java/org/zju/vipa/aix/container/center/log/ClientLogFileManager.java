@@ -1,6 +1,9 @@
 package org.zju.vipa.aix.container.center.log;
 
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
+import org.zju.vipa.aix.container.config.Config;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,33 +13,39 @@ import java.io.IOException;
  * @Author: EricMa
  * @Description: 分容器存储日志
  */
-public class ClientLogManager {
+public class ClientLogFileManager {
 
     public static final String CLIENT_LOG_PATH="/log/aixlog/";
     public static final String CLIENT_LOG_NAME="debug.log4j.2020-04-20";
 
 
-    private static class ClientLogManagerHolder{
-        private static final ClientLogManager INSTANCE=new ClientLogManager();
+    private static class ClientLogFileManagerHolder {
+        private static final ClientLogFileManager INSTANCE=new ClientLogFileManager();
     }
-    private ClientLogManager(){
-        if (ClientLogManagerHolder.INSTANCE!=null){
-            throw new RuntimeException("单例模式不可以创建多个对象");
+    private ClientLogFileManager(){
+        if (ClientLogFileManagerHolder.INSTANCE!=null){
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
     }
 
-    public static ClientLogManager getInstence(){
-        return ClientLogManagerHolder.INSTANCE;
+    public static ClientLogFileManager getInstence(){
+        return ClientLogFileManagerHolder.INSTANCE;
     }
 
 
     public String getFilePathByDate(String time){
-       return CLIENT_LOG_PATH+"debug.log4j."+time;
+        if (time==null){
+            /** 当天的日志 */
+            return CLIENT_LOG_PATH+"debug.log4j";
+        }else {
+            return CLIENT_LOG_PATH+"debug.log4j."+time;
+        }
     }
 
     /** 平台存储路径 */
     public File getSavePath(String token,String clientPath){
-        String saveDir = "/root/aix/client-log/" + token ;
+        /** 存储在应用部署根目录下的client-log中 */
+        String saveDir = Config.AIX_SERVER_ROOT_DIR+ "/client-log/" + token ;
         String savePath = saveDir + "/" + clientPath.substring(clientPath.lastIndexOf('/'));
 
         File dir=new File(saveDir);

@@ -12,6 +12,8 @@ import org.zju.vipa.aix.container.client.thread.Heartbeat;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.exception.AIXBaseException;
+import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.message.GpuInfo;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
@@ -35,7 +37,7 @@ public class TcpClient {
         clientIO = new NettyIoImpl();
 
         if (ContainerTcpClientHolder.INSTANCE != null) {
-            throw new RuntimeException("单例对象不允许多个实例");
+            throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
     }
 
@@ -266,20 +268,21 @@ public class TcpClient {
     /**
      * 向平台请求上传文件
      */
-
-    public boolean requestUpload(String path, UploadDataListener listener) {
-        ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD);
+    public void requestUpload(String path, UploadDataListener listener) {
+        ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD,path);
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);
 
         if (resMsg == null || !Intent.UPLOAD_PERMITTED.match(resMsg)) {
-            return false;
+            /** 服务器忙 */
+            listener.onError(new AIXBaseException(ExceptionCodeEnum.UPLOAD_NOT_PERMITTED));
+            return ;
         }
         String serverWanted = resMsg.getValue();
         if (serverWanted != null || !"".equals(serverWanted)) {
             path = serverWanted;
         }
-        return clientIO.upLoadData(path, listener);
+         clientIO.upLoadData(path, listener);
 
     }
 

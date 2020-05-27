@@ -10,21 +10,26 @@ import org.zju.vipa.aix.container.client.network.UploadDataListener;
  */
 public class UploadUtils {
 
-    public static boolean uploadFile(final String path){
+    public static boolean uploadFile(final String path) {
         //首先询问服务器是否接受文件，忙的时候可能会拒绝
 
         TcpClient.getInstance().requestUpload(path, new UploadDataListener() {
             @Override
             public void onProgress(int progress) {
-                ClientLogUtils.info("File uploaded {}%",progress);
+                ClientLogUtils.info("File {} uploaded {}%", path, progress);
+            }
+
+            @Override
+            public void onError(Throwable cause) {
+                ClientExceptionUtils.handle(cause);
+                ClientLogUtils.error("File {} upload failed!", path);
             }
 
             @Override
             public void onSuccess() {
-                ClientLogUtils.info("File upload successful!");
+                ClientLogUtils.info("File {} upload successful!", path);
             }
         });
-
 
 
 //
