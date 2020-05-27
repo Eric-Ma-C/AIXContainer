@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.utils;
 
 import com.alibaba.fastjson.JSON;
+import org.zju.vipa.aix.container.exception.ExceptionHandlerImpl;
 
 /**
  * @Date: 2020/1/11 16:48
@@ -12,8 +13,14 @@ public class JsonUtils {
     public static String toJSONString(Object obj) {
 
         String json = "";
-        /**  序列化 */
-        json = JSON.toJSONString(obj);
+        try {
+            /**  序列化 */
+            json = JSON.toJSONString(obj);
+        }catch (Exception e){
+          //todo 0523
+       new ExceptionHandlerImpl().handle(e);
+        }
+
         return json;
     }
 

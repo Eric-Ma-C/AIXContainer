@@ -24,13 +24,15 @@ import org.zju.vipa.aix.container.utils.JsonUtils;
  * @Description: 基于socket的tcp客户端
  */
 public class TcpClient {
-    /** 网络IO接口 */
+    /**
+     * 网络IO接口
+     */
     private ClientIO clientIO;
 
     private TcpClient() {
         /** todo 选择IO方式 */
 //        clientIO=new SocketIoImpl();
-        clientIO=new NettyIoImpl();
+        clientIO = new NettyIoImpl();
 
         if (ContainerTcpClientHolder.INSTANCE != null) {
             throw new RuntimeException("单例对象不允许多个实例");
@@ -41,6 +43,7 @@ public class TcpClient {
 
         private static final TcpClient INSTANCE = new TcpClient();
     }
+
     public static TcpClient getInstance() {
         return ContainerTcpClientHolder.INSTANCE;
     }
@@ -65,7 +68,7 @@ public class TcpClient {
     /**
      * 处理平台下发的命令
      */
-    
+
     private void handleResponseMsg(Message msg) {
 
         if (msg == null) {
@@ -179,7 +182,7 @@ public class TcpClient {
      * @param:
      * @return:
      */
-    
+
     public boolean registerContainer(String containerToken) {
         ClientMessage message = new ClientMessage(Intent.REGISTER, containerToken);
 
@@ -200,7 +203,7 @@ public class TcpClient {
      * @param: taskId
      * @return: conda配置文件下载url
      */
-    
+
     public String getCondaEnvFileByTaskId(String taskId) {
 
         ClientMessage message = new ClientMessage(Intent.GET_CONDA_ENV_FILE_BY_TASKID, taskId);
@@ -219,7 +222,7 @@ public class TcpClient {
      * @param: taskId
      * @return: pip配置文件下载url
      */
-    
+
     public String getPipEnvFileByTaskId(String taskId) {
 
         ClientMessage message = new ClientMessage(Intent.GET_PIP_ENV_FILE_BY_TASKID, taskId);
@@ -235,7 +238,7 @@ public class TcpClient {
     /**
      * 重新设置conda国内源
      */
-    
+
     public String getCondaSource() {
         ClientMessage message = new ClientMessage(Intent.CONDA_SOURCE);
 
@@ -250,7 +253,7 @@ public class TcpClient {
     /**
      * 向平台请求任务
      */
-    
+
     public void askForWork() {
         ClientMessage message = new ClientMessage(Intent.ASK_FOR_WORK);
 
@@ -263,13 +266,13 @@ public class TcpClient {
     /**
      * 向平台请求上传文件
      */
-    
+
     public boolean requestUpload(String path, UploadDataListener listener) {
         ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD);
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);
 
-        if (resMsg == null || resMsg.getIntent() != Intent.UPLOAD_PERMITTED) {
+        if (resMsg == null || !Intent.UPLOAD_PERMITTED.match(resMsg)) {
             return false;
         }
         String serverWanted = resMsg.getValue();
@@ -287,7 +290,7 @@ public class TcpClient {
      * @param:
      * @return:
      */
-    
+
     public void heartbeatReport(SystemBriefInfo info) {
 
         ClientMessage message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
@@ -297,7 +300,7 @@ public class TcpClient {
         resMsg = clientIO.sendMsgAndGetResponse(message, 10000);
 
 
-        if (resMsg != null && resMsg.getIntent() != Intent.NULL) {
+        if (resMsg != null && !Intent.NULL.match(resMsg)) {
             /** 停止心跳线程,执行任务 */
             Heartbeat.stop();
             handleResponseMsg(resMsg);
@@ -308,7 +311,7 @@ public class TcpClient {
     /**
      * 不需要返回了，有askForWork
      */
-    
+
     @Deprecated
     public void reportShellResult(ClientMessage msg) {
         Message body = null;

@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.client.netty.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.config.DebugConfig;
@@ -61,9 +62,13 @@ public class TcpClientHandler extends SimpleChannelInboundHandler<String> {
 
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext channelHandlerContext, Throwable cause) {
-        cause.printStackTrace();
-        channelHandlerContext.close();
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
+        //netty 一般涉及网络错误，不上传
+//        ClientExceptionUtils.handle(cause,false);
+        ClientExceptionUtils.handle(cause);
+        ctx.close();
+//        cause.printStackTrace();
+//        ctx.close();
     }
 
     public Message getResponse() {

@@ -91,7 +91,7 @@ public class AIXEnvConfig {
 //        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation="+Config.DATASET_SAVE_PATH+" "+modelArgs;
 
         //DeepLabv3+
-        return CONDA_ACTIVATE_CMD + " && sh " + codePath + "/train.sh" ;
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && source train.sh" ;
 //        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation "+Config.DATASET_SAVE_PATH+" --root_path "+Config.MODEL_UNZIP_PATH+" "+modelArgs;
 
 

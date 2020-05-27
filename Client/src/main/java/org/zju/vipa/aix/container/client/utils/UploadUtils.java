@@ -20,7 +20,7 @@ public class UploadUtils {
             }
 
             @Override
-            public void onFinished() {
+            public void onSuccess() {
                 ClientLogUtils.info("File upload successful!");
             }
         });

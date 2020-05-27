@@ -87,7 +87,7 @@ public class SocketIoImpl implements ClientIO {
     @Override
     public void sendMessage(ClientMessage message) {
 
-        if (message.getIntent()!=Intent.SHELL_ERROR_HELP){
+        if (Intent.SHELL_ERROR_HELP.match(message)){
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
@@ -174,7 +174,7 @@ public class SocketIoImpl implements ClientIO {
             ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
             return false;
         }
-        /** 读取文件到内存缓冲区 */
+        /** 读取文件到jvm堆内存中缓冲 */
         BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
 
         String response = null;
@@ -225,14 +225,14 @@ public class SocketIoImpl implements ClientIO {
         }
         /** 服务端没有回应 */
         if ("".equals(response) || response == null) {
-//            listener.onError("上传完成后,服务端没有回应");
+            listener.onError(new );
             return false;
         }
 
         Message resMsg = JsonUtils.parseObject(response, Message.class);
 
-        if (resMsg.getIntent() == Intent.UPLOAD_SUCCESS) {
-            listener.onFinished();
+        if (Intent.UPLOAD_SUCCESS.match(resMsg)) {
+            listener.onSuccess();
         }
         return true;
     }

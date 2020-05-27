@@ -1,11 +1,10 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.EventLoopGroup;
+import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioSocketChannel;
+import org.zju.vipa.aix.container.client.network.UploadDataListener;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.config.NetworkConfig;
@@ -64,21 +63,20 @@ public class NettyTcpClient {
      * 同步方法，向服务器发送消息
      *
      * @param sendData 待发送字符串
-     * @param doLog    是否记录日志
      * @return: void
      */
-    public void sendMsg(String sendData, boolean doLog) throws InterruptedException {
+    public void sendMsg(String sendData) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT);
+        if (channel == null) {
+            ClientLogUtils.debug("Netty建立连接失败!");
+            return;
+        }
 
         try {
-            if (channel == null) {
-                ClientLogUtils.debug("Netty建立连接失败!");
-                return;
-            }
             channel.writeAndFlush(sendData).sync();
-            if (doLog){
-                ClientLogUtils.info("SEND MSG:{}", sendData);
-            }
+//            if (doLog){
+//                ClientLogUtils.info("SEND MSG:{}", sendData);
+//            }
         } finally {
             channel.close().sync();
         }
@@ -90,12 +88,12 @@ public class NettyTcpClient {
      */
     public Message sendMsgAndGetResponse(String sendData, int timeout) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT);
+        if (channel == null) {
+            ClientLogUtils.error("Netty建立连接失败!");
+            return null;
+        }
         Message message = null;
         try {
-            if (channel == null) {
-                ClientLogUtils.debug("Netty建立连接失败!");
-                return null;
-            }
             /** 初始化阻塞拦截器 */
             CountDownLatch latch = new CountDownLatch(1);
             TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get("tcpClientHandler");
@@ -108,7 +106,69 @@ public class NettyTcpClient {
                 ClientExceptionUtils.handle(e);
             }
 
-            ClientLogUtils.info("SEND MSG:{}", sendData);
+//            ClientLogUtils.info("SEND MSG:{}", sendData);
+
+            /** 阻塞等待 */
+            latch.await(timeout, TimeUnit.MILLISECONDS);
+
+            /** 收到返回数据，或者超时 */
+            message = handler.getResponse();
+
+        } finally {
+            channel.close().sync();
+        }
+
+        return message;
+    }
+
+    /**
+     * 同步方法，向服务器上传文件
+     */
+    public Message uploadData(FileRegion fileRegion, final UploadDataListener listener) throws InterruptedException {
+        Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT);
+        if (channel == null) {
+            ClientLogUtils.error("Netty建立连接失败!");
+            return null;
+        }
+
+
+        channel.writeAndFlush(fileRegion).addListener(new ChannelFutureListener() {
+            @Override
+            public void operationComplete(ChannelFuture future) throws Exception {
+                if (future.isSuccess()) {
+                    listener.onSuccess();
+                }else {
+                    listener.onError(future.cause());
+                }
+            }
+        });
+
+
+
+
+
+
+
+
+
+
+
+        Message message = null;
+        try {
+
+            /** 初始化阻塞拦截器 */
+            CountDownLatch latch = new CountDownLatch(1);
+            TcpClientHandler handler = (TcpClientHandler) channel.pipeline().get("tcpClientHandler");
+            handler.setLatch(latch);
+
+            /** 写数据 */
+            try {
+                channel.writeAndFlush(sendData).sync();
+            } catch (Exception e) {
+                ClientExceptionUtils.handle(e);
+            }
+
+//            ClientLogUtils.info("SEND MSG:{}", sendData);
 
             /** 阻塞等待 */
             latch.await(timeout, TimeUnit.MILLISECONDS);

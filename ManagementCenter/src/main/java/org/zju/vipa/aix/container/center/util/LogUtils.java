@@ -61,12 +61,12 @@ public static void worning(String msg,Object... objs){
 
 
 
-    /** @deprecated 日志等级 */
-    private enum LogLevelEnum{
-        DEBUG,INFO,WORNING,ERROR;
-
-        public boolean match(LogLevelEnum logLevel){
-            return this.ordinal()<=logLevel.ordinal();
-        }
-    }
+//    /** @deprecated 日志等级 */
+//    private enum LogLevelEnum{
+//        DEBUG,INFO,WORNING,ERROR;
+//
+//        public boolean match(LogLevelEnum logLevel){
+//            return this.ordinal()<=logLevel.ordinal();
+//        }
+//    }
 }

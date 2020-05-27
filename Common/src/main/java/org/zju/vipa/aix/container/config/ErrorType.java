@@ -84,7 +84,22 @@ public enum ErrorType {
     }
 
 
-
+    /**
+     * 比较是否相同
+     * 由于 enum 类型的值实际上是通过运行期构造出对象来表示的，
+     * 所以在 cluster 环境下，每个虚拟机都会构造出一个同义的枚举对象。
+     * 因而在做比较操作时候就需要注意，如果直接通过使用等号 ( ‘ == ’ ) 操作符，
+     * 这些看似一样的枚举值一定不相等，因为这不是同一个对象实例。
+     *
+     * @param type
+     * @return: boolean
+     */
+    public boolean match(ErrorType type) {
+        if (type == null) {
+            return false;
+        }
+        return this.name().equals(type.name());
+    }
 
 
 

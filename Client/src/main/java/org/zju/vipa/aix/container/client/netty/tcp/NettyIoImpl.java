@@ -1,13 +1,18 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
+import io.netty.channel.DefaultFileRegion;
+import io.netty.channel.FileRegion;
 import org.zju.vipa.aix.container.client.network.ClientIO;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
+import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.config.NetworkConfig;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
+
+import java.io.*;
 
 /**
  * @Date: 2020/5/6 16:49
@@ -29,6 +34,9 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
+
+        ClientLogUtils.debug("SEND:\n{}\n", message);
+
         if (DebugConfig.IS_LOCAL_DEBUG) {
             readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
@@ -47,11 +55,16 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public void sendMessage(ClientMessage message) {
+        if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message)) {
+            //EXCEPTION已经在日志中记录过了
+            ClientLogUtils.debug("SEND:\n{}\n", message);
+        }
+
         String sendData = JsonUtils.toJSONString(message);
 
-        boolean doLog = message.getIntent() != Intent.SHELL_ERROR_HELP;
+//        boolean doLog =!Intent.SHELL_ERROR_HELP.match(message);
         try {
-            client.sendMsg(sendData, doLog);
+            client.sendMsg(sendData);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -59,11 +72,78 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public boolean upLoadData(String path, UploadDataListener listener) {
+        /** 设置读取超时时间,上传不容易，多等一下成功确认 */
+        int readTimeOut = 30 * 1000;
 
-        //todo
+        if (DebugConfig.IS_LOCAL_DEBUG) {
+            readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
+        }
+
+        File file=null;
+        FileInputStream dataInput = null;
+        try {
+            file=new File(path);
+            dataInput = new FileInputStream(file);
+        } catch (FileNotFoundException e) {
+            ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
+            return false;
+        }
+
+        FileRegion region=new DefaultFileRegion(dataInput.getChannel(),0,file.length());
 
 
-        return false;
+//        /**  读取文件到内存缓冲区 */
+//        BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
+
+
+        /** 先发一个Message，通知服务器存大文件（日志）*/
+        Message uploadMsg = new ClientMessage(Intent.UPLOAD_DATA, path);
+        String uploadMsgData = JsonUtils.toJSONString(uploadMsg);
+
+        Message response = null;
+        try {
+
+            client.sendMsg(uploadMsgData);
+
+            ClientLogUtils.info("开始上传文件：{}", path);
+
+
+            response = client.uploadData(region,listener);
+
+            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+
+
+        if (response == null) {
+            /** 若服务端没有回应 */
+//            listener.onError("上传完成后,服务端没有回应");
+            return false;
+        }
+        if (Intent.UPLOAD_SUCCESS.match(response)) {
+            listener.onSuccess();
+        }
+        return true;
+
+
+
+
+
+        /** 发送缓冲区 */
+//            BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
+
+//            /** tcp MSS=1460 */
+//            byte[] bys = new byte[1460];
+//            int len;
+//            while ((len = dataInputStream.read(bys)) != -1) {
+//                outputStream.write(bys, 0, len);
+//                outputStream.flush();
+//            }
+//            dataInputStream.close();
+
+
     }
 
 

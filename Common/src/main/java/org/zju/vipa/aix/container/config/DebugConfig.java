@@ -21,7 +21,7 @@ public class DebugConfig {
     /**
      * 是否记录Netty日志信息
      */
-    public static final boolean OPEN_NETTY_LOG = false;
+    public static final boolean OPEN_NETTY_LOG = true;
 
     /**
      * 是否是下载模型模式

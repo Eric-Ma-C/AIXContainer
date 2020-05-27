@@ -99,7 +99,7 @@ public class ClientTaskController {
      */
     private synchronized void execNewTask() {
 
-        boolean noTaskRunning = (currentTask == null || currentTask.getState() == TaskState.FINISHED);
+        boolean noTaskRunning = (currentTask == null || TaskState.FINISHED.match(currentTask.getState()));
 
         if (!noTaskRunning) {
             ClientLogUtils.info("Current task has not finished.Wait for execution.");
@@ -138,7 +138,7 @@ public class ClientTaskController {
                         ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
                         /** 修复运行环境 */
                         BaseTask task = new ClientShellTask(repairCmds);
-                        task.setTaskInfo(currentTask.getCodePath(),currentTask.getModelArgs());
+                        task.setTaskInfo(currentTask.getCodePath(), currentTask.getModelArgs());
                         addTask(task);
                     } else {
                         execNewTask();

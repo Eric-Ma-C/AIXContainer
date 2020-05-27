@@ -11,6 +11,13 @@ public interface UploadDataListener {
      */
     void onProgress(int progress);
 
-    //        void onError(String msg);
-    void onFinished();
+    /**
+     * 失败
+     */
+    void onError(Throwable cause);
+
+    /**
+     * 成功
+     */
+    void onSuccess();
 }
