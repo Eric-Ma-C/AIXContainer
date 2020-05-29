@@ -1,7 +1,5 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
-import io.netty.channel.DefaultFileRegion;
-import io.netty.channel.FileRegion;
 import org.zju.vipa.aix.container.client.network.ClientIO;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
@@ -11,8 +9,6 @@ import org.zju.vipa.aix.container.config.NetworkConfig;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.JsonUtils;
-
-import java.io.*;
 
 /**
  * @Date: 2020/5/6 16:49
@@ -34,8 +30,9 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
-
-        ClientLogUtils.debug("SEND:\n{}\n", message);
+        if (DebugConfig.CLIENT_NET_IO_LOG) {
+            ClientLogUtils.debug("SEND:\n{}\n", message);
+        }
 
         if (DebugConfig.IS_LOCAL_DEBUG) {
             readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
@@ -50,12 +47,17 @@ public class NettyIoImpl implements ClientIO {
             Thread.currentThread().interrupt();
         }
 
+        if (DebugConfig.CLIENT_NET_IO_LOG) {
+            ClientLogUtils.debug("GET RESPONSE:\n{}\n", response);
+        }
+
         return response;
     }
 
     @Override
     public void sendMessage(ClientMessage message) {
-        if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message)) {
+        if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message)
+            && DebugConfig.CLIENT_NET_IO_LOG) {
             //EXCEPTION已经在日志中记录过了
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
@@ -73,42 +75,21 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public void upLoadData(String path, UploadDataListener listener) {
-        /** todo 设置读取超时时间,上传不容易，多等一下成功确认 */
-        int readTimeOut = 30 * 1000;
 
-        if (DebugConfig.IS_LOCAL_DEBUG) {
-            readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
-        }
 
-        File file=null;
-        FileInputStream dataInput = null;
-        try {
-            file=new File(path);
-            dataInput = new FileInputStream(file);
-        } catch (FileNotFoundException e) {
-            ClientLogUtils.info(true, "Uploading file {} is not exists.", path);
-            return;
-        }
 
-        FileRegion region=new DefaultFileRegion(dataInput.getChannel(),0,file.length());
 
 
 //        /**  读取文件到内存缓冲区 */
 //        BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
 
 
-        /** 先发一个Message，通知服务器存大文件（日志）*/
-        Message uploadMsg = new ClientMessage(Intent.UPLOAD_DATA, path);
-        String uploadMsgData = JsonUtils.toJSONString(uploadMsg);
+
 
         try {
 
-            client.sendMsg(uploadMsgData);
-
             ClientLogUtils.info("开始上传文件：{}", path);
-
-
-            client.uploadData(region,listener);
+            client.uploadFile(path, listener);
 
 //            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
 

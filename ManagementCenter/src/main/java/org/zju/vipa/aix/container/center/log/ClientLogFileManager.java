@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.center.log;
 
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.config.Config;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.exception.AIXBaseException;
 import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 
@@ -45,8 +46,14 @@ public class ClientLogFileManager {
     /** 平台存储路径 */
     public File getSavePath(String token,String clientPath){
         /** 存储在应用部署根目录下的client-log中 */
-        String saveDir = Config.AIX_SERVER_ROOT_DIR+ "/client-log/" + token ;
-        String savePath = saveDir + "/" + clientPath.substring(clientPath.lastIndexOf('/'));
+        String saveDir,savePath;
+        if (DebugConfig.IS_LOCAL_DEBUG){
+            saveDir="E:\\aixTest";
+            savePath=saveDir + "\\" + clientPath.substring(clientPath.lastIndexOf('\\'));
+        }else {
+            saveDir = Config.AIX_SERVER_ROOT_DIR+ "/client-log/" + token ;
+            savePath = saveDir + "/" + clientPath.substring(clientPath.lastIndexOf('/'));
+        }
 
         File dir=new File(saveDir);
         if (!dir.exists()){

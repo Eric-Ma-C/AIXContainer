@@ -2,13 +2,13 @@ package org.zju.vipa.aix.container.client.network;
 
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.config.NetworkConfig;
 import org.zju.vipa.aix.container.exception.AIXBaseException;
 import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.ByteUtils;
-import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
 import java.io.*;
@@ -30,22 +30,24 @@ public class SocketIoImpl implements ClientIO {
 
     /**
      * 同步阻塞方法
-     * @param message 待发送消息
+     *
+     * @param message     待发送消息
      * @param readTimeOut 超时时间
      * @return: zju.vipa.aix.container.message.Message
      */
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
-        if (DebugConfig.IS_LOCAL_DEBUG){
-            readTimeOut= DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
+        if (DebugConfig.IS_LOCAL_DEBUG) {
+            readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
-
-        ClientLogUtils.debug("SEND:\n{}\n", message);
+        if (DebugConfig.CLIENT_NET_IO_LOG) {
+            ClientLogUtils.debug("SEND:\n{}\n", message);
+        }
         Socket socket = null;
         String response = null;
         try {
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
             //设置读取超时时间
             socket.setSoTimeout(readTimeOut);
 
@@ -80,7 +82,9 @@ public class SocketIoImpl implements ClientIO {
         }
         resMsg = JsonUtils.parseObject(response, Message.class);
 
-        ClientLogUtils.debug("GET RESPONSE:\n{}\n", resMsg);
+        if (DebugConfig.CLIENT_NET_IO_LOG) {
+            ClientLogUtils.debug("GET RESPONSE:\n{}\n", resMsg);
+        }
 
         return resMsg;
     }
@@ -89,7 +93,7 @@ public class SocketIoImpl implements ClientIO {
     @Override
     public void sendMessage(ClientMessage message) {
 
-        if (Intent.SHELL_ERROR_HELP.match(message)){
+        if (Intent.SHELL_ERROR_HELP.match(message) && DebugConfig.CLIENT_NET_IO_LOG) {
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
@@ -97,7 +101,7 @@ public class SocketIoImpl implements ClientIO {
         try {
             /** 短连接方式 */
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
             //设置读取超时时间
             socket.setSoTimeout(NetworkConfig.SOCKET_READ_TIMEOUT_DEFAULT);
 
@@ -184,7 +188,7 @@ public class SocketIoImpl implements ClientIO {
         Socket socket = null;
         try {
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
             /** 设置读取超时时间,上传不容易，多等一下成功确认 */
             socket.setSoTimeout(30 * 1000);
 
@@ -229,7 +233,7 @@ public class SocketIoImpl implements ClientIO {
         /** 服务端没有回应 */
         if ("".equals(response) || response == null) {
             listener.onError(new AIXBaseException(ExceptionCodeEnum.SERVER_NOT_RESPONSE));
-            return ;
+            return;
         }
 
         Message resMsg = JsonUtils.parseObject(response, Message.class);

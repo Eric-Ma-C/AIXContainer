@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.center.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.FileRegion;
@@ -8,6 +9,7 @@ import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
@@ -16,19 +18,31 @@ import org.zju.vipa.aix.container.utils.JsonUtils;
  * @Author: EricMa
  * @Description:
  */
-public class NettyServerHandler extends ChannelInboundHandlerAdapter {
+public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
 
     /**
      * 处理客户端发来的消息
      */
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            LogUtils.info("客户端channel:{}读取内容{}", ctx.channel().id(),msg);
+        }
+
         if (msg instanceof String) {
             /** 处理客户端请求 */
             Message receivedMessage = JsonUtils.parseObject((String) msg, Message.class);
             if (DebugConfig.SERVER_NET_IO_LOG) {
                 /** 收到客户端日志 */
                 LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
+            }
+
+            if (Intent.UPLOAD_DATA.match(receivedMessage.getIntent())){
+                /** 上传文件 */
+                LogUtils.info("准备读取文件内容");
+//                ctx.fireChannelRead(msg);
+
+
             }
 
             new SocketHandler(ctx).handle(receivedMessage);
@@ -39,15 +53,37 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
 
             LogUtils.info("\n\nmsg instanceof FileRegion\n\n");
 
-        } else {
+        } else if (msg instanceof ByteBuf){
+
+            LogUtils.error("\n\nmsg instanceof ByteBuf\n\n", msg);
+
+
+        }else {
             LogUtils.error("\n\nUnknown msg {}\n\n", msg);
         }
+
+
+
+
 
         /** todo 验证是否需要释放资源 */
         ReferenceCountUtil.release(msg);
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * 服务端接收客户端数据结束时调用
@@ -56,6 +92,10 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
     public void channelReadComplete(ChannelHandlerContext ctx) throws Exception {
 //        ctx.writeAndFlush(Unpooled.EMPTY_BUFFER)
 //            .addListener(ChannelFutureListener.CLOSE);
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            LogUtils.info("客户端channel:{}读取完成", ctx.channel().id());
+        }
+
         ctx.flush();
     }
 
@@ -86,6 +126,9 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
      */
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        if (DebugConfig.OPEN_NETTY_LOG) {
+            LogUtils.info("客户端channel:{}发生异常", ctx.channel().id());
+        }
         ExceptionUtils.handle(cause);
         ctx.close();
     }

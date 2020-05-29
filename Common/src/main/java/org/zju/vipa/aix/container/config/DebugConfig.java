@@ -10,14 +10,18 @@ public class DebugConfig {
     /**
      * 使用
      */
-//    public static final boolean IS_LOCAL_DEBUG = true;
-    public static final boolean IS_LOCAL_DEBUG = false;
+    public static final boolean IS_LOCAL_DEBUG = true;
+//    public static final boolean IS_LOCAL_DEBUG = false;
 
     /**
      * 是否打开Server网络消息收发日志
      * 警告：由于服务器网络IO日志量较大，仅可在测试时打开
      */
     public static final boolean SERVER_NET_IO_LOG = true;
+    /**
+     * 是否打开client网络消息收发日志
+     */
+    public static final boolean CLIENT_NET_IO_LOG = true;
 
     /**
      * socket响应数据读取超时时间500s

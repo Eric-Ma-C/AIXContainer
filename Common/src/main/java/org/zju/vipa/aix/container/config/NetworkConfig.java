@@ -51,9 +51,13 @@ public class NetworkConfig {
 //    }
 
     /**
-     * tcp自定义端口号
+     * 消息交换 tcp自定义端口号
      */
-    public static final int SERVER_PORT = 10007;
+    public static final int SERVER_PORT_MESSAGE = 10007;
+    /**
+     * 文件上传 tcp自定义端口号
+     */
+    public static final int SERVER_PORT_FILE_UPLOAD = 10008;
     /**
      * socket响应数据读取超时时间5s
      */

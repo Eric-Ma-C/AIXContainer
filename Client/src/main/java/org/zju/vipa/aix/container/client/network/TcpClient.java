@@ -269,20 +269,20 @@ public class TcpClient {
      * 向平台请求上传文件
      */
     public void requestUpload(String path, UploadDataListener listener) {
-        ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD,path);
+        ClientMessage message = new ClientMessage(Intent.REQUEST_UPLOAD, path);
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);
 
         if (resMsg == null || !Intent.UPLOAD_PERMITTED.match(resMsg)) {
             /** 服务器忙 */
             listener.onError(new AIXBaseException(ExceptionCodeEnum.UPLOAD_NOT_PERMITTED));
-            return ;
+            return;
         }
         String serverWanted = resMsg.getValue();
         if (serverWanted != null || !"".equals(serverWanted)) {
             path = serverWanted;
         }
-         clientIO.upLoadData(path, listener);
+        clientIO.upLoadData(path, listener);
 
     }
 

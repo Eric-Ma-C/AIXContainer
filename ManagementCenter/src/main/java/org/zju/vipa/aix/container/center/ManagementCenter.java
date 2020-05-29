@@ -68,7 +68,7 @@ public class ManagementCenter {
 
 
 
-        /** todo 启动tcp服务器 */
+        /**  启动Netty tcp服务器 */
         NettyTcpServer.start();
 
 //

@@ -7,6 +7,7 @@ import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
 import org.zju.vipa.aix.container.client.utils.TokenUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
+import org.zju.vipa.aix.container.config.DebugConfig;
 import org.zju.vipa.aix.container.exception.AIXBaseException;
 import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.utils.TimeUtils;
@@ -71,8 +72,16 @@ public class ClientTaskController {
             /** 验证成功，上传实时gpu信息，开始心跳线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
             ClientThreadManager.getInstance().startHeartbeat();
-            UploadUtils.uploadFile("/log/aixlog/debug.log4j");
-//            UploadUtils.uploadFile("/log/aixlog/test.txt");
+
+
+            if (DebugConfig.IS_LOCAL_DEBUG) {
+//                UploadUtils.uploadFile("E:\\tobedelete.txt");
+                UploadUtils.uploadFile("E:\\Redis-x64-3.2.100.zip");
+
+            } else {
+                //            UploadUtils.uploadFile("/log/aixlog/debug.log4j");
+                UploadUtils.uploadFile("/home/aix/Client.jar");
+            }
 
         } else {
             ClientLogUtils.error("容器注册失败，请检查token配置。");

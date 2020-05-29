@@ -15,8 +15,9 @@ import java.util.concurrent.CountDownLatch;
  * @Author: EricMa
  * @Description: 每次打开的channel都会在这处理
  */
-public class TcpClientHandler extends SimpleChannelInboundHandler<String> {
+public class ClientInboundMsgHandler extends SimpleChannelInboundHandler<String> {
 
+    public static final String name="ClientInboundMsgHandler";
     /**
      * ref http://tutorials.jenkov.com/netty/netty-tcp-client.html
      */

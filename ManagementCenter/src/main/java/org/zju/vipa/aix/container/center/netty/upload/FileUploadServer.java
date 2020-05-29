@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.netty;
+package org.zju.vipa.aix.container.center.netty.upload;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.*;
@@ -7,23 +7,19 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
-import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import org.zju.vipa.aix.container.center.netty.upload.FileUploadServer;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.NetworkConfig;
 
 /**
- * @Date: 2020/5/6 22:40
+ * @Date: 2020/5/28 19:20
  * @Author: EricMa
- * @Description: client请求几乎都是短连接，更适合AIX训练平台的模式
+ * @Description: 文件上传服务器
+ * 与message服务器分开，
  */
-public class NettyTcpServer {
+public class FileUploadServer {
     /**
      * 存储客户端连接进来的channel
      */
@@ -31,11 +27,10 @@ public class NettyTcpServer {
 
 
     public static void start() {
-//        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("bossGroup", true));
-//        EventLoopGroup workGroup = new NioEventLoopGroup(8, new DefaultThreadFactory("workGroup", true));
+        /** 可以比message服务器少分配一点线程资源 */
+        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("bossGroup", true));
+        EventLoopGroup workGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("workGroup", true));
 
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap bootstrap = new ServerBootstrap();
@@ -53,38 +48,15 @@ public class NettyTcpServer {
                 protected void initChannel(SocketChannel socketChannel) throws Exception {
                     ChannelPipeline pipeline=socketChannel.pipeline();
 
-
-                    pipeline.addLast("frameDecoder", new LengthFieldBasedFrameDecoder(Integer.MAX_VALUE, 0, 8, 0, 8));
-                    pipeline.addLast("frameEncoder", new LengthFieldPrepender(8));
-//                    pipeline.addLast(new ObjectEncoder());
-//                    pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
-
-
-//                    pipeline.addLast(new );
-
-                    /** 处理String类型的message */
-                    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
-                    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
-
-
-
-                    pipeline.addLast(new ServerInboundMsgHandler());
-
-//                    pipeline.addLast(new UploadFileHandler());
-//                    pipeline.addLast(new ());
-
+                    /** 处理文件上传 */
+                    pipeline.addLast(new UploadFileHandler());
 
                 }
             });
 
-            LogUtils.info("Netty服务端开启等待Client连接...");
+            LogUtils.info("Netty File Upload服务端开启等待Client连接...");
 
-            ChannelFuture channelFuture = bootstrap.bind(NetworkConfig.SERVER_PORT_MESSAGE).sync();
-
-            /** 启动文件上传服务器 */
-            FileUploadServer.start();
-
-
+            ChannelFuture channelFuture = bootstrap.bind(NetworkConfig.SERVER_PORT_FILE_UPLOAD).sync();
             /** 等待channel的关闭,会阻塞在这里 */
             channelFuture.channel().closeFuture().sync();
         } catch (Exception e) {
@@ -100,3 +72,4 @@ public class NettyTcpServer {
     }
 
 }
+

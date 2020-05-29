@@ -55,9 +55,6 @@ public class SocketHandler implements Runnable {
             return;
         }
 
-
-
-
         switch (msg.getIntent()) {
             case ASK_FOR_WORK:
                 clientIdleAskForWork(msg.getToken());
@@ -115,7 +112,7 @@ public class SocketHandler implements Runnable {
             default:
                 break;
         }
-//    todo    disconnect();
+//  没有disconnect();
     }
 
 
@@ -129,8 +126,7 @@ public class SocketHandler implements Runnable {
 //            serverSpecifiedFileName = ClientLogFileManager.getInstence().getFilePathByDate("2020-04-19");
             serverSpecifiedFileName = ClientLogFileManager.getInstence().getFilePathByDate(null);
         }
-        /** 注意这里不要关闭连接 */
-        serverIO.response(new ServerMessage(Intent.UPLOAD_PERMITTED, serverSpecifiedFileName),false);
+        serverIO.response(new ServerMessage(Intent.UPLOAD_PERMITTED, serverSpecifiedFileName));
     }
 
     /**
