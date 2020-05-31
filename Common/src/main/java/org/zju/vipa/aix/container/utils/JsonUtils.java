@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.utils;
 
 import com.alibaba.fastjson.JSON;
+import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.exception.ExceptionHandlerImpl;
 
 /**
@@ -16,9 +17,10 @@ public class JsonUtils {
         try {
             /**  序列化 */
             json = JSON.toJSONString(obj);
-        }catch (Exception e){
-          //todo 0523
-       new ExceptionHandlerImpl().handle(e);
+        } catch (Exception e) {
+            LoggerFactory.getLogger(JsonUtils.class).error(e.getMessage());
+
+            new ExceptionHandlerImpl().handle(e);
         }
 
         return json;

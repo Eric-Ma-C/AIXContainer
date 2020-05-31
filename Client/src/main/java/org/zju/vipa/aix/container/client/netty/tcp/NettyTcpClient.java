@@ -165,19 +165,14 @@ public class NettyTcpClient {
         uploadMsgBuf.addComponents(Unpooled.copyShort(uploadMsgBytes.length), Unpooled.wrappedBuffer(uploadMsgBytes));
         uploadMsgBuf.writerIndex(2+uploadMsgBytes.length);
         /** 跳过所有编码器发送 */
-//    todo    channel.pipeline().firstContext().writeAndFlush(uploadMsgBuf).sync();  用得不对
         channel.pipeline().firstContext().writeAndFlush(uploadMsgBuf).sync();
-//        channel.pipeline().firstContext().writeAndFlush(Unpooled.copyShort((short) uploadMsgBytes.length)).sync();
-//        channel.pipeline().firstContext().writeAndFlush(Unpooled.wrappedBuffer(uploadMsgBytes)).sync();
 
-
+//        ChunkedStream chunkedStream = new ChunkedStream(fileInputStream);
 
         /** 准备开始上传文件 */
         ClientLogUtils.info("Uploading File size {} bytes", fileLenBytes);
         FileRegion region = new DefaultFileRegion(fileInputStream.getChannel(), 0, fileLenBytes);
 
-
-//        ChunkedStream chunkedStream = new ChunkedStream(fileInputStream);
         /** 跳过所有编码器发送 */
         ChannelFuture future=channel.pipeline().firstContext().writeAndFlush(region);
 

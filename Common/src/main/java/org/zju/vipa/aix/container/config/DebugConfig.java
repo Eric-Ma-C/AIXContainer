@@ -10,8 +10,8 @@ public class DebugConfig {
     /**
      * 使用
      */
-    public static final boolean IS_LOCAL_DEBUG = true;
-//    public static final boolean IS_LOCAL_DEBUG = false;
+//    public static final boolean IS_LOCAL_DEBUG = true;
+    public static final boolean IS_LOCAL_DEBUG = false;
 
     /**
      * 是否打开Server网络消息收发日志
@@ -21,7 +21,8 @@ public class DebugConfig {
     /**
      * 是否打开client网络消息收发日志
      */
-    public static final boolean CLIENT_NET_IO_LOG = true;
+//    public static final boolean CLIENT_NET_IO_LOG = true;
+    public static final boolean CLIENT_NET_IO_LOG = false;
 
     /**
      * socket响应数据读取超时时间500s
@@ -31,7 +32,7 @@ public class DebugConfig {
     /**
      * 是否记录Netty日志信息
      */
-    public static final boolean OPEN_NETTY_LOG = true;
+    public static final boolean OPEN_NETTY_LOG = false;
 
     /**
      * 是否是下载模型模式

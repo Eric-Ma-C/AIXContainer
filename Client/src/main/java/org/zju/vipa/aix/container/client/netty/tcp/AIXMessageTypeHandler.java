@@ -10,6 +10,7 @@ import io.netty.handler.codec.MessageToByteEncoder;
  * @Description: 判断消息类型
  *  目前的类型：String（Message） FileReigon
  */
+@Deprecated
 public class AIXMessageTypeHandler extends MessageToByteEncoder<ByteBuf> {
 public static final String name="AIXMessageTypeHandler";
 

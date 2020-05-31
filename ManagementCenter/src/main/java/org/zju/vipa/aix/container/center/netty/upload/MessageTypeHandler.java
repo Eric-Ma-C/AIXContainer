@@ -11,6 +11,7 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 0527 todo:第一个字节代表消息类型
  */
+@Deprecated
 public class MessageTypeHandler extends ByteToMessageDecoder {
 
 

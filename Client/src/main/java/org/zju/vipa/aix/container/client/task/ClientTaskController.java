@@ -73,14 +73,14 @@ public class ClientTaskController {
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
             ClientThreadManager.getInstance().startHeartbeat();
 
-
+            /** 测试上传 */
             if (DebugConfig.IS_LOCAL_DEBUG) {
 //                UploadUtils.uploadFile("E:\\tobedelete.txt");
                 UploadUtils.uploadFile("E:\\Redis-x64-3.2.100.zip");
 
             } else {
                 //            UploadUtils.uploadFile("/log/aixlog/debug.log4j");
-                UploadUtils.uploadFile("/home/aix/Client.jar");
+//                UploadUtils.uploadFile("/home/aix/Client.jar");
             }
 
         } else {

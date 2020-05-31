@@ -32,13 +32,14 @@ public class NettyIoImpl implements ServerIO {
     }
 
     @Override
-    public void response(Message msg,boolean isClose) {
+    public void response(Message msg, boolean isClose) {
         if (DebugConfig.SERVER_NET_IO_LOG) {
             LogUtils.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
-          //todo  LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
+
+            LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
         }
 
-        String data= JsonUtils.toJSONString(msg);
+        String data = JsonUtils.toJSONString(msg);
 //        context.write(Unpooled.copiedBuffer(, CharsetUtil.UTF_8));
         context.writeAndFlush(data);
         if (isClose) {
@@ -49,12 +50,12 @@ public class NettyIoImpl implements ServerIO {
     @Override
     public void response(Message msg) {
         /** 默认是关闭的 */
-        response(msg,true);
+        response(msg, true);
     }
 
 
     @Override
-    public void saveData(Message msg)  {
+    public void saveData(Message msg) {
 
 //        LogUtils.info("\n\nsaveData\n\n");
 
@@ -66,22 +67,19 @@ public class NettyIoImpl implements ServerIO {
 
 //            RandomAccessFile randomAccessFile=new RandomAccessFile(saveFile, "rw");
 
-            FileOutputStream fos=new FileOutputStream(saveFile);
-            FileRegion region=new DefaultFileRegion(fos.getChannel(),0,7);
+            FileOutputStream fos = new FileOutputStream(saveFile);
+            FileRegion region = new DefaultFileRegion(fos.getChannel(), 0, 7);
 
 //            context.channel().w
 //            context();
 
 
-
 //         todo   context.read();
-
 
 
             //写入换行符表示文件结束
 //        context.writeAndFlush(CR);
 //            randomAccessFile.close();
-
 
 
 //            // 封装通道内流

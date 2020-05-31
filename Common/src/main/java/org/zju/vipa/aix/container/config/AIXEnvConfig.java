@@ -40,7 +40,7 @@ public class AIXEnvConfig {
      */
     private static final String PIP_SOURCE_TUNA = "https://pypi.tuna.tsinghua.edu.cn/simple/";
 
-    private static String PIP_SOURCE = PIP_SOURCE_USTC;
+    private static String PIP_SOURCE = PIP_SOURCE_ALIYUN;
     private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
     //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
     private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
@@ -60,7 +60,7 @@ public class AIXEnvConfig {
      */
     public static String getCondaEnvCreateCmds(String codePath) {
 
-        return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yaml";//--json
+        return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";//--json
 //        return getPipEnvCreateCmds(codePath);
     }
 
@@ -87,12 +87,30 @@ public class AIXEnvConfig {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
 
 
-        //yolo
+            /** UniversalModel */
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py" ;
+
+
+        /** yolo */
 //        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation="+Config.DATASET_SAVE_PATH+" "+modelArgs;
 
-        //DeepLabv3+
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && source train.sh" ;
+
+
+
+
+
+
+        /** DeepLabv3+ */
+//        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && source train.sh" ;
+
+
+
+
+
 //        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation "+Config.DATASET_SAVE_PATH+" --root_path "+Config.MODEL_UNZIP_PATH+" "+modelArgs;
+
+
+
 
 
 //        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python -u -m recognition.main -name prov_test";

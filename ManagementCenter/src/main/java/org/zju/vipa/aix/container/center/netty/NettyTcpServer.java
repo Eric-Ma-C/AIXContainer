@@ -95,7 +95,6 @@ public class NettyTcpServer {
 //            bossGroup.shutdownGracefully().sync();
             workGroup.shutdownGracefully();
 
-
         }
     }
 

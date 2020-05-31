@@ -1,15 +1,12 @@
 package org.zju.vipa.aix.container.center.netty;
 
-import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import io.netty.channel.FileRegion;
 import io.netty.util.ReferenceCountUtil;
 import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.config.DebugConfig;
-import org.zju.vipa.aix.container.message.Intent;
 import org.zju.vipa.aix.container.message.Message;
 import org.zju.vipa.aix.container.utils.JsonUtils;
 
@@ -37,39 +34,33 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
                 LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
             }
 
-            if (Intent.UPLOAD_DATA.match(receivedMessage.getIntent())){
-                /** 上传文件 */
-                LogUtils.info("准备读取文件内容");
-//                ctx.fireChannelRead(msg);
-
-
-            }
+//            if (Intent.UPLOAD_DATA.match(receivedMessage.getIntent())){
+//                /** 上传文件 */
+//                LogUtils.info("准备读取文件内容");
+//            }
 
             new SocketHandler(ctx).handle(receivedMessage);
 
-        } else if (msg instanceof FileRegion) {
-
-            FileRegion region = (FileRegion) msg;
-
-            LogUtils.info("\n\nmsg instanceof FileRegion\n\n");
-
-        } else if (msg instanceof ByteBuf){
-
-            LogUtils.error("\n\nmsg instanceof ByteBuf\n\n", msg);
-
-
-        }else {
+        }
+//        else if (msg instanceof FileRegion) {
+//
+//            FileRegion region = (FileRegion) msg;
+//
+//            LogUtils.info("\n\nmsg instanceof FileRegion\n\n");
+//
+//        } else if (msg instanceof ByteBuf){
+//
+//            LogUtils.error("\n\nmsg instanceof ByteBuf\n\n", msg);
+//
+//
+//        }
+        else {
             LogUtils.error("\n\nUnknown msg {}\n\n", msg);
         }
 
 
-
-
-
         /** todo 验证是否需要释放资源 */
         ReferenceCountUtil.release(msg);
-
-
     }
 
 
