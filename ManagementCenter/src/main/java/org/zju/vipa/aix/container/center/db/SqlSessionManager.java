@@ -6,8 +6,8 @@ import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.zju.vipa.aix.container.center.db.dao.*;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
 import java.io.Reader;
 import java.lang.reflect.InvocationHandler;
@@ -17,7 +17,7 @@ import java.lang.reflect.Proxy;
 /**
  * @Date: 2020/5/21 19:14
  * @Author: EricMa
- * @Description: 管理自动事务SqlSession
+ * @Description: todo 管理自动事务SqlSession
  */
 public class SqlSessionManager {
     private static SqlSessionFactory sqlSessionFactory;
@@ -97,7 +97,7 @@ public class SqlSessionManager {
 
 
     /**
-     * 自动处理回滚
+     * 自动事务处理 回滚
      */
     private class SqlSessionInterceptor implements InvocationHandler {
         @Override

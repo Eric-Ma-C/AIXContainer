@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.center.redis;
 
-import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 

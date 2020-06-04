@@ -17,6 +17,7 @@
         <module>Client</module>
         <module>ManagementCenter</module>
         <module>Common</module>
+        <module>dubbo-api</module>
     </modules>
 
     <build>

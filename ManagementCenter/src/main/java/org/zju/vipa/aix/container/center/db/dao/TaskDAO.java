@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.center.db.dao;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.zju.vipa.aix.container.center.db.entity.Task;
+import org.zju.vipa.aix.container.common.entity.Task;
 import java.util.List;
 
 /**

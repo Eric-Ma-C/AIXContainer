@@ -2,9 +2,9 @@ package org.zju.vipa.aix.container.client.thread;
 
 import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.message.SystemBriefInfo;
-import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
+import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 
 /**
  * @Date: 2020/3/10 13:47

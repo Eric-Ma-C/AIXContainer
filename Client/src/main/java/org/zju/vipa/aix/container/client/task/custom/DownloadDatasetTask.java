@@ -3,8 +3,8 @@ package org.zju.vipa.aix.container.client.task.custom;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 import org.zju.vipa.aix.container.client.utils.HttpDownloadUtils;
-import org.zju.vipa.aix.container.config.Config;
-import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
 /**
  * @Date: 2020/5/1 21:30

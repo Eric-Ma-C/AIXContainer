@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @Date: 2020/5/27 21:31
  * @Author: EricMa
- * @Description: 0527 todo:第一个字节代表消息类型
+ * @Description:
  */
 @Deprecated
 public class MessageTypeHandler extends ByteToMessageDecoder {

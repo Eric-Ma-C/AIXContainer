@@ -3,15 +3,13 @@ package org.zju.vipa.aix.container.center.netty;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.FileRegion;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.network.ServerIO;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
-import org.zju.vipa.aix.container.config.DebugConfig;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,7 +21,7 @@ import java.io.IOException;
  * @Description:
  */
 public class NettyIoImpl implements ServerIO {
-    private static final Logger LOGGER = LoggerFactory.getLogger(NettyIoImpl.class);
+//    private static final Logger LOGGER = LoggerFactory.getLogger(NettyIoImpl.class);
 
     ChannelHandlerContext context;
 
@@ -36,7 +34,7 @@ public class NettyIoImpl implements ServerIO {
         if (DebugConfig.SERVER_NET_IO_LOG) {
             LogUtils.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
 
-            LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
+//            LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
         }
 
         String data = JsonUtils.toJSONString(msg);
@@ -54,6 +52,7 @@ public class NettyIoImpl implements ServerIO {
     }
 
 
+    @Deprecated
     @Override
     public void saveData(Message msg) {
 
@@ -74,7 +73,7 @@ public class NettyIoImpl implements ServerIO {
 //            context();
 
 
-//         todo   context.read();
+//           context.read();
 
 
             //写入换行符表示文件结束

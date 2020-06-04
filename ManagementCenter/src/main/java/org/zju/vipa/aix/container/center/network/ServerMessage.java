@@ -1,7 +1,7 @@
 package org.zju.vipa.aix.container.center.network;
 
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.message.Message;
+import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
 
 /**
  * @Date: 2020/3/30 21:36

@@ -10,10 +10,10 @@ import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.config.NetworkConfig;
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.io.File;
 import java.io.FileInputStream;

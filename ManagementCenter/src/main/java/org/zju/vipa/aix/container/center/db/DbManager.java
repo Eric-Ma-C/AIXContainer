@@ -2,17 +2,17 @@ package org.zju.vipa.aix.container.center.db;
 
 import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.DataturksUserDAO;
-import org.zju.vipa.aix.container.center.db.dao.DeviceDAO;
-import org.zju.vipa.aix.container.center.db.dao.ModelDAO;
 import org.zju.vipa.aix.container.center.db.dao.TaskDAO;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
+import org.zju.vipa.aix.container.center.db.dao.DeviceDAO;
+import org.zju.vipa.aix.container.center.db.dao.ModelDAO;
 import org.zju.vipa.aix.container.center.db.entity.Device;
 import org.zju.vipa.aix.container.center.db.entity.Model;
-import org.zju.vipa.aix.container.center.db.entity.Task;
-import org.zju.vipa.aix.container.config.Config;
-import org.zju.vipa.aix.container.config.DebugConfig;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
 import java.util.List;
 
@@ -24,7 +24,7 @@ import java.util.List;
 public class DbManager {
 
 //    private SqlSessionFactory sqlSessionFactory;
-//    private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
+    private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
 
 
     private static class DbManagerHolder {
@@ -69,7 +69,7 @@ public class DbManager {
      * 获取所有任务
      *
      * @param
-     * @return: java.util.List<org.zju.vipa.aix.container.center.db.entity.Task>列表
+     * @return: java.util.List<Task>列表
      */
     public List<Task> getTaskList() {
         return SqlSessionProxy.start(new SqlTask<List<Task>>() {
@@ -89,7 +89,7 @@ public class DbManager {
     /**
      * 获取等待状态的任务列表，抢任务
      *
-     * @return: java.util.List<org.zju.vipa.aix.container.center.db.entity.Task>
+     * @return: java.util.List<Task>
      */
     public List<Task> getWaittingTaskList() {
         return SqlSessionProxy.start(new SqlTask<List<Task>>() {
@@ -109,7 +109,7 @@ public class DbManager {
     /**
      * 为某个容器id抢到一个任务
      *
-     * @return: java.util.List<org.zju.vipa.aix.container.center.db.entity.Task>
+     * @return: java.util.List<Task>
      */
     public Task grabTask(final String clientId) {
 

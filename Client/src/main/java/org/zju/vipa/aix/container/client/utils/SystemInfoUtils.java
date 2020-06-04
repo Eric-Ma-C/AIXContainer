@@ -1,8 +1,8 @@
 package org.zju.vipa.aix.container.client.utils;
 
 import com.sun.management.OperatingSystemMXBean;
-import org.zju.vipa.aix.container.message.GpuInfo;
-import org.zju.vipa.aix.container.message.SystemBriefInfo;
+import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
+import org.zju.vipa.aix.container.common.message.GpuInfo;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;

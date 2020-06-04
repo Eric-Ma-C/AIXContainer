@@ -4,8 +4,8 @@ import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.HttpDownloadUtils;
-import org.zju.vipa.aix.container.config.Config;
-import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
 /**
  * @Date: 2020/5/1 20:23
@@ -25,7 +25,7 @@ public class DownloadModelTask extends BaseTask {
     protected void run() {
         download();
         /** 解压 */
-        new ShellTask("unzip -o -d "+Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener);
+        new ShellTask("unzip -o -d "+ Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener);
     }
 
     private void download(){

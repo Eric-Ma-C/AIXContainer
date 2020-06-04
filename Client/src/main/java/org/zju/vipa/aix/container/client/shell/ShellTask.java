@@ -6,7 +6,7 @@ import org.zju.vipa.aix.container.client.env.ClientErrorParser;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.message.Intent;
+import org.zju.vipa.aix.container.common.message.Intent;
 
 import java.io.IOException;
 

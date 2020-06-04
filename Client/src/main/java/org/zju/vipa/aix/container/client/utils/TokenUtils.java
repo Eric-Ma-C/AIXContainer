@@ -1,8 +1,8 @@
 package org.zju.vipa.aix.container.client.utils;
 
-import org.zju.vipa.aix.container.config.Config;
-import org.zju.vipa.aix.container.config.NetworkConfig;
-import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
 
 /**
  * @Date: 2020/3/27 9:17

@@ -1,6 +1,6 @@
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 /**
  * @Date: 2020/4/17 23:38

@@ -16,7 +16,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.zju.vipa.aix.container.center.netty.upload.FileUploadServer;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
-import org.zju.vipa.aix.container.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
 /**
  * @Date: 2020/5/6 22:40

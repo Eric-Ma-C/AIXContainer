@@ -2,16 +2,16 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.TaskManager;
+import org.zju.vipa.aix.container.center.manager.TaskManager;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
-import org.zju.vipa.aix.container.config.NetworkConfig;
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.message.SystemBriefInfo;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -150,7 +150,7 @@ public class SocketHandler implements Runnable {
 
     /**
      * 处理gpu信息
-     * 目前仅显示 todo 存入db?
+     * 目前仅显示
      *
      * @param:
      * @return:
@@ -238,7 +238,7 @@ public class SocketHandler implements Runnable {
             return;
         }
 
-        //todo mSocket 独立
+
 //        LogUtils.info("{}:\nHeartbeats from client (id={}): IP{} CPU={}%  RAM={}%  time={}",
 //            token, id, mSocket.getInetAddress(), info.getCpuRate(), info.getRamRate(),
 //            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));

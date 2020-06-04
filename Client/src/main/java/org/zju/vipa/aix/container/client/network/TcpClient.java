@@ -11,14 +11,14 @@ import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.thread.Heartbeat;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.config.NetworkConfig;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
-import org.zju.vipa.aix.container.message.GpuInfo;
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.message.SystemBriefInfo;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.message.GpuInfo;
+import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 /**
  * @Date: 2020/1/7 15:26
@@ -32,7 +32,7 @@ public class TcpClient {
     private ClientIO clientIO;
 
     private TcpClient() {
-        /** todo 选择IO方式 */
+        /**  选择IO方式 */
 //        clientIO=new SocketIoImpl();
         clientIO = new NettyIoImpl();
 

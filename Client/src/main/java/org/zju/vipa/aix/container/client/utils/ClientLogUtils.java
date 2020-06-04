@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
-import org.zju.vipa.aix.container.message.Intent;
+import org.zju.vipa.aix.container.common.message.Intent;
 
 /**
  * @Date: 2020/3/27 17:37

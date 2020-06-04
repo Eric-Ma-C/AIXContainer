@@ -2,8 +2,8 @@ package org.zju.vipa.aix.container.client.thread;
 
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
 import java.io.File;
 import java.text.SimpleDateFormat;

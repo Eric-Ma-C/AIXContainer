@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.client.task;
 
 import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.config.AIXEnvConfig;
+import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 
 import java.util.Arrays;
 

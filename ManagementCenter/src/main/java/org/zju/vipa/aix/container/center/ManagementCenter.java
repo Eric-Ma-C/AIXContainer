@@ -1,10 +1,11 @@
 package org.zju.vipa.aix.container.center;
 
 import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
-import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.center.dubbo.RpcServer;
+import org.zju.vipa.aix.container.center.util.ExceptionUtils;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,13 +64,42 @@ public class ManagementCenter {
     }
 
     public static void main(String[] args) {
+        System.out.println("Starting AIX Container Manager...");
+
+
+
+
         /** 处理主线程的未捕获异常 */
         ExceptionUtils.setDefaultUncaughtExceptionHandler();
+        /** dubbo */
+        RpcServer.getInstance().start();
 
 
 
-        /**  启动Netty tcp服务器 */
-        NettyTcpServer.start();
+
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Starting Netty Server...");
+                /**  启动Netty tcp服务器 */
+                NettyTcpServer.start();
+            }
+        }).start();
+
+
+
+//        System.out.println("readInit1");
+//        LogReader.readInit();
+//        System.out.println("readInit2");
+//        String s = LogReader.readLine();
+//        s+=LogReader.readLine();
+//        s+=LogReader.readLine();
+//        s+=LogReader.readLine();
+//        s+=LogReader.readLine();
+//        System.out.println(s);
+//        LogReader.stop();
 
 //
 //        try {

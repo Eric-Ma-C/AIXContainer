@@ -99,7 +99,7 @@ public class HttpClient {
             String host = url.substring(url.indexOf("//") + 2);
             host = host.substring(0, host.indexOf('/'));
             url = url.substring(url.indexOf('/', 8));
-            // Start the client.todo 区分 80 443?
+            // Start the client.区分 80 443?
             ChannelFuture f;
 //            if (url.startsWith("http")){
 //                f=b.connect(host,80).sync();

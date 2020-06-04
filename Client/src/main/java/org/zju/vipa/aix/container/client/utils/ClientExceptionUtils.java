@@ -2,8 +2,8 @@ package org.zju.vipa.aix.container.client.utils;
 
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.TcpClient;
-import org.zju.vipa.aix.container.message.Intent;
-import org.zju.vipa.aix.container.config.DebugConfig;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.message.Intent;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;

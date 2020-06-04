@@ -1,10 +1,10 @@
 package org.zju.vipa.aix.container.center.log;
 
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.config.Config;
-import org.zju.vipa.aix.container.config.DebugConfig;
-import org.zju.vipa.aix.container.exception.AIXBaseException;
-import org.zju.vipa.aix.container.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
+import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
 import java.io.File;
 import java.io.IOException;

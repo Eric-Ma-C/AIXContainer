@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.client.network;
 
-import org.zju.vipa.aix.container.message.Message;
+import org.zju.vipa.aix.container.common.message.Message;
 
 /**
  * @Date 2020/5/12 17:20

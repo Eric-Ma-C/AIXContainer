@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.center.util;
 
-import org.zju.vipa.aix.container.exception.ExceptionHandlerImpl;
+import org.zju.vipa.aix.container.common.exception.ExceptionHandlerImpl;
 
 /**
  * @Date: 2020/1/11 15:27

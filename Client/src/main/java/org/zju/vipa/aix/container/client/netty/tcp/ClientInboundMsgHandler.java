@@ -2,11 +2,11 @@ package org.zju.vipa.aix.container.client.netty.tcp;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.message.Message;
-import org.zju.vipa.aix.container.config.DebugConfig;
-import org.zju.vipa.aix.container.utils.JsonUtils;
+import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.util.concurrent.CountDownLatch;
 
