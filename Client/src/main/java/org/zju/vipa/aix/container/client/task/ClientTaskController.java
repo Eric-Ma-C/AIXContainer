@@ -58,7 +58,7 @@ public class ClientTaskController {
     }
 
     /**
-     * 启动容器心跳线程和工作线程
+     * 启动容器抢任务线程和工作线程
      *
      * @param:
      * @return:
@@ -67,11 +67,11 @@ public class ClientTaskController {
 
         /** 上传验证容器token */
         boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
-        /** 此处判断可以减少非法token的容器发送大量无效心跳请求 */
+        /** 此处判断可以减少非法token的容器发送大量无效抢任务请求 */
         if (isSuccessful) {
-            /** 验证成功，上传实时gpu信息，开始心跳线程 */
+            /** 验证成功，上传实时gpu信息，开始抢任务线程 */
             TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
-            ClientThreadManager.getInstance().startHeartbeat();
+            ClientThreadManager.getInstance().startGrabbingTask();
 
             /** 测试上传 */
             if (DebugConfig.IS_LOCAL_DEBUG) {

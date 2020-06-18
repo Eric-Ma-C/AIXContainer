@@ -10,7 +10,7 @@ public enum Intent {
 
     /**
      * 空消息
-     * 若容器收到此消息，则开始心跳线程
+     * 若容器收到此消息，则开始抢任务线程
      */
     NULL,
     /**
@@ -22,9 +22,9 @@ public enum Intent {
      */
     GPU_INFO,
     /**
-     * 容器心跳轮询
+     * 容器抢任务轮询
      */
-    HEARTBEAT,
+    GRAB_TASK,
     /**
      * 执行特定任务
      */
@@ -59,7 +59,7 @@ public enum Intent {
 
     /**
      * 请求新任务，平台返回待发送消息
-     * 若平台没有待发送消息，返回HEARTBEAT，容器开始心跳汇报
+     * 若平台没有待发送消息，返回GRAB_TAST，容器开始抢任务
      */
     ASK_FOR_WORK,
 

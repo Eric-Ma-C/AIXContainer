@@ -68,8 +68,8 @@ public class SocketHandler implements Runnable {
             case GET_PIP_ENV_FILE_BY_TASKID:
                 getPipEnvFileByTaskId(msg.getValue());
                 break;
-            case HEARTBEAT:
-                handleHeartbeat(msg);
+            case GRAB_TASK:
+                handleGrabbingTask(msg);
                 break;
 
 
@@ -135,7 +135,7 @@ public class SocketHandler implements Runnable {
     private void clientIdleAskForWork(String token) {
         Message toSendMsg = TaskManager.getInstance().askForWork(token);
         if (toSendMsg == null) {
-            /** 使容器开始心跳汇报 */
+            /** 使容器开始抢任务*/
             toSendMsg = new ServerMessage(Intent.NULL);
         }
 
@@ -220,27 +220,27 @@ public class SocketHandler implements Runnable {
 
 
     /**
-     * 心跳消息处理
+     * 抢任务消息处理
      * 平台有任务则下发任务执行
-     * 否则继续心跳汇报
+     * 否则继续抢任务
      *
      * @param msg
      * @return: void
      */
-    private void handleHeartbeat(Message msg) {
+    private void handleGrabbingTask(Message msg) {
         String token = msg.getToken();
 
         /** 根据token获取id */
         String id = ManagementCenter.getInstance().getIdByToken(token);
 
         if (id == null) {
-            LogUtils.error("No such a device:{}", msg.getToken());
+            LogUtils.error("Grabbing task no such a device:{}", msg.getToken());
             return;
         }
 
         SystemBriefInfo info = JsonUtils.parseObject(msg.getValue(), SystemBriefInfo.class);
         if (info == null) {
-            LogUtils.error("Heartbeat info error:{}", msg);
+            LogUtils.error("Grabbing task info error:{}", msg);
             return;
         }
 
@@ -249,7 +249,7 @@ public class SocketHandler implements Runnable {
 //            token, id, mSocket.getInetAddress(), info.getCpuRate(), info.getRamRate(),
 //            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
-        LogUtils.info("{}:\nHeartbeats from client (id={}): CPU={}%  RAM={}%  time={}",
+        LogUtils.info("{}:\nGrabbing task message from client (id={}): CPU={}%  RAM={}%  time={}",
             token, id, info.getCpuRate(), info.getRamRate(),
             new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 

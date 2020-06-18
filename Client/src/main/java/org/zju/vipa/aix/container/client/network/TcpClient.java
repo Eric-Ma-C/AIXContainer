@@ -8,16 +8,16 @@ import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import org.zju.vipa.aix.container.client.task.custom.DownloadDatasetTask;
 import org.zju.vipa.aix.container.client.task.custom.DownloadModelTask;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
-import org.zju.vipa.aix.container.client.thread.Heartbeat;
+import org.zju.vipa.aix.container.client.thread.GrabbingTaskManager;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.common.exception.AIXBaseException;
-import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 /**
@@ -79,8 +79,8 @@ public class TcpClient {
         }
         switch (msg.getIntent()) {
             case NULL:
-                /** 平台没有待发送消息，容器开始心跳汇报 */
-                ClientThreadManager.getInstance().startHeartbeat();
+                /** 平台没有待发送消息，容器开始抢任务 */
+                ClientThreadManager.getInstance().startGrabbingTask();
                 break;
             case TASK:
                 execTask(msg.getValue());
@@ -287,16 +287,16 @@ public class TcpClient {
     }
 
     /**
-     * 心跳汇报
+     * 抢任务
      * 定时询问服务器有无连接需求，同时汇报容器状态（cpu，gpu，内存占用率等等）
      *
      * @param:
      * @return:
      */
 
-    public void heartbeatReport(SystemBriefInfo info) {
+    public void grabTask(SystemBriefInfo info) {
 
-        ClientMessage message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
+        ClientMessage message = new ClientMessage(Intent.GRAB_TASK, JsonUtils.toJSONString(info));
         Message resMsg = null;
 
         /** 10s读超时，抢任务并发多时可能会比较慢？ */
@@ -304,8 +304,8 @@ public class TcpClient {
 
 
         if (resMsg != null && !Intent.NULL.match(resMsg)) {
-            /** 停止心跳线程,执行任务 */
-            Heartbeat.stop();
+            /** 停止抢任务线程,执行任务 */
+            GrabbingTaskManager.stop();
             handleResponseMsg(resMsg);
         }
 

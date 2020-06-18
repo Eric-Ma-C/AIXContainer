@@ -52,18 +52,18 @@ public class ClientThreadManager {
     }
 
     /**
-     * 开始心跳汇报
+     * 开始抢任务
      */
-    public void startHeartbeat() {
-        if (!Heartbeat.isRunning()) {
+    public void startGrabbingTask() {
+        if (!GrabbingTaskManager.isRunning()) {
             lastUploadTime = System.currentTimeMillis();
 
-            /** todo 延时上传日志，若停止心跳（不空闲）会暂停本任务 */
+            /** todo 延时上传日志，若停止抢任务（已经在训练模型）会暂停本任务 */
             if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
                 uploadLogFilePerDay();
             }
 
-            mThreadPoolExecutor.execute(Heartbeat.getRunnable());
+            mThreadPoolExecutor.execute(GrabbingTaskManager.getRunnable());
         }
     }
 
@@ -82,8 +82,8 @@ public class ClientThreadManager {
                 @Override
                 public void run() {
 
-                    /** 停止心跳线程,执行日志上传 */
-                    Heartbeat.stop();
+                    /** 停止抢任务线程,执行日志上传 */
+                    GrabbingTaskManager.stop();
                     UploadUtils.uploadFile(file.getPath());
                 }
             },30 * 60, TimeUnit.SECONDS);
