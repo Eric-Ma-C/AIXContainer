@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.center.log;
 
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.util.PropertyUtils;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -29,8 +30,9 @@ public class LogReader {
     public static void readInit() {
 //        stop = false;
 
+        String filePath=PropertyUtils.getProperty("log4j.properties","log4j.appender.fileLog.File");
         try {
-            raf = new RandomAccessFile("/nfs2/mc/docker/aix-center/log/debug.log4j", "r");
+            raf = new RandomAccessFile(filePath, "r");
 //            raf = new RandomAccessFile("/nfs2/mc/docker/aix-center/log/123", "r");
             //指定末尾的位置
 

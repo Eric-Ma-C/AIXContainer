@@ -8,6 +8,7 @@ import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
@@ -37,7 +38,6 @@ public class SocketHandler implements Runnable {
 
     @Override
     public void run() {
-
 
         handle(((SocketIoImpl) serverIO).readRequests());
 
@@ -138,6 +138,7 @@ public class SocketHandler implements Runnable {
             /** 使容器开始心跳汇报 */
             toSendMsg = new ServerMessage(Intent.NULL);
         }
+
         serverIO.response(toSendMsg);
     }
 
@@ -150,13 +151,18 @@ public class SocketHandler implements Runnable {
 
     /**
      * 处理gpu信息
-     * 目前仅显示
-     *
+     * 保存在map中
      * @param:
      * @return:
      */
     private void handleGpuInfo(Message message) {
-        LogUtils.info("{}:\nGPU info:{}", message.getTokenSuffix(), message.getValue());
+
+        GpuInfo gpuInfo=JsonUtils.parseObject(message.getValue(),GpuInfo.class);
+        if (gpuInfo!=null){
+            LogUtils.info("{}:\nGPU info:{}", message.getTokenSuffix(), message.getValue());
+            ManagementCenter.getInstance().updateGpuInfo(message.getToken(),gpuInfo);
+        }
+
     }
 
     /**
@@ -173,7 +179,7 @@ public class SocketHandler implements Runnable {
     /**
      * 首次连接平台，验证容器的token
      *
-     * @param token 容器上传的token，无法伪造
+     * @param token 容器上传的jwt token，没有私钥不能伪造
      * @return: void
      */
     private void registerContainer(String token) {

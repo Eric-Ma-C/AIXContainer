@@ -1,9 +1,12 @@
 package org.zju.vipa.aix.container.center.dubbo;
 
 import org.zju.vipa.aix.container.api.AIXClientCenterService;
+import org.zju.vipa.aix.container.api.entity.RunningClient;
+import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.log.LogReader;
 import org.zju.vipa.aix.container.center.manager.TaskManagerService;
 import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Message;
 
 import java.util.ArrayList;
@@ -39,19 +42,34 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
-    public int getActiveClientNum() {
+    public int getClientActiveNum() {
         return TaskManagerService.getActiveClientNum();
     }
 
     @Override
     public List<Message> getMessageQueueByToken(String token) {
         Queue<Message> queue = TaskManagerService.getMessageQueueByToken(token);
+        if (queue==null){
+            return null;
+        }
         return new ArrayList<>(queue);
     }
 
     @Override
     public Task getTaskByToken(String token) {
         return TaskManagerService.getTaskByToken(token);
+    }
+
+    @Override
+    public GpuInfo getGpuInfoByToken(String token) {
+        //todo 长连接实现  参考websocket
+
+        return null;
+    }
+
+    @Override
+    public List<RunningClient> getClientList() {
+        return ManagementCenter.getInstance().getClientsList();
     }
 
 

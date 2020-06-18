@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.common.message;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,31 +9,34 @@ import java.util.List;
  * @Author: EricMa
  * @Description: gpu
  */
-public class GpuInfo {
-    private String nvidiaSmi, driverVersion, cudaVersion;
+public class GpuInfo implements Serializable {
+    private String driverVersion, cudaVersion;
+    private int gpuNum;
     private List<Gpu> gpus;
-    private List<Process> processes;
+
 
     public GpuInfo() {
         gpus=new ArrayList<>();
-        processes=new ArrayList<>();
+
     }
 
-    public static class Gpu{
-        String id,name,fan,temp,usage,cap,memUsed,memAll;
+    public static class Gpu implements Serializable{
+        String id,name, temperature, powerDraw, powerLimit,memUsed,memAll;
+        private List<Process> processes;
 
         public Gpu() {
+
         }
 
-        public Gpu(String id, String name, String fan, String temp, String usage, String cap, String memUsed, String memAll) {
+        public Gpu(String id, String name, String temperature, String powerDraw, String powerLimit, String memUsed, String memAll) {
             this.id = id;
             this.name = name;
-            this.fan = fan;
-            this.temp = temp;
-            this.usage = usage;
-            this.cap = cap;
+            this.temperature = temperature;
+            this.powerDraw = powerDraw;
+            this.powerLimit = powerLimit;
             this.memUsed = memUsed;
             this.memAll = memAll;
+            this.processes=new ArrayList<>();
         }
 
         public String getId() {
@@ -51,36 +55,28 @@ public class GpuInfo {
             this.name = name;
         }
 
-        public String getFan() {
-            return fan;
+        public String getTemperature() {
+            return temperature;
         }
 
-        public void setFan(String fan) {
-            this.fan = fan;
+        public void setTemperature(String temperature) {
+            this.temperature = temperature;
         }
 
-        public String getTemp() {
-            return temp;
+        public String getPowerDraw() {
+            return powerDraw;
         }
 
-        public void setTemp(String temp) {
-            this.temp = temp;
+        public void setPowerDraw(String powerDraw) {
+            this.powerDraw = powerDraw;
         }
 
-        public String getUsage() {
-            return usage;
+        public String getPowerLimit() {
+            return powerLimit;
         }
 
-        public void setUsage(String usage) {
-            this.usage = usage;
-        }
-
-        public String getCap() {
-            return cap;
-        }
-
-        public void setCap(String cap) {
-            this.cap = cap;
+        public void setPowerLimit(String powerLimit) {
+            this.powerLimit = powerLimit;
         }
 
         public String getMemUsed() {
@@ -98,28 +94,33 @@ public class GpuInfo {
         public void setMemAll(String memAll) {
             this.memAll = memAll;
         }
+
+        public List<Process> getProcesses() {
+            return processes;
+        }
+
+        public void setProcesses(List<Process> processes) {
+            this.processes = processes;
+        }
+
+        public void addProcess(Process process) {
+            this.processes.add(process);
+        }
     }
-    public static class Process {
-        String gpuId,pid,type,processName,memUsed;
+    public static class Process implements Serializable{
+        String pid,type,processName,memUsed;
 
         public Process() {
         }
 
-        public Process(String gpuId, String pid, String type, String processName, String memUsed) {
-            this.gpuId = gpuId;
+        public Process(String pid, String type, String processName, String memUsed) {
+
             this.pid = pid;
             this.type = type;
             this.processName = processName;
             this.memUsed = memUsed;
         }
 
-        public String getGpuId() {
-            return gpuId;
-        }
-
-        public void setGpuId(String gpuId) {
-            this.gpuId = gpuId;
-        }
 
         public String getPid() {
             return pid;
@@ -154,14 +155,6 @@ public class GpuInfo {
         }
     }
 
-    public String getNvidiaSmi() {
-        return nvidiaSmi;
-    }
-
-    public void setNvidiaSmi(String nvidiaSmi) {
-        this.nvidiaSmi = nvidiaSmi;
-    }
-
     public String getDriverVersion() {
         return driverVersion;
     }
@@ -186,18 +179,17 @@ public class GpuInfo {
         this.gpus.add(gpu);
     }
 
-    public List<Process> getProcesses() {
-        return processes;
-    }
 
-    public void addProcess(Process process) {
-        this.processes.add(process);
-    }
 
     public void setGpus(List<Gpu> gpus) {
         this.gpus = gpus;
     }
-    public void setProcesses(List<Process> processes) {
-        this.processes = processes;
+
+    public int getGpuNum() {
+        return gpuNum;
+    }
+
+    public void setGpuNum(int gpuNum) {
+        this.gpuNum = gpuNum;
     }
 }

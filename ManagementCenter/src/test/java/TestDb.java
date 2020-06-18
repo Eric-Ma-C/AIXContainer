@@ -1,3 +1,4 @@
+import org.junit.Test;
 import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.common.entity.Task;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
@@ -41,5 +42,36 @@ public class TestDb {
         /** 向数据库写入测试device */
         public static void initTestDevices(){
 
+        }
+
+        @Test
+        public void updateDeviceDetail(){
+                DbManager.getInstance().updateDeviceGpuDetailById("test","{\n" +
+                    "                \"driverVersion\": \"440.31\",\n" +
+                    "                \"cudaVersion\": \"10.2\",\n" +
+                    "                \"gpuNum\": 2,\n" +
+                    "                \"gpus\": [\n" +
+                    "                    {\n" +
+                    "                        \"id\": \"0\",\n" +
+                    "                        \"name\": \"Quadro P5000\",\n" +
+                    "                        \"temperature\": \"65 C\",\n" +
+                    "                        \"powerDraw\": \"62.64 W\",\n" +
+                    "                        \"powerLimit\": \"180.00 W\",\n" +
+                    "                        \"memUsed\": \"5541 MiB\",\n" +
+                    "                        \"memAll\": \"16276 MiB\",\n" +
+                    "                        \"processes\": []\n" +
+                    "                    },\n" +
+                    "                    {\n" +
+                    "                        \"id\": \"1\",\n" +
+                    "                        \"name\": \"Tesla K20c\",\n" +
+                    "                        \"temperature\": \"47 C\",\n" +
+                    "                        \"powerDraw\": \"50.99 W\",\n" +
+                    "                        \"powerLimit\": \"225.00 W\",\n" +
+                    "                        \"memUsed\": \"0 MiB\",\n" +
+                    "                        \"memAll\": \"4743 MiB\",\n" +
+                    "                        \"processes\": []\n" +
+                    "                    }\n" +
+                    "                ]\n" +
+                    "            }");
         }
 }

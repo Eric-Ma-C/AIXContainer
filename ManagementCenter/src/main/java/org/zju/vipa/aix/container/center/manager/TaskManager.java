@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.center.manager;
 
+import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
@@ -90,9 +91,6 @@ public class TaskManager {
     }
 
 
-
-
-
     /**
      * 在空闲时尝试获取新的任务
      * 当容器抢到一个任务的时候，对应token下若有待发送消息，则依次返回队列中的消息
@@ -125,11 +123,13 @@ public class TaskManager {
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
+                ManagementCenter.getInstance().updateTaskBriefInfo(token, new TaskBriefInfo(task));
+
                 String codePath = task.getCodePath();
                 String modelArgs = task.getModelArgs();
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
 //         todo 测试 跳过配conda环境
-                /** 分成两条指令执行，否则可能会卡住 */
+                /** 分成两条指令执行，否则可能会卡住? */
                 String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
                 String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
@@ -190,7 +190,16 @@ public class TaskManager {
             }
         }
 
-        return getMessageByToken(token);
+
+        /** 待发送的指令消息 */
+        Message toSendMsg = getMessageByToken(token);
+        if (toSendMsg != null) {
+            ManagementCenter.getInstance().updateRunningCmds(token, toSendMsg.getValue());
+        } else {
+            ManagementCenter.getInstance().updateRunningCmds(token, "");
+        }
+
+        return toSendMsg;
     }
 
 

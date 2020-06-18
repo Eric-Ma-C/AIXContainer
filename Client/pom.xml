@@ -72,15 +72,25 @@
                             <goal>upload-single</goal>
                         </goals>
                         <configuration>
-                            <serverId>vipa-205</serverId>
-                            <!-- serverId即在settings.xml中配置的service的id -->
-                            <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <!-- 要上传到服务器的文件，一般来说是jar或者war包 -->
-<!--                            <url>scp://10.214.211.205/disk2/mc/docker/aix-container/train_client2/</url>-->
-                           <!-- <url>scp://10.214.211.205/nfs2/mc/docker</url>-->
-                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-client</url>
+<!--                            <serverId>vipa-205</serverId>-->
+<!--                             serverId即在settings.xml中配置的service的id -->
+<!--                            <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
+<!--                            Client-1.0-SNAPSHOT-jar-with-dependencies.jar-->
+<!--                            &lt;!&ndash; 要上传到服务器的文件，一般来说是jar或者war包 &ndash;&gt;-->
+<!--                            &lt;!&ndash; <url>scp://10.214.211.205/nfs2/mc/docker/aix-client</url>&ndash;&gt;-->
+<!--                            <url>scp://10.214.211.205/disk2/mc</url>-->
 
-<!--                            <url>scp://10.214.211.205/disk2/mc/</url>-->
+
+
+                            <serverId>vipa-207</serverId>
+                            <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
+                            <url>scp://10.214.211.207/nfs2/aix-container/client</url>
+
+
+                            <!--                            <serverId>vipa-207</serverId>-->
+                            <!--                            <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
+                            <!--                            <url>scp://10.214.211.207/nfs2/mc/docker/aix-center</url>-->
+                            <!--                            <url>scp://10.214.211.207/home/disk1/mc</url>-->
                             <!-- 配置服务器的地址以及文件上传的目录。 -->
                         </configuration>
                     </execution>
@@ -97,7 +107,21 @@
             <scope>compile</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/junit/junit -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
 
+
+        <!-- https://mvnrepository.com/artifact/dom4j/dom4j -->
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>1.6.1</version>
+        </dependency>
 
 
     </dependencies>

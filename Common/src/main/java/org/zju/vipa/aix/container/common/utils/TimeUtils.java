@@ -1,7 +1,6 @@
 package org.zju.vipa.aix.container.common.utils;
 
 import java.text.DecimalFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -501,5 +500,14 @@ public class TimeUtils {
 
         String formatStr = formatter.format(new Date());
         return formatStr;
+    }
+
+    /** 获取当前时间 */
+    public static String getCurrentTimeStr(){
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        //（24小时制）
+        return sdf.format(date);
     }
 }

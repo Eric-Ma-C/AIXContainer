@@ -14,6 +14,7 @@ import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -21,9 +22,9 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 数据库管理器, 单例
  */
-public class DbManager {
+public class DbManager implements Serializable {
 
-//    private SqlSessionFactory sqlSessionFactory;
+    //    private SqlSessionFactory sqlSessionFactory;
     private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
 
 
@@ -168,6 +169,27 @@ public class DbManager {
             }
         });
 
+    }
+
+    /**
+     * 更新容器detail
+     * @return
+     */
+    public Boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
+
+//        DeviceDAO deviceDAO = SqlSessionManager.getInstance().getMapper(DeviceDAO.class);
+//        deviceDAO.updateDetailById(clientId, detail);
+
+        return SqlSessionProxy.start(new SqlTask<Boolean>() {
+            @Override
+            public Boolean exec(SqlSession sqlSession) {
+                // 获取映射类
+                DeviceDAO deviceDAO = sqlSession.getMapper(DeviceDAO.class);
+                deviceDAO.updateDetailById(clientId,detail);
+
+                return true;
+            }
+        });
     }
 
 //    private void execThreadLocalSession(){

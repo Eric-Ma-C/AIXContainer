@@ -81,9 +81,14 @@
 <!--                            <url>scp://112.124.46.179/home/maven_upload/</url>-->
 
 
-                            <serverId>vipa-205</serverId>
+<!--                            <serverId>vipa-205</serverId>-->
+<!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
+<!--                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-center</url>-->
+
+                            <serverId>vipa-207</serverId>
                             <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-center</url>
+<!--                            <url>scp://10.214.211.207/nfs2/mc/docker/aix-center</url>-->
+                            <url>scp://10.214.211.207/nfs2/aix-container/server</url>
 
                         </configuration>
                     </execution>

@@ -1,6 +1,8 @@
 package org.zju.vipa.aix.container.api;
 
+import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Message;
 
 import java.util.List;
@@ -42,7 +44,13 @@ public interface AIXClientCenterService {
      * 正在与平台通信的训练容器数量
      * 也就是待发送队列的数量
      */
-     int getActiveClientNum() ;
+     int getClientActiveNum();
+
+    /**
+     * 正在与平台通信的训练容器列表
+     * 也就是待发送队列的容器列表
+     */
+    List<RunningClient> getClientList();
 
     /**
      * 获取某容器的待发送队列
@@ -54,5 +62,8 @@ public interface AIXClientCenterService {
      */
      Task getTaskByToken(String token);
 
-
+    /**
+     * 获取某容器的当前gpu状态
+     */
+    GpuInfo getGpuInfoByToken(String token);
 }

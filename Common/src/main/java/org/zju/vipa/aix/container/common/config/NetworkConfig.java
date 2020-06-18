@@ -19,6 +19,14 @@ public class NetworkConfig {
      */
     public static final String VIPA_205_IP = "10.214.211.205";
     /**
+     * vipa 内网206
+     */
+    public static final String VIPA_206_IP = "10.214.211.206";
+    /**
+     * vipa 内网207
+     */
+    public static final String VIPA_207_IP = "10.214.211.207";
+    /**
      * 本地测试地址
      */
     public static final String DEBUG_SERVER_IP = "127.0.0.1";
@@ -42,8 +50,8 @@ public class NetworkConfig {
     public static final int ZK_AIX_PORT = 20880;
 
     //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
-    public static String SERVER_IP = VIPA_205_IP;
-    public static String DOWNLOAD_SERVER_IP = VIPA_205_IP;
+    public static String SERVER_IP = VIPA_207_IP;
+    public static String DOWNLOAD_SERVER_IP = VIPA_207_IP;
     //    public static String DOWNLOAD_SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static int DOWNLOAD_SERVER_PORT = 8080;
 

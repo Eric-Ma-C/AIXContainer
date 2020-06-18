@@ -33,6 +33,4 @@ public class TaskManagerService {
         return TaskManager.getInstance().getTaskByToken(token);
     }
 
-
-
 }

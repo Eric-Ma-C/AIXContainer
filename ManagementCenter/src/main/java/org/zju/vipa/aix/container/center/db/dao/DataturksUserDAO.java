@@ -12,5 +12,5 @@ import java.util.List;
  */
 public interface DataturksUserDAO {
         @Select("select * from d_users")
-        public List<DataturksUser> getUserList();
+        List<DataturksUser> getUserList();
 }

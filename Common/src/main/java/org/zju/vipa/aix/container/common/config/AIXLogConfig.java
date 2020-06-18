@@ -7,5 +7,6 @@ package org.zju.vipa.aix.container.common.config;
  */
 public class AIXLogConfig {
 
-    public static final String CLIENT_LOG_PATH="/log/aixlog/debug.log4j";
+//    public static final String CLIENT_LOG_PATH="/log/aixlog/debug.log4j";
+//    public static final String SERVER_LOG_PATH="/log/aixlog/debug.log4j";
 }

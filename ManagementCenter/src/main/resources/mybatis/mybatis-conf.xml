@@ -15,9 +15,11 @@
             <transactionManager type="JDBC" />
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver" />
-                <property name="url" value="jdbc:mysql://10.214.211.205:3316/center_temp?serverTimezone=Asia/Shanghai" />
+<!--                <property name="url" value="jdbc:mysql://10.214.211.207:3316/center_temp?serverTimezone=Asia/Shanghai" />-->
 <!--                <property name="url" value="jdbc:mysql://112.124.46.179:3307/center_temp?serverTimezone=Asia/Shanghai&amp;useSSL=false" />-->
 <!--                <property name="url" value="jdbc:mysql://127.0.0.1:3307/center_temp?serverTimezone=Asia/Shanghai" />-->
+                <property name="url" value="jdbc:mysql://10.214.211.205:3316/center_temp?serverTimezone=Asia/Shanghai" />
+
                 <property name="username" value="sontal" />
                 <property name="password" value="12345" />
             </dataSource>

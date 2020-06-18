@@ -58,50 +58,54 @@ public class SystemInfoUtils {
     }
 
     public static GpuInfo getGpuInfo() {
-        ShellUtils.CommandResult result = ShellUtils.execCommand("nvidia-smi");
+        ShellUtils.CommandResult result = ShellUtils.execCommand("nvidia-smi -q -x");
         if (result.result != 0) {
             ClientLogUtils.error(result.errorMsg);
             return null;
         }
-        List<String> info = Arrays.asList(result.responseMsg.split("\\s+"));
+
+//        return parseInfo(result.responseMsg);
+        return XmlUtils.parseGpuInfo(result.responseMsg);
+    }
+
+    public static GpuInfo parseInfo(String str){
+        List<String> info = Arrays.asList(str.split("\\s+"));
 
         GpuInfo gpuInfo = new GpuInfo();
-        gpuInfo.setNvidiaSmi(info.get(info.indexOf("NVIDIA-SMI") + 1));
         gpuInfo.setDriverVersion(info.get(info.indexOf("Driver") + 2));
         gpuInfo.setCudaVersion(info.get(info.indexOf("CUDA") + 2));
 
         int gpuBegin = info.indexOf("|===============================+======================+======================|") + 2;
         int processBegin = info.indexOf("Processes:");
         int count = (processBegin - gpuBegin) / 24;
-        for (int i = 0; i < count; i++) {
-            gpuInfo.addGpu(new GpuInfo.Gpu(
-                info.get(gpuBegin),
-                info.get(gpuBegin + 1) + " " + info.get(gpuBegin + 2),
-                info.get(gpuBegin + 11),
-                info.get(gpuBegin + 12),
-                info.get(gpuBegin + 14),
-                info.get(gpuBegin + 16),
-                info.get(gpuBegin + 18),
-                info.get(gpuBegin + 20)));
-
-            gpuBegin += 27;
-        }
-
-        processBegin += 14;
-        count = (info.size() - processBegin) / 6;
-        for (int i = 0; i < count; i++) {
-            gpuInfo.addProcess(new GpuInfo.Process(
-                info.get(processBegin),
-                info.get(processBegin + 1),
-                info.get(processBegin + 2),
-                info.get(processBegin + 3),
-                info.get(processBegin + 4)
-            ));
-            processBegin += 7;
-        }
+//        for (int i = 0; i < count; i++) {
+//            gpuInfo.addGpu(new GpuInfo.Gpu(
+//                info.get(gpuBegin),
+//                info.get(gpuBegin + 1) + " " + info.get(gpuBegin + 2),
+//                info.get(gpuBegin + 11),
+//                info.get(gpuBegin + 12),
+//                info.get(gpuBegin + 14),
+//                info.get(gpuBegin + 16),
+//                info.get(gpuBegin + 18),
+//                info.get(gpuBegin + 20)));
+//
+//            gpuBegin += 27;
+//        }
+//
+//        processBegin += 14;
+//        count = (info.size() - processBegin) / 6;
+//        for (int i = 0; i < count; i++) {
+//            gpuInfo.addProcess(new GpuInfo.Process(
+//                info.get(processBegin),
+//                info.get(processBegin + 1),
+//                info.get(processBegin + 2),
+//                info.get(processBegin + 3),
+//                info.get(processBegin + 4)
+//            ));
+//            processBegin += 7;
+//        }
 
         return gpuInfo;
-
     }
 
     public static SystemBriefInfo getSystemBriefInfo() {

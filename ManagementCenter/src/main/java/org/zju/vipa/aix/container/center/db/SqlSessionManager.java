@@ -21,7 +21,7 @@ import java.lang.reflect.Proxy;
  */
 public class SqlSessionManager {
     private static SqlSessionFactory sqlSessionFactory;
-    private final SqlSession sqlSessionProxy;
+//    private final SqlSession sqlSessionProxy;
 
     /**
      * 保证每个线程一个session
@@ -41,10 +41,14 @@ public class SqlSessionManager {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
-        sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
-            SqlSessionFactory.class.getClassLoader(),
-            new Class[]{SqlSession.class},
-            new SqlSessionInterceptor());
+//        sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
+//            SqlSession.class.getClassLoader(),
+//            new Class[]{SqlSession.class},
+//            new SqlSessionInterceptor());
+    }
+
+    public static SqlSessionManager getInstance(){
+        return SqlSessionManagerHolder.INSTANCE;
     }
 
     static {
@@ -65,22 +69,30 @@ public class SqlSessionManager {
             ExceptionUtils.handle(e);
         }
     }
+    public <T> T getMapper(Class<T> type){
+        return getLocalSession().getMapper(type);
+    }
 
     /**
-     * localSqlSession获取与直接sqlSessionFactory.openSession();相比，好在sqlSession关闭前，
+     * localSqlSession获取与直接sqlSessionFactory.openSession()相比，好在sqlSession关闭前，
      * 如果不小心在其他线程调用sqlSession的方法不会产生并发冲突
      *
      * @param
      * @return: org.apache.ibatis.session.SqlSession
      */
     private SqlSession getLocalSession() {
-        SqlSession session = localSqlSession.get();
-        if (session == null) {
-            session = sqlSessionFactory.openSession();
-            localSqlSession.set(session);
+        SqlSession sqlSessionProxy = localSqlSession.get();
+        if (sqlSessionProxy == null) {
+            sqlSessionProxy = (SqlSession) Proxy.newProxyInstance(
+                SqlSession.class.getClassLoader(),
+                new Class[]{SqlSession.class},
+                new SqlSessionInterceptor());
+//            session = sqlSessionFactory.openSession();
+            localSqlSession.set(sqlSessionProxy);
         }
 
-        return session;
+        return sqlSessionProxy;
+//        return sqlSessionProxy;
     }
 
     /**
@@ -102,12 +114,15 @@ public class SqlSessionManager {
     private class SqlSessionInterceptor implements InvocationHandler {
         @Override
         public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-            SqlSession autoSqlSession = getLocalSession();
+//            SqlSession autoSqlSession = getLocalSession();
+            SqlSession autoSqlSession = (SqlSession) proxy;
             Object obj = null;
             try {
                 obj = method.invoke(autoSqlSession, args);
 
                 autoSqlSession.commit();
+                return obj;
+
             } catch (Throwable t) {
                 autoSqlSession.rollback();
                 throw t;
@@ -115,7 +130,7 @@ public class SqlSessionManager {
             } finally {
                 closeSession();
             }
-            return obj;
+
         }
     }
 }

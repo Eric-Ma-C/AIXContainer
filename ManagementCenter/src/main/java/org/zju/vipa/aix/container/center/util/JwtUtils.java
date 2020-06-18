@@ -7,6 +7,7 @@ import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 
 import java.util.Date;
 
@@ -24,7 +25,7 @@ public class JwtUtils {
 
 
     static{
-        secret = PropertyUtils.getProperty("jwt.secret","vipa-dev");
+        secret = PropertyUtils.getProperty("custom.properties","jwt.secret","vipa-dev");
         jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
     }
 
@@ -55,7 +56,8 @@ public class JwtUtils {
 
     public static boolean verify(String token) {
         try {
-            jwtVerifier.verify(token);
+            DecodedJWT decodedJWT = jwtVerifier.verify(token);
+//            decodedJWT.
             return true;
         }catch (JWTVerificationException e){
             ExceptionUtils.handle(e,"Token:"+token);
