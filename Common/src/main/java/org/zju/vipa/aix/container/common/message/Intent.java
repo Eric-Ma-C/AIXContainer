@@ -18,9 +18,9 @@ public enum Intent {
      */
     REGISTER,
     /**
-     * gpu信息
+     * 心跳,gpu信息
      */
-    GPU_INFO,
+    HEARTBEAT,
     /**
      * 容器抢任务轮询
      */

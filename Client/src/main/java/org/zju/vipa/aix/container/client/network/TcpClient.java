@@ -8,7 +8,7 @@ import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import org.zju.vipa.aix.container.client.task.custom.DownloadDatasetTask;
 import org.zju.vipa.aix.container.client.task.custom.DownloadModelTask;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
-import org.zju.vipa.aix.container.client.thread.GrabbingTaskManager;
+import org.zju.vipa.aix.container.client.thread.GrabbingTaskThread;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
@@ -51,17 +51,7 @@ public class TcpClient {
     }
 
 
-    /**
-     * 上传gpu cuda和显存占用信息
-     *
-     * @param:
-     * @return:
-     */
 
-    public void uploadGpuInfo(GpuInfo gpuInfo) {
-        ClientMessage msg = new ClientMessage(Intent.GPU_INFO, JsonUtils.toJSONString(gpuInfo));
-        clientIO.sendMessage(msg);
-    }
 
     public void sendMessage(ClientMessage clientMessage) {
         clientIO.sendMessage(clientMessage);
@@ -293,21 +283,32 @@ public class TcpClient {
      * @param:
      * @return:
      */
-
     public void grabTask(SystemBriefInfo info) {
 
         ClientMessage message = new ClientMessage(Intent.GRAB_TASK, JsonUtils.toJSONString(info));
         Message resMsg = null;
 
-        /** 10s读超时，抢任务并发多时可能会比较慢？ */
-        resMsg = clientIO.sendMsgAndGetResponse(message, 10000);
+        /** 5s读超时，抢任务并发多时可能会比较慢？ */
+        resMsg = clientIO.sendMsgAndGetResponse(message, 5000);
 
 
         if (resMsg != null && !Intent.NULL.match(resMsg)) {
             /** 停止抢任务线程,执行任务 */
-            GrabbingTaskManager.stop();
+            GrabbingTaskThread.stop();
             handleResponseMsg(resMsg);
         }
+
+    }
+
+    /**
+     * 心跳汇报容器状态（cpu，gpu，内存占用率等等）
+     * 上传gpu cuda和显存占用信息
+     */
+    public void heartbeatReport(GpuInfo info) {
+
+        ClientMessage message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
+
+        clientIO.sendMessage(message);
 
     }
 

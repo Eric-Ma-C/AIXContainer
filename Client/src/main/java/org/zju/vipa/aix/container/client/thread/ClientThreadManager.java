@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.client.thread;
 
+import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
@@ -55,16 +56,33 @@ public class ClientThreadManager {
      * 开始抢任务
      */
     public void startGrabbingTask() {
-        if (!GrabbingTaskManager.isRunning()) {
-            lastUploadTime = System.currentTimeMillis();
 
-            /** todo 延时上传日志，若停止抢任务（已经在训练模型）会暂停本任务 */
-            if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
-                uploadLogFilePerDay();
+            if (!GrabbingTaskThread.isRunning()) {
+                lastUploadTime = System.currentTimeMillis();
+
+                /** todo 延时上传日志，若停止抢任务（已经在训练模型）会暂停本任务 */
+                if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
+                    uploadLogFilePerDay();
+                }
+
+                mThreadPoolExecutor.execute(GrabbingTaskThread.getRunnable());
             }
 
-            mThreadPoolExecutor.execute(GrabbingTaskManager.getRunnable());
+    }
+    /**
+     * 初始化,开始心跳,抢任务
+     */
+    public void init() {
+
+        mThreadPoolExecutor.execute(new HeartBeatThread());
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            ClientExceptionUtils.handle(e);
         }
+        startGrabbingTask();
+
     }
 
     /**
@@ -83,7 +101,7 @@ public class ClientThreadManager {
                 public void run() {
 
                     /** 停止抢任务线程,执行日志上传 */
-                    GrabbingTaskManager.stop();
+                    GrabbingTaskThread.stop();
                     UploadUtils.uploadFile(file.getPath());
                 }
             },30 * 60, TimeUnit.SECONDS);

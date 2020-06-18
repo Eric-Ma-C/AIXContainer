@@ -4,11 +4,10 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
 import org.zju.vipa.aix.container.client.utils.TokenUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
-import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
@@ -69,9 +68,8 @@ public class ClientTaskController {
         boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
         /** 此处判断可以减少非法token的容器发送大量无效抢任务请求 */
         if (isSuccessful) {
-            /** 验证成功，上传实时gpu信息，开始抢任务线程 */
-            TcpClient.getInstance().uploadGpuInfo(SystemInfoUtils.getGpuInfo());
-            ClientThreadManager.getInstance().startGrabbingTask();
+            /** 验证成功，开始心跳,抢任务线程 */
+            ClientThreadManager.getInstance().init();
 
             /** 测试上传 */
             if (DebugConfig.IS_LOCAL_DEBUG) {

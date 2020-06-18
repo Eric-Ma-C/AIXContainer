@@ -7,16 +7,14 @@ import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 
 /**
- * @Date: 2020/3/10 13:47
+ * @Date: 2020/6/17 13:47
  * @Author: EricMa
  * @Description: 抢任务线程：
  * 1.未抢到任务时（工作线程空闲），每30s询问服务器有无任务可抢，同时汇报容器状态（cpu，gpu，内存占用率等等）
  * todo 2.已抢到任务时（工作线程忙碌），每一次Task执行完毕时，打包上传Task执行信息
  */
-public class GrabbingTaskManager {
-    /**
-     * 执行代码
-     */
+public class GrabbingTaskThread {
+
     private static Runnable runnable;
     /**
      * 抢任务间隔时间 15s
@@ -25,7 +23,7 @@ public class GrabbingTaskManager {
 
     private static volatile boolean exit = true;
 
-    static Runnable getRunnable() {
+    synchronized static Runnable getRunnable() {
         return runnable;
     }
 
@@ -33,12 +31,12 @@ public class GrabbingTaskManager {
      * 停止抢任务
      * 本方法不会立刻停止抢任务，需要等待本周期任务结束，线程才会终止
      */
-    public static void stop() {
+    public synchronized static void stop() {
         exit = true;
         ClientThreadManager.getInstance().cancelUploadLog();
     }
 
-    public static boolean isRunning(){
+    public synchronized static boolean isRunning(){
         return !exit;
     }
 

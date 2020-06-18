@@ -96,8 +96,8 @@ public class SocketHandler implements Runnable {
             case REGISTER:
                 registerContainer(msg.getValue());
                 break;
-            case GPU_INFO:
-                handleGpuInfo(msg);
+            case HEARTBEAT:
+                handleHeartbeatGpuInfo(msg);
                 break;
             case EXCEPTION:
                 handleException(msg);
@@ -155,11 +155,11 @@ public class SocketHandler implements Runnable {
      * @param:
      * @return:
      */
-    private void handleGpuInfo(Message message) {
+    private void handleHeartbeatGpuInfo(Message message) {
 
         GpuInfo gpuInfo=JsonUtils.parseObject(message.getValue(),GpuInfo.class);
         if (gpuInfo!=null){
-            LogUtils.info("{}:\nGPU info:{}", message.getTokenSuffix(), message.getValue());
+            LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), message.getValue());
             ManagementCenter.getInstance().updateGpuInfo(message.getToken(),gpuInfo);
         }
 
@@ -249,7 +249,7 @@ public class SocketHandler implements Runnable {
 //            token, id, mSocket.getInetAddress(), info.getCpuRate(), info.getRamRate(),
 //            new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
-        LogUtils.info("{}:\nGrabbing task message from client (id={}): CPU={}%  RAM={}%  time={}",
+        LogUtils.info("{}:\nGrabbing task request from client (id={}): CPU={}%  RAM={}%  time={}",
             token, id, info.getCpuRate(), info.getRamRate(),
             new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Date()));
 
