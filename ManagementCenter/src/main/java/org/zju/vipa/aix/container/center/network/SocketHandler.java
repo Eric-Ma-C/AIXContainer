@@ -71,8 +71,6 @@ public class SocketHandler implements Runnable {
             case GRAB_TASK:
                 handleGrabbingTask(msg);
                 break;
-
-
             case SHELL_BEGIN:
                 shellBegin(msg);
                 break;

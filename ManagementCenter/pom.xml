@@ -14,7 +14,7 @@
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
+                <artifactId>wagon-ssh-external</artifactId>
                 <version>3.3.3</version>
             </extension>
         </extensions>
@@ -85,10 +85,10 @@
 <!--                            <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
 <!--                            <url>scp://10.214.211.205/nfs2/mc/docker/aix-center</url>-->
 
-                            <serverId>vipa-207</serverId>
+                            <serverId>vipa-207-key</serverId>
                             <fromFile>target/ManagementCenter-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
 <!--                            <url>scp://10.214.211.207/nfs2/mc/docker/aix-center</url>-->
-                            <url>scp://10.214.211.207/nfs2/aix-container/server</url>
+                            <url>scpexe://10.214.211.207/nfs2/aix-container/server</url>
 
                         </configuration>
                     </execution>

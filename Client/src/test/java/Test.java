@@ -13,6 +13,7 @@ public class Test {
         GpuInfo info= XmlUtils.parseGpuInfo(str2);
 
         System.out.println(info);
+
     }
 
     String str1="Tue Jun  9 19:46:24 2020\n" +

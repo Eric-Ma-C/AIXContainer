@@ -14,8 +14,8 @@ public class Config {
 
     /** 容器中model.zip文件下载位置 */
     public static final String MODEL_SAVE_PATH = AIX_CONTAINER_ROOT_DIR +"/model.zip";
-    /** 容器中model.zip文件解压位置 */
-    public static final String MODEL_UNZIP_PATH = AIX_CONTAINER_ROOT_DIR +"/model";
+    /** 容器中model.zip文件解压位置,todo 子文件夹放不同的model */
+    public static final String MODEL_UNZIP_PATH = AIX_CONTAINER_ROOT_DIR +"/models";
 
     /** 容器中dataset文件下载位置 */
     public static final String DATASET_SAVE_PATH = AIX_CONTAINER_ROOT_DIR +"/annotations.json";
