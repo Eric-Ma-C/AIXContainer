@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.client.network;
 
 
+import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.netty.tcp.NettyIoImpl;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 import org.zju.vipa.aix.container.client.task.ClientTaskController;
@@ -84,9 +85,22 @@ public class TcpClient {
             case DOWNLOAD_DATASET:
                 downloadDataset(msg);
                 break;
+            case REAL_TIME_LOG_SHOW_DETAIL:
+                realTimeLogShowDetail();
+                break;
+            case REAL_TIME_LOG_SHOW_BRIEF:
+                realTimeLogShowBrief();
+                break;
             default:
                 break;
         }
+    }
+
+    private void realTimeLogShowDetail() {
+        Client.isUploadRealtimeLog=true;
+    }
+    private void realTimeLogShowBrief() {
+        Client.isUploadRealtimeLog=false;
     }
 
     /**

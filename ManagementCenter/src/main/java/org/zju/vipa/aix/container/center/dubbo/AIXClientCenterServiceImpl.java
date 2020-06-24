@@ -76,8 +76,8 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
-    public void clientLogStop() {
-
+    public void clientLogStop(String token) {
+        TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_BRIEF));
     }
 
     @Override

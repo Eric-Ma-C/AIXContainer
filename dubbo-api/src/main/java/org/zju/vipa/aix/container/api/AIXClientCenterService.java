@@ -79,5 +79,5 @@ public interface AIXClientCenterService {
      * @param
      * @return: void
      */
-    void clientLogStop();
+    void clientLogStop(String token);
 }
