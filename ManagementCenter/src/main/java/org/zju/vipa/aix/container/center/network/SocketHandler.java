@@ -2,9 +2,10 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.task.TaskManager;
+import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
+import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
@@ -283,38 +284,35 @@ public class SocketHandler implements Runnable {
         }
 
     }
+    private void sendToKafka(String log){
+        if (ClientRealTimeLogProducer.isActive){
+            ClientRealTimeLogProducer.send("key",log);
+        }
+    }
 
     private void shellBegin(Message message) {
         LogUtils.debug("{} shellBegin: {}", message.getTokenSuffix(), message.getValue());
+       sendToKafka(message.getValue());
     }
 
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
         LogUtils.debug("{} shellInfo: {}", message.getTokenSuffix(), message.getValue());
+        sendToKafka(message.getValue());
     }
-
-
     /**
-     * shell指令执行结果显示，环境配置错误处理
-     *
-     * @param message shell result info
-     * @return: void
+     * shell指令执行结果显示
      */
     private void shellResult(Message message) {
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
-//        Message msg = null;
-//        if (!"resultCode=0".equals(message.getValue())) {
-//            /** 遇到错误尝试获取修复指令，可能会失败 */
-//            msg = TaskManager.getInstance().askForWork(message.getToken());
-//        }
-//        //写返回报文
-//        response(msg);
+        sendToKafka(message.getValue());
     }
 
     private void shellError(Message message) {
 
 //        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
         LogUtils.error("shellError: {}", message.getValue());
+        sendToKafka(message.getValue());
     }
 
     private void shellErrorHandle(Message message) {

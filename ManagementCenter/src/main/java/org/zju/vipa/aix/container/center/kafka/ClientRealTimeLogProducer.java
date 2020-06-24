@@ -1,6 +1,8 @@
 package org.zju.vipa.aix.container.center.kafka;
 
 import org.apache.kafka.clients.producer.*;
+import org.zju.vipa.aix.container.center.util.ExceptionUtils;
+import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
 import java.util.Properties;
@@ -14,50 +16,11 @@ import java.util.concurrent.Future;
  */
 public class ClientRealTimeLogProducer {
 
-    KafkaProducer<String, String> producer;
-
-    public void send(String key, String value) {
-        init();
-
-        // 3. 准备数据
-        ProducerRecord<String, String> record = new ProducerRecord<>(NetworkConfig.KAFKA_TOPIC, key, value);
-        // 4. 发送数据（带回调）
-        Future<RecordMetadata> future = producer.send(record, new Callback() {
-            @Override
-            public void onCompletion(RecordMetadata metadata, Exception exception) {
-                if (exception == null) {
-                    // 回调函数，该方法会在 Producer 收到 ack 时调用，为异步调用
-                    String result = String.format("消息发送成功，主题Topic: %s,分区Partition: %s,偏移量Offset: %s",
-                        metadata.topic(), metadata.partition(), metadata.offset());
-                    System.out.println(result);
-                } else {
-                    System.out.println("消息发送失败");
-                    exception.printStackTrace();
-                }
-
-            }
-        });
-        try {
-            future.get();//同步
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        // 5. 关闭连接
-//        producer.close();
-    }
-
-    private void init() {
+    private static KafkaProducer<String, String> producer;
+    public static volatile  boolean isActive=false;
+    static  {
         // 1. 生产者配置
         Properties properties = new Properties();
-//        Properties props = new Properties();
-//        props.put("bootstrap.servers", "localhost:9092");
-//        props.put("acks", "all");
-//        props.put("retries", 0);
-//        props.put("batch.size", 16384);
-//        props.put("linger.ms", 1);
-//        props.put("buffer.memory", 33554432);
-//        props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-//        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         // 指定kafka地址
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, NetworkConfig.KAFKA_SERVER_URL);
         // 指定ack等级
@@ -78,4 +41,40 @@ public class ClientRealTimeLogProducer {
         producer = new KafkaProducer<>(properties);
 
     }
+
+    public static void send(String key, String value) {
+
+        // 3. 准备数据
+        ProducerRecord<String, String> record = new ProducerRecord<>(NetworkConfig.KAFKA_TOPIC, key, value);
+        // 4. 发送数据（带回调）
+        Future<RecordMetadata> future = producer.send(record, new Callback() {
+            @Override
+            public void onCompletion(RecordMetadata metadata, Exception exception) {
+                if (exception == null) {
+                    // 回调函数，该方法会在 Producer 收到 ack 时调用，为异步调用
+                    String result = String.format("kafka消息发送成功，主题Topic: %s,分区Partition: %s,偏移量Offset: %s",
+                        metadata.topic(), metadata.partition(), metadata.offset());
+                    LogUtils.debug(result);
+                } else {
+                    ExceptionUtils.handle(exception);
+                }
+
+            }
+        });
+        try {
+            future.get();//同步
+        } catch (InterruptedException | ExecutionException e) {
+            ExceptionUtils.handle(e);
+        }
+
+    }
+
+    public static void close(){
+        // 5. 关闭连接
+        if (producer!=null) {
+            producer.close();
+        }
+    }
+
+
 }
