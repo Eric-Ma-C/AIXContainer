@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.manager;
+package org.zju.vipa.aix.container.center.task;
 
 import org.zju.vipa.aix.container.common.entity.Task;
 import org.zju.vipa.aix.container.common.message.Message;

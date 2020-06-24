@@ -3,10 +3,13 @@ package org.zju.vipa.aix.container.center.dubbo;
 import org.zju.vipa.aix.container.api.AIXClientCenterService;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.log.LogReader;
-import org.zju.vipa.aix.container.center.manager.TaskManagerService;
+import org.zju.vipa.aix.container.center.log.ServerLogReader;
+import org.zju.vipa.aix.container.center.task.TaskManager;
+import org.zju.vipa.aix.container.center.task.TaskManagerService;
+import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.common.entity.Task;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
+import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 
 import java.util.ArrayList;
@@ -27,18 +30,18 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
-    public String srverLogReadToEnd() {
-        return LogReader.readToEnd();
+    public String serverLogReadToEnd() {
+        return ServerLogReader.readToEnd();
     }
 
     @Override
-    public void srverLogInit() {
-        LogReader.readInit();
+    public void serverLogInit() {
+        ServerLogReader.readInit();
     }
 
     @Override
-    public void srverLogStop() {
-        LogReader.stop();
+    public void serverLogStop() {
+        ServerLogReader.stop();
     }
 
     @Override
@@ -65,6 +68,16 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
         //todo 长连接实现  参考websocket
 
         return null;
+    }
+
+    @Override
+    public void clientLogInit(String token) {
+        TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_DETAIL));
+    }
+
+    @Override
+    public void clientLogStop() {
+
     }
 
     @Override

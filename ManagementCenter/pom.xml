@@ -99,6 +99,14 @@
 
     <dependencies>
 
+        <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
+        <dependency>
+            <groupId>org.apache.kafka</groupId>
+            <artifactId>kafka-clients</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+
         <dependency>
             <groupId>vipa</groupId>
             <artifactId>Common</artifactId>

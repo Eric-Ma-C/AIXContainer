@@ -48,6 +48,12 @@ public class NetworkConfig {
      * zk服务端口
      */
     public static final int ZK_AIX_PORT = 20880;
+    /**
+     * kafka broker服务器地址
+     */
+    public static final String KAFKA_SERVER_URL = "112.124.46.179:9092";
+    public static final String KAFKA_GROUP_ID = "aix-group";
+    public static final String KAFKA_TOPIC="client-realtime-log";
 
     //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static String SERVER_IP = VIPA_207_IP;

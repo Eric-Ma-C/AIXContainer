@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.manager;
+package org.zju.vipa.aix.container.center.task;
 
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.ManagementCenter;
@@ -29,9 +29,14 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class TaskManager {
 
     /**
-     * 消息队列，< token,messages >
+     * 按token存储的消息队列,存放需要顺序执行的消息，< token,messages >
      */
-    private Map<String, ConcurrentLinkedQueue<Message>> messageMap;
+    private Map<String, ConcurrentLinkedQueue<Message>> serialMessageMap;
+
+    /**
+     * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级操作,不应该影响到正在执行的任务,比如开启详细实时日志上传，< token,messages >
+     */
+    private Map<String, ConcurrentLinkedQueue<Message>> heartbeatMessageMap;
     /**
      * 任务映射，< token,task >
      */
@@ -53,7 +58,8 @@ public class TaskManager {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
-        messageMap = new ConcurrentHashMap<>();
+        serialMessageMap = new ConcurrentHashMap<>();
+        heartbeatMessageMap = new ConcurrentHashMap<>();
         taskMap = new ConcurrentHashMap<>();
 //        /** 保证hashset的同步性 */
 //        tokenSet = Collections.synchronizedSet(new HashSet<String>());
@@ -73,14 +79,14 @@ public class TaskManager {
      * 也就是待发送队列的数量
      */
     protected int getActiveClientNum() {
-        return messageMap.size();
+        return serialMessageMap.size();
     }
 
     /**
      * 获取某容器的待发送队列
      */
     protected Queue<Message> getMessageQueueByToken(String token) {
-        return messageMap.get(token);
+        return serialMessageMap.get(token);
     }
 
     /**
@@ -146,17 +152,17 @@ public class TaskManager {
                 //如果不通过下载,一般将模型挂载进容器,在数据库写入路径
                 if (DebugConfig.IS_DOWNLOAD_MODULE) {
                     /** 告诉容器下载model */
-                    addMessage(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
+                    addSerialMessage(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
                     /** 告诉容器下载dataset */
-                    addMessage(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
+                    addSerialMessage(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
                 }
 
                 Message msg1 = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
                 Message msg2 = new ServerMessage(Intent.SHELL_TASK, startCmds);
                 msg2.addCustomData("codePath", codePath);
                 msg2.addCustomData("modelArgs", modelArgs);
-                addMessage(token, msg1);
-                addMessage(token, msg2);
+                addSerialMessage(token, msg1);
+                addSerialMessage(token, msg2);
 
 
             } else {
@@ -174,7 +180,7 @@ public class TaskManager {
                     Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath, modelArgs));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
-                    addMessage(token, msg);
+                    addSerialMessage(token, msg);
 
 
                 } else {
@@ -183,7 +189,7 @@ public class TaskManager {
                         EnvError error = errorQueue.poll();
                         String repairCmds = error.getRepairCmds();
                         /** 添加一条待发送任务至列表 */
-                        addMessage(token, new ServerMessage(Intent.SHELL_TASK, repairCmds));
+                        addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, repairCmds));
                     }
                 }
 
@@ -212,7 +218,7 @@ public class TaskManager {
         Message message = null;
 
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = messageMap.get(token);
+            ConcurrentLinkedQueue<Message> messageList = serialMessageMap.get(token);
             if (messageList != null) {
                 message = messageList.poll();
             }
@@ -228,20 +234,50 @@ public class TaskManager {
     /**
      * 新增消息
      */
-    private void addMessage(String token, Message msg) {
+    private void addSerialMessage(String token, Message msg) {
         /** 锁粒度细化为token */
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = messageMap.get(token);
+            ConcurrentLinkedQueue<Message> messageList = serialMessageMap.get(token);
 
             if (messageList == null) {
                 //TODO 太久没用的token删除,相当于客户端离线
                 messageList = new ConcurrentLinkedQueue<>();
-                messageMap.put(token, messageList);
+                serialMessageMap.put(token, messageList);
             }
             messageList.offer(msg);
 //            messageMap.put(token, messageList);
         }
-        LogUtils.info("{}:\n添加待发送消息{}", token.substring(token.length() - 9), msg);
+        LogUtils.info("{}:\n添加待发送serial消息{}", token.substring(token.length() - 9), msg);
+    }
+
+    /**
+     * 返回待发送的heartbeat信息
+     */
+    public Message getHeartbeatMessage(String token) {
+        ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
+        if (messageList == null) {
+            return null;
+        } else {
+            return messageList.poll();
+        }
+    }
+
+    /**
+     * 新增随心跳返回的消息
+     */
+    public void addHeartbeatMessage(String token, Message msg) {
+        /** 锁粒度细化为token */
+//        synchronized (token.intern()) {
+        ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
+
+        if (messageList == null) {
+            messageList = new ConcurrentLinkedQueue<>();
+            heartbeatMessageMap.put(token, messageList);
+        }
+        messageList.offer(msg);
+//            messageMap.put(token, messageList);
+//        }
+        LogUtils.info("{}:\n添加待发送heartbeat消息{}", token.substring(token.length() - 9), msg);
     }
 
 

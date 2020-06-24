@@ -14,13 +14,19 @@ public enum Intent {
      */
     NULL,
     /**
+     * 心跳ping,附带gpu信息
+     * center可能回应pong,也可能回应一些控制指令
+     */
+    PING,
+    /**
+     * 心跳普通回应pong
+     */
+    PONG,
+    /**
      * 注册
      */
     REGISTER,
-    /**
-     * 心跳,gpu信息
-     */
-    HEARTBEAT,
+
     /**
      * 容器抢任务轮询
      */
@@ -113,9 +119,17 @@ public enum Intent {
      */
     EXCEPTION,
     /**
-     * 容器实时日志上传
+     * 容器实时日志上传,默认简要模式
      */
     REAL_TIME_LOG,
+    /**
+     * 进入更多容器实时日志上传状态,需要指定clientId
+     */
+    REAL_TIME_LOG_SHOW_DETAIL,
+    /**
+     * 进入更少容器实时日志上传状态(默认的状态)
+     */
+    REAL_TIME_LOG_SHOW_BRIEF,
 
 
     /**

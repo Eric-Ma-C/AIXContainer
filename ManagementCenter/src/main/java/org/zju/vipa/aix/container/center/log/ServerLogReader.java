@@ -13,7 +13,7 @@ import java.nio.charset.Charset;
  * @Author: EricMa
  * @Description:
  */
-public class LogReader {
+public class ServerLogReader {
     //    private static volatile boolean stop = false;
     private static RandomAccessFile raf = null;
 

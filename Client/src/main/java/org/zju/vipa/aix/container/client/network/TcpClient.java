@@ -306,9 +306,9 @@ public class TcpClient {
      */
     public void heartbeatReport(GpuInfo info) {
 
-        ClientMessage message = new ClientMessage(Intent.HEARTBEAT, JsonUtils.toJSONString(info));
+        ClientMessage pingMsg = new ClientMessage(Intent.PING, JsonUtils.toJSONString(info));
 
-        clientIO.sendMessage(message);
+        clientIO.sendMsgAndGetResponse(pingMsg,2000);
 
     }
 

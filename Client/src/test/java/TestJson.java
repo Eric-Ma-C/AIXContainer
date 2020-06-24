@@ -15,6 +15,7 @@ public class TestJson {
         msg.setValue("cmd");
         msg.addCustomData("k","v");
 
+
         String json= JsonUtils.toJSONString(msg);
         Message m=  JsonUtils.parseObject(json,Message.class);
         System.out.println(m.toString());

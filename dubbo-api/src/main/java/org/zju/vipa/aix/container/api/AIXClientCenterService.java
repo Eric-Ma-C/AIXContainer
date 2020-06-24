@@ -19,25 +19,25 @@ public interface AIXClientCenterService {
     int getOnlineNum();
 
     /**
-     *  获取一次实时日志,读到日志文件结尾,一般有多行
+     *  获取一次center实时日志,读到日志文件结尾,一般有多行
      * @param
      * @return: java.lang.String
      */
-    String srverLogReadToEnd();
+    String serverLogReadToEnd();
 
     /**
-     *   开始获取实时日志
+     *   开始获取center实时日志
      * @param
      * @return: void
      */
-    void srverLogInit();
+    void serverLogInit();
 
     /**
-     *   停止获取实时日志
+     *   停止获取center实时日志
      * @param
      * @return: void
      */
-    void srverLogStop();
+    void serverLogStop();
 
 
     /**
@@ -66,4 +66,18 @@ public interface AIXClientCenterService {
      * 获取某容器的当前gpu状态
      */
     GpuInfo getGpuInfoByToken(String token);
+
+    /**
+     *   开始获取client实时日志
+     * @param
+     * @return: void
+     */
+    void clientLogInit(String token);
+
+    /**
+     *   停止获取client实时日志
+     * @param
+     * @return: void
+     */
+    void clientLogStop();
 }

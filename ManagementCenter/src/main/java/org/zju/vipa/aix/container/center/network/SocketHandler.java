@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.manager.TaskManager;
+import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
@@ -94,7 +94,7 @@ public class SocketHandler implements Runnable {
             case REGISTER:
                 registerContainer(msg.getValue());
                 break;
-            case HEARTBEAT:
+            case PING:
                 handleHeartbeatGpuInfo(msg);
                 break;
             case EXCEPTION:
@@ -159,6 +159,13 @@ public class SocketHandler implements Runnable {
         if (gpuInfo!=null){
             LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), message.getValue());
             ManagementCenter.getInstance().updateGpuInfo(message.getToken(),gpuInfo);
+        }
+        //取出可能的待发送信息
+        Message res=TaskManager.getInstance().getHeartbeatMessage(message.getToken());
+        if (res!=null){
+            serverIO.response(res);
+        }else {
+            serverIO.response(new ServerMessage(Intent.PONG));
         }
 
     }
