@@ -3,6 +3,7 @@ package org.zju.vipa.aix.container.center.dubbo;
 import org.zju.vipa.aix.container.api.AIXClientCenterService;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.center.ManagementCenter;
+import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ServerLogReader;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
@@ -72,11 +73,15 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public void clientLogInit(String token) {
+        ClientRealTimeLogProducer.client_token=token;
+        ClientRealTimeLogProducer.isActive=true;
         TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_DETAIL));
     }
 
     @Override
     public void clientLogStop(String token) {
+        ClientRealTimeLogProducer.isActive=false;
+        ClientRealTimeLogProducer.client_token=null;
         TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_BRIEF));
     }
 

@@ -3,8 +3,8 @@ package org.zju.vipa.aix.container.client.utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.client.Client;
-import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
+import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.common.message.Intent;
 
 /**
@@ -38,7 +38,7 @@ public class ClientLogUtils {
     public static void debug(boolean isUpload, String msg, Object... objs) {
         logger.debug(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
+            upload(msg, objs);
         }
     }
 
@@ -53,7 +53,7 @@ public class ClientLogUtils {
     public static void info(boolean isUpload, String msg, Object... objs) {
         logger.info(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
+            upload(msg, objs);
         }
     }
 
@@ -68,7 +68,7 @@ public class ClientLogUtils {
     public static void worning(boolean isUpload, String msg, Object... objs) {
         logger.warn(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
+            upload(msg, objs);
         }
     }
 
@@ -77,13 +77,15 @@ public class ClientLogUtils {
         error(Client.isUploadRealtimeLog, msg, objs);
     }
 
-    //    public static void error(Message msg,boolean isUpload){
-//        error(msg.getValue(),isUpload);
-//    }
     public static void error(boolean isUpload, String msg, Object... objs) {
         logger.error(msg, objs);
         if (isUpload) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
+            upload(msg, objs);
         }
+    }
+
+    private static void upload(String msg, Object... objs) {
+        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, String.format(msg.replaceAll("\\{}", "%s"), objs)));
+//        TcpClient.getInstance().sendMessage(new ClientMessage(Intent.REAL_TIME_LOG, msg));
     }
 }

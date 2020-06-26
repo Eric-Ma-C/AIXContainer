@@ -1,5 +1,4 @@
-import org.zju.vipa.aix.container.client.utils.XmlUtils;
-import org.zju.vipa.aix.container.common.message.GpuInfo;
+import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 /**
  * @Date: 2020/4/20 21:13
@@ -10,9 +9,9 @@ public class Test {
 
     @org.junit.Test
     public void test(){
-        GpuInfo info= XmlUtils.parseGpuInfo(str2);
-
-        System.out.println(info);
+        ClientLogUtils.debug("dsada{}fd{}","222",32);
+//        GpuInfo info= XmlUtils.parseGpuInfo(str2);
+//        System.out.println(info);
 
     }
 

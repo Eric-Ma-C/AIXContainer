@@ -18,6 +18,7 @@ public class ClientRealTimeLogProducer {
 
     private static KafkaProducer<String, String> producer;
     public static volatile  boolean isActive=false;
+    public static volatile  String client_token=null;
     static  {
         // 1. 生产者配置
         Properties properties = new Properties();
@@ -43,7 +44,6 @@ public class ClientRealTimeLogProducer {
     }
 
     public static void send(String key, String value) {
-
         // 3. 准备数据
         ProducerRecord<String, String> record = new ProducerRecord<>(NetworkConfig.KAFKA_TOPIC, key, value);
         // 4. 发送数据（带回调）
@@ -66,7 +66,6 @@ public class ClientRealTimeLogProducer {
         } catch (InterruptedException | ExecutionException e) {
             ExceptionUtils.handle(e);
         }
-
     }
 
     public static void close(){

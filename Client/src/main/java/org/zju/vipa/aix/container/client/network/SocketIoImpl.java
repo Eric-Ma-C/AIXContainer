@@ -40,7 +40,7 @@ public class SocketIoImpl implements ClientIO {
         if (DebugConfig.IS_LOCAL_DEBUG) {
             readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
-        if (DebugConfig.CLIENT_NET_IO_LOG) {
+        if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
         Socket socket = null;
@@ -82,7 +82,7 @@ public class SocketIoImpl implements ClientIO {
         }
         resMsg = JsonUtils.parseObject(response, Message.class);
 
-        if (DebugConfig.CLIENT_NET_IO_LOG) {
+        if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
             ClientLogUtils.debug("GET RESPONSE:\n{}\n", resMsg);
         }
 
@@ -93,7 +93,10 @@ public class SocketIoImpl implements ClientIO {
     @Override
     public void sendMessage(ClientMessage message) {
 
-        if (Intent.SHELL_ERROR_HELP.match(message) && DebugConfig.CLIENT_NET_IO_LOG) {
+        if (!Intent.SHELL_ERROR_HELP.match(message) &&
+            !Intent.EXCEPTION.match(message) &&
+            !Intent.REAL_TIME_LOG.match(message)
+            && DebugConfig.CLIENT_NETWORK_IO_LOG) {
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
@@ -197,7 +200,7 @@ public class SocketIoImpl implements ClientIO {
             sendData(socket, JsonUtils.toJSONString(msg).getBytes(Message.CHARSET_NAME));
 
 
-            ClientLogUtils.info("开始上传文件：{}", path);
+            ClientLogUtils.info(true,"开始上传文件：{}", path);
             /** 发送缓冲区 */
             BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
 

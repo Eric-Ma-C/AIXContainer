@@ -34,8 +34,11 @@ public class TcpClient {
 
     private TcpClient() {
         /**  选择IO方式 */
-//        clientIO=new SocketIoImpl();
-        clientIO = new NettyIoImpl();
+        if (NetworkConfig.CLIENT_USE_NETTY) {
+            clientIO = new NettyIoImpl();
+        } else {
+            clientIO = new SocketIoImpl();
+        }
 
         if (ContainerTcpClientHolder.INSTANCE != null) {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
@@ -50,8 +53,6 @@ public class TcpClient {
     public static TcpClient getInstance() {
         return ContainerTcpClientHolder.INSTANCE;
     }
-
-
 
 
     public void sendMessage(ClientMessage clientMessage) {
@@ -69,6 +70,9 @@ public class TcpClient {
             return;
         }
         switch (msg.getIntent()) {
+            case PONG:
+                /** 心跳回应 */
+                break;
             case NULL:
                 /** 平台没有待发送消息，容器开始抢任务 */
                 ClientThreadManager.getInstance().startGrabbingTask();
@@ -97,10 +101,13 @@ public class TcpClient {
     }
 
     private void realTimeLogShowDetail() {
-        Client.isUploadRealtimeLog=true;
+        ClientLogUtils.debug("Set Client.isUploadRealtimeLog=true");
+        Client.isUploadRealtimeLog = true;
     }
+
     private void realTimeLogShowBrief() {
-        Client.isUploadRealtimeLog=false;
+        ClientLogUtils.debug("Set Client.isUploadRealtimeLog=false");
+        Client.isUploadRealtimeLog = false;
     }
 
     /**
@@ -319,11 +326,12 @@ public class TcpClient {
      * 上传gpu cuda和显存占用信息
      */
     public void heartbeatReport(GpuInfo info) {
-
         ClientMessage pingMsg = new ClientMessage(Intent.PING, JsonUtils.toJSONString(info));
 
-        clientIO.sendMsgAndGetResponse(pingMsg,2000);
+        Message res = clientIO.sendMsgAndGetResponse(pingMsg, 2000);
+        handleResponseMsg(res);
 
+//        ClientLogUtils.debug("heartbeat recieve:{}",res);
     }
 
     /**

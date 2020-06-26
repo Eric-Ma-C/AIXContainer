@@ -1,9 +1,8 @@
 package org.zju.vipa.aix.container.client.shell;
 
-import org.zju.vipa.aix.container.client.network.TcpClient;
-import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.env.ClientErrorParser;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
+import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.message.Intent;
@@ -66,9 +65,10 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessBegin(String cmd) {
-        if (Client.isUploadRealtimeLog) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
-        }
+        ClientLogUtils.info(cmd);
+//        if (Client.isUploadRealtimeLog) {
+//            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
+//        }
     }
 
     /**
@@ -80,9 +80,9 @@ public class ShellTask implements RealtimeProcessListener {
             return;
         }
         ClientLogUtils.info(newStdOut);
-        if (Client.isUploadRealtimeLog) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO, newStdOut));
-        }
+//        if (Client.isUploadRealtimeLog) {
+//            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_INFO, newStdOut));
+//        }
     }
 
     @Override
@@ -95,14 +95,14 @@ public class ShellTask implements RealtimeProcessListener {
         String moduleName = ClientErrorParser.handleModuleNotFoundError(newStdErr);
         if (moduleName != null) {
             /** 平台不用尝试解析错误类型了 */
-            Intent intent = Intent.SHELL_ERROR;
             if (handleShellErrorListener != null) {
                 handleShellErrorListener.onHandle(moduleName);
             }
-            if (Client.isUploadRealtimeLog) {
-                /** 只报告shell error，平台不做什么处理 */
-                TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
-            }
+//            Intent intent = Intent.SHELL_ERROR;
+//            if (Client.isUploadRealtimeLog) {
+//                /** 只报告shell error，平台不做什么处理 */
+//                TcpClient.getInstance().sendMessage(new ClientMessage(intent, newStdErr));
+//            }
         } else {
             /** 无法解析的错误信息一直需要上传平台解析 */
             TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_ERROR_HELP, newStdErr));
@@ -114,9 +114,13 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessFinished(int resultCode) {
-        if (Client.isUploadRealtimeLog) {
-            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
-        }
+
+        ClientLogUtils.info("resultCode={}",resultCode);
+//        if (Client.isUploadRealtimeLog) {
+//            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
+//        }
+
+
 //        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
 
     }

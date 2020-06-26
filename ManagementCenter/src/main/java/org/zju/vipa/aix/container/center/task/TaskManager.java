@@ -254,6 +254,7 @@ public class TaskManager {
      * 返回待发送的heartbeat信息
      */
     public Message getHeartbeatMessage(String token) {
+        LogUtils.debug("getHeartbeatMessage() token={} ",token);
         ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
         if (messageList == null) {
             return null;

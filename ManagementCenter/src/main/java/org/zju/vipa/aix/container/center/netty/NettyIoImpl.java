@@ -31,7 +31,7 @@ public class NettyIoImpl implements ServerIO {
 
     @Override
     public void response(Message msg, boolean isClose) {
-        if (DebugConfig.SERVER_NET_IO_LOG) {
+        if (DebugConfig.SERVER_NETWORK_IO_LOG) {
             LogUtils.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
 
 //            LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);

@@ -30,7 +30,7 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
-        if (DebugConfig.CLIENT_NET_IO_LOG) {
+        if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
@@ -47,7 +47,7 @@ public class NettyIoImpl implements ClientIO {
             Thread.currentThread().interrupt();
         }
 
-        if (DebugConfig.CLIENT_NET_IO_LOG) {
+        if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
             ClientLogUtils.debug("GET RESPONSE:\n{}\n", response);
         }
 
@@ -56,9 +56,9 @@ public class NettyIoImpl implements ClientIO {
 
     @Override
     public void sendMessage(ClientMessage message) {
-        if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message)
-            && DebugConfig.CLIENT_NET_IO_LOG) {
-            //EXCEPTION已经在日志中记录过了
+        if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message) && !Intent.REAL_TIME_LOG.match(message)
+            && DebugConfig.CLIENT_NETWORK_IO_LOG) {
+            //这些待上传类型的message已经在日志中记录过了,不需要再打日志和上传
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
@@ -91,7 +91,7 @@ public class NettyIoImpl implements ClientIO {
             ClientLogUtils.info("开始上传文件：{}", path);
             client.uploadFile(path, listener);
 
-//            ClientLogUtils.info("文件{} 上传完毕，等待服务器确认", path);
+//            ClientLogUtils.info(false,"文件{} 上传完毕，等待服务器确认", path);
 
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
@@ -144,13 +144,13 @@ public class NettyIoImpl implements ClientIO {
 //                    loop.schedule(new Runnable() {
 //                        @Override
 //                        public void run() {
-//                            ClientLogUtils.error("not connect service");
+//                            ClientLogUtils.error(,"not connect service");
 //                            start();
 //                        }
 //                    }, 1L, TimeUnit.SECONDS);
 //                } else {
 //                    channel = channelFuture.channel();
-//                    ClientLogUtils.info("连接AIX服务器成功");
+//                    ClientLogUtils.info(,"连接AIX服务器成功");
 //                }
 //            }
 //        });

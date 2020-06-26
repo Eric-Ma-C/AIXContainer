@@ -12,7 +12,7 @@ import java.io.Serializable;
 public class RunningClient implements Serializable {
 
     String id;
-//    String name;
+    String token;
     /**
      * 连入平台的时间
      */
@@ -27,8 +27,9 @@ public class RunningClient implements Serializable {
     public RunningClient() {
     }
 
-    public RunningClient(String id, String since) {
+    public RunningClient(String id,String token, String since) {
         this.id = id;
+        this.token=token;
         this.since = since;
     }
 
@@ -38,6 +39,14 @@ public class RunningClient implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
     public String getSince() {

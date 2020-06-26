@@ -7,6 +7,16 @@ package org.zju.vipa.aix.container.common.config;
  */
 public class NetworkConfig {
     /**
+     * server是否使用netty作为网络通信框架
+     * 否则使用socket阻塞IO
+     */
+    public static  boolean SERVER_USE_NETTY = true;
+    /**
+     * client是否使用netty作为网络通信框架
+     * 否则使用socket阻塞IO
+     */
+    public static  boolean CLIENT_USE_NETTY = true;
+    /**
      * my aliyun
      */
     public static final String MY_ALIYUN_SERVER_IP = "112.124.46.179";

@@ -29,7 +29,7 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
         if (msg instanceof String) {
             /** 处理客户端请求 */
             Message receivedMessage = JsonUtils.parseObject((String) msg, Message.class);
-            if (DebugConfig.SERVER_NET_IO_LOG) {
+            if (DebugConfig.SERVER_NETWORK_IO_LOG) {
                 /** 收到客户端日志 */
                 LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
             }

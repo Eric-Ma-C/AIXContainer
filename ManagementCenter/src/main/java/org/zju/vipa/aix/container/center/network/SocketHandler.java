@@ -145,6 +145,7 @@ public class SocketHandler implements Runnable {
      * 容器实时日志处理
      */
     private void handleRealtimeLog(Message msg) {
+        sendToKafka(msg);
         LogUtils.debug("Realtime log from {}:{}", msg.getTokenSuffix(), msg.getValue());
     }
 
@@ -163,6 +164,7 @@ public class SocketHandler implements Runnable {
         }
         //取出可能的待发送信息
         Message res=TaskManager.getInstance().getHeartbeatMessage(message.getToken());
+        LogUtils.debug("getHeartbeatMessage() return={}",res);
         if (res!=null){
             serverIO.response(res);
         }else {
@@ -284,35 +286,41 @@ public class SocketHandler implements Runnable {
         }
 
     }
-    private void sendToKafka(String log){
+
+    /** 发送到kafka */
+    private void sendToKafka(Message message){
         if (ClientRealTimeLogProducer.isActive){
-            ClientRealTimeLogProducer.send("key",log);
+            //token要匹配
+            if (ClientRealTimeLogProducer.client_token!=null&&ClientRealTimeLogProducer.client_token.equals(message.getToken())) {
+                LogUtils.debug("sendToKafka: {}",message);
+                ClientRealTimeLogProducer.send("key",message.getValue());
+            }
         }
     }
 
     private void shellBegin(Message message) {
         LogUtils.debug("{} shellBegin: {}", message.getTokenSuffix(), message.getValue());
-       sendToKafka(message.getValue());
+       sendToKafka(message);
     }
 
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
         LogUtils.debug("{} shellInfo: {}", message.getTokenSuffix(), message.getValue());
-        sendToKafka(message.getValue());
+        sendToKafka(message);
     }
     /**
      * shell指令执行结果显示
      */
     private void shellResult(Message message) {
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
-        sendToKafka(message.getValue());
+        sendToKafka(message);
     }
 
     private void shellError(Message message) {
 
 //        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
         LogUtils.error("shellError: {}", message.getValue());
-        sendToKafka(message.getValue());
+        sendToKafka(message);
     }
 
     private void shellErrorHandle(Message message) {

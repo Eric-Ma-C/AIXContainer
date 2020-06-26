@@ -10,6 +10,7 @@ import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -82,9 +83,9 @@ public class NettyTcpClient {
         }
         try {
             channel.writeAndFlush(sendData).sync();
-//            if (doLog){
-//                ClientLogUtils.info("SEND MSG:{}", sendData);
-//            }
+            if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
+                ClientLogUtils.debug("SEND MSG:{}", sendData);
+            }
         } finally {
             channel.close().sync();
         }
@@ -114,8 +115,9 @@ public class NettyTcpClient {
             } catch (Exception e) {
                 ClientExceptionUtils.handle(e);
             }
-
-//            ClientLogUtils.info("SEND MSG:{}", sendData);
+            if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
+                ClientLogUtils.debug("SEND MSG:{}", sendData);
+            }
 
             /** 阻塞等待 */
             latch.await(timeout, TimeUnit.MILLISECONDS);
@@ -151,7 +153,7 @@ public class NettyTcpClient {
             return;
         }
 
-        long fileLenBytes=file.length();
+        long fileLenBytes = file.length();
 
         /** 先发一个Message，通知服务器存大文件（日志）*/
         Message uploadMsg = new ClientMessage(Intent.UPLOAD_DATA, filePath);
@@ -163,7 +165,7 @@ public class NettyTcpClient {
         CompositeByteBuf uploadMsgBuf = channel.alloc().compositeBuffer(2);
 
         uploadMsgBuf.addComponents(Unpooled.copyShort(uploadMsgBytes.length), Unpooled.wrappedBuffer(uploadMsgBytes));
-        uploadMsgBuf.writerIndex(2+uploadMsgBytes.length);
+        uploadMsgBuf.writerIndex(2 + uploadMsgBytes.length);
         /** 跳过所有编码器发送 */
         channel.pipeline().firstContext().writeAndFlush(uploadMsgBuf).sync();
 
@@ -174,13 +176,7 @@ public class NettyTcpClient {
         FileRegion region = new DefaultFileRegion(fileInputStream.getChannel(), 0, fileLenBytes);
 
         /** 跳过所有编码器发送 */
-        ChannelFuture future=channel.pipeline().firstContext().writeAndFlush(region);
-
-
-
-
-
-
+        ChannelFuture future = channel.pipeline().firstContext().writeAndFlush(region);
 
 
 //        // 新建CompositeByteBuf对象
@@ -212,8 +208,6 @@ public class NettyTcpClient {
         });
 //        future.sync();
 
-
-//            ClientLogUtils.info("SEND MSG:{}", sendData);
 
 //        /**  设置读(服务器接收成功消息)超时时间,上传不容易，多等一下成功确认 */
 //        int uploadTimeOut = 30 * 60 * 1000;

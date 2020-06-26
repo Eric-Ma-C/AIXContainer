@@ -16,7 +16,7 @@ public class Client {
      * 1.容器shell执行输出 2.容器日志
      * 若不上传，暂存在本地log文件中，需要时上传平台
      */
-    public static boolean isUploadRealtimeLog = false;
+    public static volatile boolean isUploadRealtimeLog = false;
 
     public static void main(String[] args) {
 

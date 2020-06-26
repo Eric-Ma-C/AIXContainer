@@ -49,7 +49,7 @@ public class SocketIoImpl implements ServerIO {
             disconnect();
             return null;
         }
-        if (DebugConfig.SERVER_NET_IO_LOG) {
+        if (DebugConfig.SERVER_NETWORK_IO_LOG) {
             /** 收到客户端日志 */
             LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", mSocket.getInetAddress(), msg.getTokenSuffix(), msg);
         }
@@ -69,7 +69,7 @@ public class SocketIoImpl implements ServerIO {
             return;
         }
 
-        if (DebugConfig.SERVER_NET_IO_LOG) {
+        if (DebugConfig.SERVER_NETWORK_IO_LOG) {
             LogUtils.debug("RESPONSE TO {}:\n{}\n", mSocket.getInetAddress(), msg);
         }
 

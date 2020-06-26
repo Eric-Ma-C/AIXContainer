@@ -3,16 +3,19 @@ package org.zju.vipa.aix.container.center;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.db.DbManager;
-import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
-import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.dubbo.RpcServer;
+import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
+import org.zju.vipa.aix.container.center.network.SocketServer;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
+import org.zju.vipa.aix.container.center.util.JwtUtils;
+import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
 import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,9 @@ public class ManagementCenter {
      * 缓存已经连接到平台的容器token，避免反复查询数据库
      */
     private Map<String, String> cachedTokenMap;
-    /** 已连接客户端列表 */
+    /**
+     * 已连接客户端列表
+     */
     private Map<String, RunningClient> clientMap;
 
     private static class ManagementCenterHolder {
@@ -66,36 +71,38 @@ public class ManagementCenter {
             if (id != null) {
                 /** 新设备接入 */
                 cachedTokenMap.put(token, id);
-                clientMap.put(token,new RunningClient(id, TimeUtils.getCurrentTimeStr()));
+                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
             }
         }
 
         return id;
     }
 
-    public void updateGpuInfo(String token, GpuInfo info){
-            RunningClient client= clientMap.get(token);
-            client.setGpuInfo(info);
-            clientMap.put(token,client);
+    public void updateGpuInfo(String token, GpuInfo info) {
+        RunningClient client = clientMap.get(token);
+        client.setGpuInfo(info);
+        clientMap.put(token, client);
 
         DbManager.getInstance().updateDeviceGpuDetailById(cachedTokenMap.get(token), JsonUtils.toJSONString(info));
     }
 
-    public void updateRunningCmds(String token, String cmds){
-        RunningClient client= clientMap.get(token);
+    public void updateRunningCmds(String token, String cmds) {
+        RunningClient client = clientMap.get(token);
         client.setRunningCmds(cmds);
-        clientMap.put(token,client);
+        clientMap.put(token, client);
     }
 
-    public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo){
-        RunningClient client= clientMap.get(token);
+    public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo) {
+        RunningClient client = clientMap.get(token);
         client.setTaskBriefInfo(briefInfo);
-        clientMap.put(token,client);
+        clientMap.put(token, client);
     }
 
-    /** 获取已连接容器列表 */
+    /**
+     * 获取已连接容器列表
+     */
     public List<RunningClient> getClientsList() {
-        List<RunningClient> list=new ArrayList<>(clientMap.values());
+        List<RunningClient> list = new ArrayList<>(clientMap.values());
         return list;
     }
 
@@ -109,38 +116,23 @@ public class ManagementCenter {
         RpcServer.getInstance().start();
 
 
-
-
-
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                System.out.println("Starting Netty Server...");
-                /**  启动Netty tcp服务器 */
-                NettyTcpServer.start();
+        /** 启动tcp服务 */
+        if (NetworkConfig.SERVER_USE_NETTY) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    System.out.println("Starting Netty Server...");
+                    /**  启动Netty tcp服务器 */
+                    NettyTcpServer.start();
+                }
+            }).start();
+        } else {
+            try {
+                SocketServer.getInstance().start();
+            } catch (IOException e) {
+                ExceptionUtils.handle(e);
             }
-        }).start();
-
-
-
-//        System.out.println("readInit1");
-//        LogReader.readInit();
-//        System.out.println("readInit2");
-//        String s = LogReader.readLine();
-//        s+=LogReader.readLine();
-//        s+=LogReader.readLine();
-//        s+=LogReader.readLine();
-//        s+=LogReader.readLine();
-//        System.out.println(s);
-//        LogReader.stop();
-
-//
-//        try {
-//            CenterTcpServer.getInstance().start();
-//        } catch (IOException e) {
-//            ExceptionUtils.handle(e);
-//        }
+        }
 
 
     }
