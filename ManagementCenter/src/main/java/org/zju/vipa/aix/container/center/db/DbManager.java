@@ -125,9 +125,7 @@ public class DbManager implements Serializable {
                     return null;
                 }
                 Task task = taskList.get(0);
-                //TODO 方便测试用
-                taskDAO.updateTask(task.getId(), "WAITING", clientId);
-//                taskDAO.updateTask(task.getId(), "TRAINING", clientId);
+                taskDAO.taskTobeTrained(task.getId(),  clientId);
 
 
 //                //  获取code path
@@ -144,6 +142,25 @@ public class DbManager implements Serializable {
 
 
                 return task;
+            }
+        });
+    }
+
+    /**
+     * 任务训练状态更新为完成
+     *
+     * @return: java.util.List<Task>
+     */
+    public Boolean setTaskFinished(final String taskId) {
+
+        return SqlSessionProxy.start(new SqlTask<Boolean>() {
+            @Override
+            public Boolean exec(SqlSession sqlSession) {
+                // 获取映射类
+                TaskDAO taskDAO = sqlSession.getMapper(TaskDAO.class);
+                taskDAO.setTaskStatus(taskId, "FINISHED");
+
+                return true;
             }
         });
     }

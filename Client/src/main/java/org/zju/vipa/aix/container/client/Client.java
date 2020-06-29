@@ -17,6 +17,8 @@ public class Client {
      * 若不上传，暂存在本地log文件中，需要时上传平台
      */
     public static volatile boolean isUploadRealtimeLog = false;
+    /** 抢任务失败次数,失败次数多了会减慢抢任务的速度 */
+    public static volatile int grabTaskFailedCount = 0;
 
     public static void main(String[] args) {
 

@@ -133,10 +133,10 @@ public class SocketHandler implements Runnable {
      */
     private void clientIdleAskForWork(String token) {
         Message toSendMsg = TaskManager.getInstance().askForWork(token);
-        if (toSendMsg == null) {
-            /** 使容器开始抢任务*/
-            toSendMsg = new ServerMessage(Intent.NULL);
-        }
+//        if (toSendMsg == null) {
+//            /** 使容器开始抢任务*/
+//            toSendMsg = new ServerMessage(Intent.NULL);
+//        }
 
         serverIO.response(toSendMsg);
     }
@@ -152,22 +152,23 @@ public class SocketHandler implements Runnable {
     /**
      * 处理gpu信息
      * 保存在map中
+     *
      * @param:
      * @return:
      */
     private void handleHeartbeatGpuInfo(Message message) {
 
-        GpuInfo gpuInfo=JsonUtils.parseObject(message.getValue(),GpuInfo.class);
-        if (gpuInfo!=null){
+        GpuInfo gpuInfo = JsonUtils.parseObject(message.getValue(), GpuInfo.class);
+        if (gpuInfo != null) {
             LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), message.getValue());
-            ManagementCenter.getInstance().updateGpuInfo(message.getToken(),gpuInfo);
+            ManagementCenter.getInstance().updateGpuInfo(message.getToken(), gpuInfo);
         }
         //取出可能的待发送信息
-        Message res=TaskManager.getInstance().getHeartbeatMessage(message.getToken());
-        LogUtils.debug("getHeartbeatMessage() return={}",res);
-        if (res!=null){
+        Message res = TaskManager.getInstance().getHeartbeatMessage(message.getToken());
+        LogUtils.debug("getHeartbeatMessage() return={}", res);
+        if (res != null) {
             serverIO.response(res);
-        }else {
+        } else {
             serverIO.response(new ServerMessage(Intent.PONG));
         }
 
@@ -287,40 +288,54 @@ public class SocketHandler implements Runnable {
 
     }
 
-    /** 发送到kafka */
-    private void sendToKafka(Message message){
-        if (ClientRealTimeLogProducer.isActive){
+    /**
+     * 发送到kafka
+     */
+    private void sendToKafka(Message message) {
+        if (ClientRealTimeLogProducer.isActive) {
             //token要匹配
-            if (ClientRealTimeLogProducer.client_token!=null&&ClientRealTimeLogProducer.client_token.equals(message.getToken())) {
-                LogUtils.debug("sendToKafka: {}",message);
-                ClientRealTimeLogProducer.send("key",message.getValue());
+            if (ClientRealTimeLogProducer.client_token != null && ClientRealTimeLogProducer.client_token.equals(message.getToken())) {
+                LogUtils.debug("sendToKafka: {}", message);
+                ClientRealTimeLogProducer.send("key", message.getValue());
             }
         }
     }
 
+    /** 走handleRealtimeLog */
+    @Deprecated
     private void shellBegin(Message message) {
         LogUtils.debug("{} shellBegin: {}", message.getTokenSuffix(), message.getValue());
-       sendToKafka(message);
+//       sendToKafka(message);
     }
-
+    /** 走handleRealtimeLog */
+    @Deprecated
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
         LogUtils.debug("{} shellInfo: {}", message.getTokenSuffix(), message.getValue());
-        sendToKafka(message);
-    }
-    /**
-     * shell指令执行结果显示
-     */
-    private void shellResult(Message message) {
-        LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
-        sendToKafka(message);
+//        sendToKafka(message);
     }
 
+    /**
+     * shell指令执行结束
+     */
+    private void shellResult(Message message) {
+        boolean success = false;
+        if (message.getCustomData(Message.SHELL_RESULT_KEY) == Message.SHELL_RESULT_SUCCESS) {
+            success = true;
+        }
+        TaskManager.getInstance().setLastShellResult(message.getToken(), success);
+
+        LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
+//        sendToKafka(message);
+    }
+
+    /** 走handleRealtimeLog */
+    @Deprecated
     private void shellError(Message message) {
 
 //        LogUtils.error("{} shellError: {}", message.getTokenSuffix(), message.getValue());
         LogUtils.error("shellError: {}", message.getValue());
-        sendToKafka(message);
+//        sendToKafka(message);
     }
 
     private void shellErrorHandle(Message message) {

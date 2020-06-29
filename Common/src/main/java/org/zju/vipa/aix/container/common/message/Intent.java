@@ -32,6 +32,10 @@ public enum Intent {
      */
     GRAB_TASK,
     /**
+     * 容器抢任务失败
+     */
+    GRAB_TASK_FAILED,
+    /**
      * 执行特定任务
      */
     TASK,

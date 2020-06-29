@@ -88,7 +88,7 @@ public class AIXEnvConfig {
 
 
             /** UniversalModel */
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py" ;
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py "+modelArgs ;
 
 
         /** yolo */

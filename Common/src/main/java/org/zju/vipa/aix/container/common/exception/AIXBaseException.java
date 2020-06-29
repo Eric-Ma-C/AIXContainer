@@ -5,7 +5,8 @@ package org.zju.vipa.aix.container.common.exception;
  * @Author: EricMa
  * @Description: AIX自定义异常基类
  */
-public class AIXBaseException extends RuntimeException {
+public class
+AIXBaseException extends RuntimeException {
     /** 错误码 */
     protected final ExceptionCode exceptionCode;
 
@@ -13,6 +14,7 @@ public class AIXBaseException extends RuntimeException {
      * 无参默认构造UNSPECIFIED
      */
     public AIXBaseException() {
+
         super(ExceptionCodeEnum.UNSPECIFIED.getDescription());
         this.exceptionCode = ExceptionCodeEnum.UNSPECIFIED;
     }

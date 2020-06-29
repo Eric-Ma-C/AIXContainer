@@ -9,10 +9,9 @@ import java.util.Map;
  * @Date: 2020/1/9 21:59
  * @Author: EricMa
  * @Description: 容器与平台通信的消息体
- *  确认 fastjson 反序列化时，若没有public的getter和setter，则为该变量默认初始值，如0，null
- *                      无参构造函数和全参构造函数至少有一个，不限制访问修饰符
- *                      不需要重载tostring
- *
+ * 确认 fastjson 反序列化时，若没有public的getter和setter，则为该变量默认初始值，如0，null
+ * 无参构造函数和全参构造函数至少有一个，不限制访问修饰符
+ * 不需要重载tostring
  */
 public class Message implements Serializable {
     /**
@@ -20,6 +19,18 @@ public class Message implements Serializable {
      * 不用了，改为前两字节表示长度
      */
     public static final String END_STRING = "EOF-AIX-MESSAGE";
+    /**
+     * shell执行结果字符串
+     */
+    public static final String SHELL_RESULT_KEY = "SHELL_RESULT_KEY";
+    /**
+     * shell执行结果字符串
+     */
+    public static final String SHELL_RESULT_SUCCESS = "SHELL_RESULT_SUCCESS";
+    /**
+     * shell执行结果字符串
+     */
+    public static final String SHELL_RESULT_FAILED = "SHELL_RESULT_FAILED";
 
 
     /**
@@ -36,7 +47,7 @@ public class Message implements Serializable {
     /**
      * 自定义数据 键值对
      */
-    protected Map<String, String> customDataMap =null;
+    protected Map<String, String> customDataMap = null;
 
 //    private String s;
 
@@ -82,8 +93,9 @@ public class Message implements Serializable {
     public String getToken() {
         return token;
     }
+
     public String getTokenSuffix() {
-        return token.substring(token.length()-9);
+        return token.substring(token.length() > 9 ? token.length() - 9 : token.length());
     }
 
     public void setToken(String token) {
@@ -99,17 +111,17 @@ public class Message implements Serializable {
     }
 
     public String getCustomData(String key) {
-        if(customDataMap ==null){
+        if (customDataMap == null) {
             return null;
         }
         return customDataMap.get(key);
     }
 
     public void addCustomData(String k, String v) {
-        if (customDataMap ==null){
-            customDataMap =new HashMap<>(2);
+        if (customDataMap == null) {
+            customDataMap = new HashMap<>(2);
         }
-        customDataMap.put(k,v);
+        customDataMap.put(k, v);
     }
 
     @Override

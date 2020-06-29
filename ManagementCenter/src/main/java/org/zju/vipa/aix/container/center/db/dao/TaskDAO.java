@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 import org.zju.vipa.aix.container.common.entity.Task;
+
 import java.util.List;
 
 /**
@@ -15,11 +16,16 @@ public interface TaskDAO {
 
     int add(Task task);
 
-//    @Update("update task")
+    //    @Update("update task")
     int update(Task task);
 
-    @Update("update task set status=#{status} , trainBy=#{trainBy} where id=#{id}")
-    public int updateTask(@Param("id")String id,@Param("status")String status, @Param("trainBy")String trainBy);
+    //TODO 方便测试用
+//    @Update("update task set status='WAITING' , trainBy=#{trainBy} where id=#{id}")
+    @Update("update task set status='TRAINING' , trainBy=#{trainBy} where id=#{id}")
+    int taskTobeTrained(@Param("id") String id,  @Param("trainBy") String trainBy);
+
+    @Update("update task set status=#{status} where id=#{id}")
+    int setTaskStatus(@Param("id") String id, @Param("status") String status);
 
 
     int delete(int id);

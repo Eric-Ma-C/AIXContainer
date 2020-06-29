@@ -6,6 +6,7 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.message.Intent;
+import org.zju.vipa.aix.container.common.message.Message;
 
 import java.io.IOException;
 
@@ -18,7 +19,7 @@ public class ShellTask implements RealtimeProcessListener {
 
     private RealtimeProcess mRealtimeProcess = null;
     private HandleShellErrorListener handleShellErrorListener;
-//    private String command;
+    private String command;
 //    private String cmdDir;
 
     public ShellTask(String cmd, String cmdDir) {
@@ -65,6 +66,7 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessBegin(String cmd) {
+        this.command = cmd;
         ClientLogUtils.info(cmd);
 //        if (Client.isUploadRealtimeLog) {
 //            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_BEGIN, cmd));
@@ -114,11 +116,18 @@ public class ShellTask implements RealtimeProcessListener {
 
     @Override
     public void onProcessFinished(int resultCode) {
+        /** 指令执行结果一直都需要上传,用于判断任务执行完毕 */
+        ClientLogUtils.info(false, "resultCode={},cmds={}", resultCode, command);
 
-        ClientLogUtils.info("resultCode={}",resultCode);
-//        if (Client.isUploadRealtimeLog) {
-//            TcpClient.getInstance().sendMessage(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
-//        }
+        ClientMessage msg = new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode + " ,cmds=" + command);
+        if (resultCode==0) {
+            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_SUCCESS);
+        }else {
+            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
+        }
+
+        TcpClient.getInstance().sendMessage(msg);
+
 
 
 //        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));

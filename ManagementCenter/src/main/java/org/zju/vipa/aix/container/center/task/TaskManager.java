@@ -41,6 +41,10 @@ public class TaskManager {
      * 任务映射，< token,task >
      */
     private Map<String, Task> taskMap;
+    /**
+     * 最近一次指令执行状态映射，< token,Boolean >
+     */
+    private Map<String, Boolean> shellResultMap;
 
     /**
      * token锁列表，用于减小并发访问的锁粒度
@@ -61,6 +65,7 @@ public class TaskManager {
         serialMessageMap = new ConcurrentHashMap<>();
         heartbeatMessageMap = new ConcurrentHashMap<>();
         taskMap = new ConcurrentHashMap<>();
+        shellResultMap = new ConcurrentHashMap<>();
 //        /** 保证hashset的同步性 */
 //        tokenSet = Collections.synchronizedSet(new HashSet<String>());
 
@@ -96,6 +101,14 @@ public class TaskManager {
         return taskMap.get(token);
     }
 
+    /**
+     * 设置最后一次指令执行结果,辅助判断任务是否完成
+     */
+    public void setLastShellResult(String token, boolean result) {
+
+        shellResultMap.put(token, result);
+
+    }
 
     /**
      * 在空闲时尝试获取新的任务
@@ -112,9 +125,18 @@ public class TaskManager {
             /** 消息队列中有待发送消息，直接取出 */
             return message;
         }
+        /** 若没有待发送消息，先判断上次client指令执行是否成功,若成功则说明当前任务完成,可以移除任务,再抢新的任务 */
+        Boolean shellResult = shellResultMap.get(token);
+        if (shellResult != null && shellResult.booleanValue()) {
+            //任务执行成功,删除任务
+            Task task = taskMap.remove(token);
+            DbManager.getInstance().setTaskFinished(task.getId());
+        }
 
-        /** 若没有待发送消息，则尝试添加消息，首先判断有无正在执行的任务 */
+
+        /** 若上次client指令执行失败,则需要尝试添加修复环境的命令;若成功则抢新的任务 */
         synchronized (token.intern()) {
+            /** 首先判断有无正在执行的任务 */
             Task task = taskMap.get(token);
             if (task == null) {
                 /** 没有正在执行的任务，尝试抢新的任务 */
@@ -122,10 +144,10 @@ public class TaskManager {
                 task = DbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
-                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...", token.substring(token.length() - 9));
-                    return null;
+                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...", token);
+                    return new ServerMessage(Intent.GRAB_TASK_FAILED);
                 }
-                LogUtils.info("{}:\n抢到任务{}", token.substring(token.length() - 9), task);
+                LogUtils.info("{}:\n抢到任务{}", token, task);
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
@@ -136,7 +158,8 @@ public class TaskManager {
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
 //         todo 测试 跳过配conda环境
                 /** 分成两条指令执行，否则可能会卡住? */
-                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
+//                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
+                String condaEnvCreateCmds = "ls";
                 String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
@@ -165,15 +188,15 @@ public class TaskManager {
                 addSerialMessage(token, msg2);
 
 
-            } else {
-                /**  task ！= null，说明有任务正在配置环境 */
-                LogUtils.info("{}发现已有任务{}", token.substring(token.length() - 9), task);
+            } else { /**  task ！= null，说明有任务正在配置环境 */
+
+                LogUtils.info("{}发现已有任务{}", token, task);
 
                 /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...", token.substring(token.length() - 9));
+                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...", token);
 
                     String codePath = task.getCodePath();
                     String modelArgs = task.getModelArgs();
@@ -221,13 +244,17 @@ public class TaskManager {
             ConcurrentLinkedQueue<Message> messageList = serialMessageMap.get(token);
             if (messageList != null) {
                 message = messageList.poll();
+                LogUtils.debug("{}队列还剩{}个待发送消息", token, messageList.size());
+                if (messageList.size() == 0) {
+                    serialMessageMap.remove(token);
+                }
             }
         }
         if (message == null) {
             return null;
         }
 
-        LogUtils.info("{}:\n从队列中获取待发送消息：{}", token.substring(token.length() - 9), message);
+        LogUtils.info("{}:\n从队列中获取待发送消息：{}", message.getTokenSuffix(), message);
         return message;
     }
 
@@ -247,19 +274,26 @@ public class TaskManager {
             messageList.offer(msg);
 //            messageMap.put(token, messageList);
         }
-        LogUtils.info("{}:\n添加待发送serial消息{}", token.substring(token.length() - 9), msg);
+        LogUtils.info("{}:\n添加待发送serial消息{}", msg.getTokenSuffix(), msg);
     }
 
     /**
      * 返回待发送的heartbeat信息
      */
     public Message getHeartbeatMessage(String token) {
-        LogUtils.debug("getHeartbeatMessage() token={} ",token);
+        LogUtils.debug("getHeartbeatMessage() token={} ", token);
         ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
         if (messageList == null) {
             return null;
         } else {
-            return messageList.poll();
+            Message message = messageList.poll();
+            LogUtils.debug("{}心跳信息队列还剩{}个待发送消息", token, messageList.size());
+
+            if (messageList.size() == 0) {
+                /** 保证空值messageList == null */
+                heartbeatMessageMap.remove(token);
+            }
+            return message;
         }
     }
 
@@ -278,7 +312,7 @@ public class TaskManager {
         messageList.offer(msg);
 //            messageMap.put(token, messageList);
 //        }
-        LogUtils.info("{}:\n添加待发送heartbeat消息{}", token.substring(token.length() - 9), msg);
+        LogUtils.info("{}:\n添加待发送heartbeat消息{}", msg.getTokenSuffix(), msg);
     }
 
 

@@ -313,10 +313,26 @@ public class TcpClient {
         resMsg = clientIO.sendMsgAndGetResponse(message, 5000);
 
 
-        if (resMsg != null && !Intent.NULL.match(resMsg)) {
-            /** 停止抢任务线程,执行任务 */
-            GrabbingTaskThread.stop();
-            handleResponseMsg(resMsg);
+        if (resMsg != null) {
+            if (!Intent.GRAB_TASK_FAILED.match(resMsg)) {
+                /** 停止抢任务线程,执行任务 */
+                GrabbingTaskThread.stop();
+                handleResponseMsg(resMsg);
+
+            } else {
+                if (Client.grabTaskFailedCount++ > 10) {
+                    try {/** 减慢抢任务频率 */
+                        Thread.sleep((Client.grabTaskFailedCount - 10) * 1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+                if (Client.grabTaskFailedCount > 6000) {
+                    /** 复位 */
+                    Client.grabTaskFailedCount = 0;
+                }
+
+            }
         }
 
     }
