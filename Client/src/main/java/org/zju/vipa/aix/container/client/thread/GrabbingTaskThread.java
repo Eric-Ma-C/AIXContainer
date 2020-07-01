@@ -5,6 +5,7 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 
 import java.util.Random;
@@ -60,8 +61,8 @@ public class GrabbingTaskThread {
                             /** 减慢抢任务频率 */
                             grabbingInterval = (Client.grabTaskFailedCount - 10) * 1000 + 4000 + new Random().nextInt(1000);
                         }
-                        if (Client.grabTaskFailedCount > 300) {
-                            /** 复位,最大间隔约5min */
+                        if (Client.grabTaskFailedCount > ClientConfig.MAX_GRAB_TASK_INTERVAL_SECONDS) {
+                            /** 复位 */
                             Client.grabTaskFailedCount = 0;
                         }
                         ClientLogUtils.info("暂时没有抢到任务,准备第{}次尝试,请耐心等待...", Client.grabTaskFailedCount);
