@@ -27,10 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description: aix容器管理平台 启动入口
  */
 public class ManagementCenter {
-    /**
-     * 缓存已经连接到平台的容器token，避免反复查询数据库
-     */
-    private Map<String, String> cachedTokenMap;
+
     /**
      * 已连接客户端列表
      */
@@ -52,7 +49,6 @@ public class ManagementCenter {
     }
 
     private void init() {
-        cachedTokenMap = new ConcurrentHashMap<>(20);
         clientMap = new ConcurrentHashMap<>(20);
     }
 
@@ -64,13 +60,13 @@ public class ManagementCenter {
      * @return: java.lang.String 返回null代表数据库无此设备
      */
     public String getIdByToken(String token) {
-        String id = cachedTokenMap.get(token);
-        if (id == null) {
+        RunningClient client = clientMap.get(token);
+        String id = "";
+        if (client == null) {
             /** todo 目前没有去数据库检查token   id = DbManager.getInstance().getClientIdByToken(token); */
             id = JwtUtils.decodeClinetIdByToken(token);
             if (id != null) {
                 /** 新设备接入 */
-                cachedTokenMap.put(token, id);
                 clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
             }
         }
@@ -80,10 +76,12 @@ public class ManagementCenter {
 
     public void updateGpuInfo(String token, GpuInfo info) {
         RunningClient client = clientMap.get(token);
+        if (client == null) {
+            return;
+        }
         client.setGpuInfo(info);
-//        clientMap.put(token, client);
 
-        DbManager.getInstance().updateDeviceGpuDetailById(cachedTokenMap.get(token), JsonUtils.toJSONString(info));
+        DbManager.getInstance().updateDeviceGpuDetailById(client.getId(), JsonUtils.toJSONString(info));
     }
 
     public void updateRunningCmds(String token, String cmds) {

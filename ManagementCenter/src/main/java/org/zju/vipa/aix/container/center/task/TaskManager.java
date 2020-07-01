@@ -38,7 +38,7 @@ public class TaskManager {
      */
     private Map<String, ConcurrentLinkedQueue<Message>> heartbeatMessageMap;
     /**
-     * 任务映射，< token,task >
+     * client-任务映射表，< token,task >
      */
     private Map<String, Task> taskMap;
     /**
@@ -81,11 +81,12 @@ public class TaskManager {
 
     /**
      * 正在与平台通信的训练容器数量
-     * 也就是待发送队列的数量
+     * 也就是有任务的client数量
      */
     protected int getActiveClientNum() {
-        return serialMessageMap.size();
+        return taskMap.size();
     }
+
 
     /**
      * 获取某容器的待发送队列

@@ -15,8 +15,14 @@ import java.util.List;
 public interface AIXClientCenterService {
     /**
      * 获取在线客户端数量
+     * =有任务的容器数量+正在抢任务的容器数量
      */
-    int getOnlineNum();
+    int getOnlineClientNum();
+
+    /**
+     * 有任务的容器数量
+     */
+    int getActiveClientNum();
 
     /**
      *  获取一次center实时日志,读到日志文件结尾,一般有多行
@@ -40,11 +46,7 @@ public interface AIXClientCenterService {
     void serverLogStop();
 
 
-    /**
-     * 正在与平台通信的训练容器数量
-     * 也就是待发送队列的数量
-     */
-     int getClientActiveNum();
+
 
     /**
      * 正在与平台通信的训练容器列表

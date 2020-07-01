@@ -24,10 +24,9 @@ import java.util.Queue;
  */
 public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     @Override
-    public int getOnlineNum() {
-//        return NettyTcpServer.group.size();
-//        return 7654321;
-        return (int) (Math.random() * 100);
+    public int getOnlineClientNum() {
+        ManagementCenter.getInstance().getClientsList()
+
     }
 
     @Override
@@ -46,7 +45,7 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
-    public int getClientActiveNum() {
+    public int getActiveClientNum() {
         return TaskManagerService.getActiveClientNum();
     }
 
