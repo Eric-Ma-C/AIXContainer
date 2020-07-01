@@ -1,9 +1,11 @@
 package org.zju.vipa.aix.container.client.task;
 
 
+import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
+import org.zju.vipa.aix.container.common.message.Message;
 
 import java.util.Arrays;
 
@@ -54,6 +56,7 @@ public abstract class BaseTask {
     private String modelArgs = null;
 
     protected ShellTask.HandleShellErrorListener shellErrorListener;
+
 
     public String getCodePath() {
         return codePath;
@@ -109,7 +112,7 @@ public abstract class BaseTask {
     }
 
     /**
-     * 获取执行任务的人Runnable接口
+     * 获取执行任务的Runnable接口
      *
      * @param taskStateListener 任务执行状态回调
      * @return: Runnable 给线程池执行的接口
@@ -125,10 +128,17 @@ public abstract class BaseTask {
                 listener.onBegin();
                 beginTime = System.currentTimeMillis();
                 state = TaskState.RUNNING;
-                BaseTask.this.run();
-                state = TaskState.FINISHED;
-                endTime = System.currentTimeMillis();
-                listener.onFinished();
+                BaseTask.this.run(new ServerResponseListener() {
+                    @Override
+                    public void onResponse(Message message) {
+//                      目前  message.getIntent()== Intent.ACK
+                        /** 指令执行完毕拿到服务器响应才视为执行完毕 */
+                        state = TaskState.FINISHED;
+                        endTime = System.currentTimeMillis();
+                        listener.onFinished();
+                    }
+                });
+
 
 
             }
@@ -163,16 +173,17 @@ public abstract class BaseTask {
      * @param:
      * @return:
      */
-    abstract protected void run();
+    abstract protected void run(ServerResponseListener responseListener);
 
     /**
-     * 任务执行完毕回调
+     * 任务执行回调
      */
     public interface TaskStateListener {
         void onBegin();
 
         void onFinished();
     }
+
 
 //    @Override
 //    public String toString() {

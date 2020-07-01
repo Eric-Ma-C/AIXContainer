@@ -10,9 +10,12 @@ public enum Intent {
 
     /**
      * 空消息
-     * 若容器收到此消息，则开始抢任务线程
      */
     NULL,
+    /**
+     * 收到消息,知会
+     */
+    ACK,
     /**
      * 心跳ping,附带gpu信息
      * center可能回应pong,也可能回应一些控制指令
@@ -31,6 +34,10 @@ public enum Intent {
      * 容器抢任务轮询
      */
     GRAB_TASK,
+    /**
+     * 若容器收到此消息，则GRAB_TASK
+     */
+    YOU_CAN_GRAB_TASK,
     /**
      * 容器抢任务失败
      */
@@ -71,7 +78,7 @@ public enum Intent {
      * 请求新任务，平台返回待发送消息
      * 若平台没有待发送消息，返回GRAB_TAST，容器开始抢任务
      */
-    ASK_FOR_WORK,
+    ASK_FOR_COMMENDS,
 
 
     /**
@@ -187,11 +194,12 @@ public enum Intent {
 
     /**
      * 比较是否相同
+     *
      * @param msg
      * @return: boolean
      */
     public boolean match(Message msg) {
-        if (msg==null) {
+        if (msg == null) {
             return false;
         }
         return this.name().equals(msg.getIntent().name());

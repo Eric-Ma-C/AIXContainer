@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.client.task.custom;
 
+import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 
@@ -19,9 +20,9 @@ public class ClientShellTask extends BaseTask {
 //    }
 
     @Override
-    protected void run() {
+    protected void run(ServerResponseListener responseListener) {
 //        ClientLogUtils.debug("ClientShellTask.procedure() begin");
         /** 没有及时退出 */
-        new ShellTask(getCommands()).exec(shellErrorListener);
+        new ShellTask(getCommands()).exec(shellErrorListener,responseListener);
     }
 }

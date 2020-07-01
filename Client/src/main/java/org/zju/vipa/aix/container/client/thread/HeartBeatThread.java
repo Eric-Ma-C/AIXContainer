@@ -17,7 +17,7 @@ public class HeartBeatThread implements Runnable{
     /**
      * todo 心跳间隔时间 30s  自动调整?
      */
-    private static final int HEARTBEATS_INTERVAL = 5 * 1000;
+    private static final int HEARTBEATS_INTERVAL = 15 * 1000;
 
 //    private static boolean isRunning=false;
 

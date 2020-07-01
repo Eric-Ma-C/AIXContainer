@@ -57,18 +57,22 @@ public class ClientThreadManager {
      */
     public void startGrabbingTask() {
 
-            if (!GrabbingTaskThread.isRunning()) {
-                lastUploadTime = System.currentTimeMillis();
+//        ClientLogUtils.debug("startGrabbingTask");
+        if (!GrabbingTaskThread.isRunning()) {
+            lastUploadTime = System.currentTimeMillis();
 
-                /** todo 延时上传日志，若停止抢任务（已经在训练模型）会暂停本任务 */
-                if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
-                    uploadLogFilePerDay();
-                }
-
-                mThreadPoolExecutor.execute(GrabbingTaskThread.getRunnable());
+            /** todo 延时上传日志，若停止抢任务（已经在训练模型）会暂停本任务 */
+            if (System.currentTimeMillis() - lastUploadTime > 3600 * 24 * 1000) {
+                uploadLogFilePerDay();
             }
 
+            mThreadPoolExecutor.execute(GrabbingTaskThread.getRunnable());
+        } else {
+            ClientLogUtils.worning("Grabbing Task Thread is Already Running!");
+        }
+
     }
+
     /**
      * 初始化,开始心跳,抢任务
      */
@@ -104,10 +108,9 @@ public class ClientThreadManager {
                     GrabbingTaskThread.stop();
                     UploadUtils.uploadFile(file.getPath());
                 }
-            },30 * 60, TimeUnit.SECONDS);
+            }, 30 * 60, TimeUnit.SECONDS);
         }
     }
-
 
 
     public void cancelUploadLog() {
@@ -126,14 +129,14 @@ public class ClientThreadManager {
         int corePoolSize = 5;
         /** 最大线程池大小 */
         int maximumPoolSize = 30;
-        /** 线程最大空闲时间 */
+        /** 超过corePoolSize后,线程最大空闲时间,超出后将被销毁 */
         long keepAliveTime = 60;
         TimeUnit unit = TimeUnit.SECONDS;
-        /** 线程等待队列 */
+        /** 超过maximumPoolSize后的线程等待队列 */
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(20);
         /** 线程创建工厂 */
         ThreadFactory threadFactory = new ClientTreadFactory();
-        /** 拒绝策略 */
+        /** 超出workQueue容量后的拒绝策略 */
         RejectedExecutionHandler handler = new ClientIgnorePolicy();
 
         mThreadPoolExecutor = new ThreadPoolExecutor(

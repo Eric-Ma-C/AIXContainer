@@ -110,6 +110,36 @@ public class TaskManager {
 
     }
 
+
+    /**
+     * 获取当前task已有的未发送的指令
+     *
+     * @param token
+     * @return: Message 为空则表示当前任务已执行完毕,准备抢新的任务
+     */
+    public Message getExistingTaskCmds(String token) {
+        Message message = getMessageByToken(token);
+        if (message != null) {
+            /** 消息队列中有待发送消息，直接取出 */
+            return message;
+        }
+
+
+        /** 若没有待发送消息，先判断上次client指令执行是否成功,若成功则说明当前任务完成,可以移除任务,再抢新的任务 */
+        Boolean shellResult = shellResultMap.get(token);
+        LogUtils.debug("token={},shellResult={}", token, shellResult);
+        if (shellResult != null && shellResult.booleanValue()) {
+            //任务执行成功,删除任务
+            Task task = taskMap.remove(token);
+            shellResultMap.remove(token);
+            DbManager.getInstance().setTaskFinished(task.getId());
+            LogUtils.info("{}任务执行结束!", token);
+            return new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * 在空闲时尝试获取新的任务
      * 当容器抢到一个任务的时候，对应token下若有待发送消息，则依次返回队列中的消息
@@ -118,23 +148,17 @@ public class TaskManager {
      * @param token
      * @return: zju.vipa.aix.container.message.Message
      */
-    public Message askForWork(String token) {
+    public Message askForCmds(String token) {
 
-        Message message = getMessageByToken(token);
+        Message message = getExistingTaskCmds(token);
         if (message != null) {
-            /** 消息队列中有待发送消息，直接取出 */
             return message;
         }
-        /** 若没有待发送消息，先判断上次client指令执行是否成功,若成功则说明当前任务完成,可以移除任务,再抢新的任务 */
-        Boolean shellResult = shellResultMap.get(token);
-        if (shellResult != null && shellResult.booleanValue()) {
-            //任务执行成功,删除任务
-            Task task = taskMap.remove(token);
-            DbManager.getInstance().setTaskFinished(task.getId());
-        }
 
 
-        /** 若上次client指令执行失败,则需要尝试添加修复环境的命令;若成功则抢新的任务 */
+        /** 若没有待发送消息且
+         * 若上次client指令执行没有成功,则需要尝试添加修复环境的命令;
+         * 若没有上次执行状态则抢新的任务 */
         synchronized (token.intern()) {
             /** 首先判断有无正在执行的任务 */
             Task task = taskMap.get(token);

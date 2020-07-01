@@ -19,6 +19,7 @@ public class ShellTask implements RealtimeProcessListener {
 
     private RealtimeProcess mRealtimeProcess = null;
     private HandleShellErrorListener handleShellErrorListener;
+    private ServerResponseListener serverResponseListener;
     private String command;
 //    private String cmdDir;
 
@@ -44,8 +45,9 @@ public class ShellTask implements RealtimeProcessListener {
         mRealtimeProcess.setCommand(cmdList.substring(0, cmdList.length() - 4));
     }
 
-    public void exec(HandleShellErrorListener listener) {
-        this.handleShellErrorListener = listener;
+    public void exec(HandleShellErrorListener errorListener,ServerResponseListener responseListener) {
+        this.handleShellErrorListener = errorListener;
+        this.serverResponseListener=responseListener;
         exec();
 
         //System.out.println(mRealtimeProcess.getAllResult());
@@ -119,15 +121,12 @@ public class ShellTask implements RealtimeProcessListener {
         /** 指令执行结果一直都需要上传,用于判断任务执行完毕 */
         ClientLogUtils.info(false, "resultCode={},cmds={}", resultCode, command);
 
-        ClientMessage msg = new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode + " ,cmds=" + command);
-        if (resultCode==0) {
-            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_SUCCESS);
-        }else {
-            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
+
+        Message resMsg = TcpClient.getInstance().reportTaskFinished(resultCode, command);
+        if (serverResponseListener != null) {
+            /** 返回服务器的意见 */
+            serverResponseListener.onResponse(resMsg);
         }
-
-        TcpClient.getInstance().sendMessage(msg);
-
 
 
 //        TcpClient.getInstance().reportShellResult(new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode));
@@ -140,4 +139,5 @@ public class ShellTask implements RealtimeProcessListener {
          */
         void onHandle(String moduleName);
     }
+
 }

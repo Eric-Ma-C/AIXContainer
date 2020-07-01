@@ -57,8 +57,8 @@ public class SocketHandler implements Runnable {
         }
 
         switch (msg.getIntent()) {
-            case ASK_FOR_WORK:
-                clientIdleAskForWork(msg.getToken());
+            case ASK_FOR_COMMENDS:
+                clientIdleAskForCmds(msg.getToken());
                 break;
             case CONDA_SOURCE:
                 getCondaSource();
@@ -131,13 +131,14 @@ public class SocketHandler implements Runnable {
     /**
      * 容器已没有待执行Task，问平台有没有任务
      */
-    private void clientIdleAskForWork(String token) {
-        Message toSendMsg = TaskManager.getInstance().askForWork(token);
-//        if (toSendMsg == null) {
-//            /** 使容器开始抢任务*/
-//            toSendMsg = new ServerMessage(Intent.NULL);
-//        }
+    private void clientIdleAskForCmds(String token) {
+        Message toSendMsg = TaskManager.getInstance().askForCmds(token);
+        if (Intent.GRAB_TASK_FAILED.equals(toSendMsg.getIntent())) {
+            /** 平台针对当前任务已没有指令可以执行,告诉容器开始抢新任务*/
+            toSendMsg = new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
+        }
 
+        LogUtils.info("{}:clientIdleAskForCmds={}", toSendMsg.getIntent());
         serverIO.response(toSendMsg);
     }
 
@@ -264,27 +265,26 @@ public class SocketHandler implements Runnable {
 
 
         //尝试取出一条待发送消息
-        Message message = TaskManager.getInstance().askForWork(token);
-        boolean newTaskToExec = (message != null);
+        Message message = TaskManager.getInstance().askForCmds(token);
+        if (message != null) {
+            serverIO.response(message);
+        }
 
 
-        if (newTaskToExec) {
-            //依次执行任务
-            //plate
+        //依次执行任务
+        //plate
 //            Message res = new Message(Intent.TASK, PipConfigTask.class.getName());
 //            Message res = new Message(Intent.TASK, TrainingTask.class.getName());
 
-            //cigar
+        //cigar
 //            Message res = new Message(Intent.TASK, "zju.vipa.container.client.task.YoloCigarTask");
 
 
 //            String cmds = "source /root/miniconda3/bin/activate clean_yolo " +
 //                "&& python " + codePath + "/main.py";
-            //写返回报文
+        //写返回报文
 //            response(new Message(Intent.SHELL_TASK, cmds));
-            serverIO.response(message);
 
-        }
 
     }
 
@@ -301,13 +301,18 @@ public class SocketHandler implements Runnable {
         }
     }
 
-    /** 走handleRealtimeLog */
+    /**
+     * 走handleRealtimeLog
+     */
     @Deprecated
     private void shellBegin(Message message) {
         LogUtils.debug("{} shellBegin: {}", message.getTokenSuffix(), message.getValue());
 //       sendToKafka(message);
     }
-    /** 走handleRealtimeLog */
+
+    /**
+     * 走handleRealtimeLog
+     */
     @Deprecated
     private void shellInfo(Message message) {
 //        LogUtils.debug("Shell info from " + mSocket.getInetAddress() + " :" + value);
@@ -320,16 +325,28 @@ public class SocketHandler implements Runnable {
      */
     private void shellResult(Message message) {
         boolean success = false;
-        if (message.getCustomData(Message.SHELL_RESULT_KEY) == Message.SHELL_RESULT_SUCCESS) {
+        if (Message.SHELL_RESULT_SUCCESS.equals(message.getCustomData(Message.SHELL_RESULT_KEY))) {
             success = true;
         }
         TaskManager.getInstance().setLastShellResult(message.getToken(), success);
 
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
+
+
+//        Message toSendMsg = TaskManager.getInstance().askForCmds(message.getToken());
+//        if (toSendMsg == null) {
+//            /** 使容器开始抢新任务*/
+//            toSendMsg = new ServerMessage(Intent.NULL);
+//        }
+
+
+        serverIO.response(new ServerMessage(Intent.ACK));
 //        sendToKafka(message);
     }
 
-    /** 走handleRealtimeLog */
+    /**
+     * 走handleRealtimeLog
+     */
     @Deprecated
     private void shellError(Message message) {
 

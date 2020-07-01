@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.client.task.custom;
 
+import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
@@ -22,10 +23,10 @@ public class DownloadModelTask extends BaseTask {
     }
 
     @Override
-    protected void run() {
+    protected void run(ServerResponseListener responseListener) {
         download();
         /** 解压 */
-        new ShellTask("unzip -o -d "+ Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener);
+        new ShellTask("unzip -o -d "+ Config.MODEL_UNZIP_PATH+" "+Config.MODEL_SAVE_PATH).exec(shellErrorListener,responseListener);
     }
 
     private void download(){

@@ -59,6 +59,22 @@ public class TcpClient {
         clientIO.sendMessage(clientMessage);
     }
 
+    /** 向平台通知任务执行完成 */
+    public Message reportTaskFinished(int resultCode,String command) {
+        ClientMessage msg = new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode + " ,cmds=" + command);
+        if (resultCode==0) {
+            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_SUCCESS);
+        }else {
+            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
+        }
+        Message resMsg = clientIO.sendMsgAndGetResponse(msg);
+        if (resMsg==null){
+            ClientLogUtils.error("reportTaskFinished() get no response!");
+        }
+        return  resMsg;
+
+    }
+
     /**
      * 处理平台下发的命令
      */
@@ -74,6 +90,9 @@ public class TcpClient {
                 /** 心跳回应 */
                 break;
             case NULL:
+            case ACK:
+                break;
+            case YOU_CAN_GRAB_TASK:
                 /** 平台没有待发送消息，容器开始抢任务 */
                 ClientThreadManager.getInstance().startGrabbingTask();
                 break;
@@ -264,11 +283,11 @@ public class TcpClient {
     }
 
     /**
-     * 向平台请求任务
+     * 向平台请求新的执行命令
      */
 
-    public void askForWork() {
-        ClientMessage message = new ClientMessage(Intent.ASK_FOR_WORK);
+    public void askForCmds() {
+        ClientMessage message = new ClientMessage(Intent.ASK_FOR_COMMENDS);
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);
 
@@ -304,7 +323,7 @@ public class TcpClient {
      * @param:
      * @return:
      */
-    public void grabTask(SystemBriefInfo info) {
+    public boolean grabTask(SystemBriefInfo info) {
 
         ClientMessage message = new ClientMessage(Intent.GRAB_TASK, JsonUtils.toJSONString(info));
         Message resMsg = null;
@@ -315,26 +334,16 @@ public class TcpClient {
 
         if (resMsg != null) {
             if (!Intent.GRAB_TASK_FAILED.match(resMsg)) {
+                /** 失败次数归0 */
+                Client.grabTaskFailedCount=0;
+                ClientLogUtils.info("抢到任务:{}",resMsg.getIntent());
                 /** 停止抢任务线程,执行任务 */
                 GrabbingTaskThread.stop();
                 handleResponseMsg(resMsg);
-
-            } else {
-                if (Client.grabTaskFailedCount++ > 10) {
-                    try {/** 减慢抢任务频率 */
-                        Thread.sleep((Client.grabTaskFailedCount - 10) * 1000);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                    }
-                }
-                if (Client.grabTaskFailedCount > 6000) {
-                    /** 复位 */
-                    Client.grabTaskFailedCount = 0;
-                }
-
+                return true;
             }
         }
-
+        return false;
     }
 
     /**

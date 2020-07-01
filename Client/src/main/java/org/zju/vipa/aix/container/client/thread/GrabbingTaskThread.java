@@ -1,10 +1,13 @@
 package org.zju.vipa.aix.container.client.thread;
 
+import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.network.TcpClient;
+import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
 import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
-import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+
+import java.util.Random;
 
 /**
  * @Date: 2020/6/17 13:47
@@ -17,9 +20,9 @@ public class GrabbingTaskThread {
 
     private static Runnable runnable;
     /**
-     * 抢任务间隔时间 15s
+     * 初始抢任务间隔时间 4-5s
      */
-    private static final int GRABBING_INTERVAL = 15 * 1000;
+    private static int grabbingInterval = 4000 + new Random().nextInt(1000);
 
     private static volatile boolean exit = true;
 
@@ -36,7 +39,7 @@ public class GrabbingTaskThread {
         ClientThreadManager.getInstance().cancelUploadLog();
     }
 
-    public synchronized static boolean isRunning(){
+    public synchronized static boolean isRunning() {
         return !exit;
     }
 
@@ -51,11 +54,23 @@ public class GrabbingTaskThread {
                     SystemBriefInfo info = SystemInfoUtils.getSystemBriefInfo();
 
                     /** 若抢到了任务，会在新线程执行任务 */
-                    TcpClient.getInstance().grabTask(info);
+                    boolean ok = TcpClient.getInstance().grabTask(info);
+                    if (!ok) {/** 没抢到 */
+                        if (Client.grabTaskFailedCount++ > 10) {
+                            /** 减慢抢任务频率 */
+                            grabbingInterval = (Client.grabTaskFailedCount - 10) * 1000 + 4000 + new Random().nextInt(1000);
+                        }
+                        if (Client.grabTaskFailedCount > 300) {
+                            /** 复位,最大间隔约5min */
+                            Client.grabTaskFailedCount = 0;
+                        }
+                        ClientLogUtils.info("暂时没有抢到任务,准备第{}次尝试,请耐心等待...", Client.grabTaskFailedCount);
+
+                    }
 
                     /** 休眠 */
                     try {
-                        Thread.sleep(GRABBING_INTERVAL);
+                        Thread.sleep(grabbingInterval);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                         ClientExceptionUtils.handle(e);

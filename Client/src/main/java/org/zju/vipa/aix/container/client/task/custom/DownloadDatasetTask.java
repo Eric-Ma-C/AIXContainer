@@ -1,7 +1,8 @@
 package org.zju.vipa.aix.container.client.task.custom;
 
-import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
+import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.task.BaseTask;
+import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.HttpDownloadUtils;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
@@ -21,7 +22,7 @@ public class DownloadDatasetTask extends BaseTask {
     }
 
     @Override
-    protected void run() {
+    protected void run(ServerResponseListener responseListener) {
         download();
 
         //todo 成功的反馈  下载失败的处理

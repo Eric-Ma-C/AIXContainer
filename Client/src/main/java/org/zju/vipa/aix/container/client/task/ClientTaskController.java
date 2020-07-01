@@ -119,11 +119,8 @@ public class ClientTaskController {
 
             /** 向平台请求任务 */
             ClientLogUtils.info("Client Task Queue is empty.Ask for new work.");
-            TcpClient.getInstance().askForWork();
+            TcpClient.getInstance().askForCmds();
 
-//            ClientLogUtils.info("Task Queue is empty.Start heartbeats report.");
-//            /** 启动心跳线程 */
-//            ClientThreadManager.getInstance().startHeartbeat();
             return;
 
         } else {/** noTaskRunning && !taskQueue.isEmpty() */

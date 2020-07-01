@@ -1,9 +1,10 @@
 package org.zju.vipa.aix.container.client.task.custom;
 
 import org.zju.vipa.aix.container.client.network.TcpClient;
+import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.shell.ShellTask;
-import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.task.BaseTask;
+import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 /**
  * @Date: 2020/3/10 9:39
@@ -57,13 +58,13 @@ public class YoloCigarTask extends BaseTask {
 //    }
 
     @Override
-    protected  void run() {
+    protected  void run(ServerResponseListener responseListener) {
         /** 更新conda源 */
 //        setCondaSource();
         /** 获取yml路径 */
         getCondaYmlPath();
 
-        new ShellTask(getCommands()).exec(shellErrorListener);
+        new ShellTask(getCommands()).exec(shellErrorListener,responseListener);
 
     }
 }

@@ -1,7 +1,6 @@
-import org.junit.Test;
 import org.zju.vipa.aix.container.center.db.DbManager;
-import org.zju.vipa.aix.container.common.entity.Task;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
+import org.zju.vipa.aix.container.common.entity.Task;
 
 import java.util.List;
 
@@ -44,7 +43,7 @@ public class TestDb {
 
         }
 
-        @Test
+//        @Test
         public void updateDeviceDetail(){
                 DbManager.getInstance().updateDeviceGpuDetailById("test","{\n" +
                     "                \"driverVersion\": \"440.31\",\n" +
