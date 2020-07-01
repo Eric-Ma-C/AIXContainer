@@ -79,6 +79,15 @@ public class TaskManager {
         return TaskManagerHolder.INSTANCE;
     }
 
+
+    /** 删除无心跳client的数据 */
+    public void removeDeadClient(String token) {
+        serialMessageMap.remove(token);
+        heartbeatMessageMap.remove(token);
+        taskMap.remove(token);
+        shellResultMap.remove(token);
+    }
+
     /**
      * 正在与平台通信的训练容器数量
      * 也就是有任务的client数量

@@ -4,6 +4,7 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
+import org.zju.vipa.aix.container.common.config.ClientConfig;
 
 /**
  * @Date: 2020/6/18 19:48
@@ -14,10 +15,7 @@ import org.zju.vipa.aix.container.client.utils.SystemInfoUtils;
  */
 public class HeartBeatThread implements Runnable{
 
-    /**
-     * todo 心跳间隔时间 30s  自动调整?
-     */
-    private static final int HEARTBEATS_INTERVAL = 15 * 1000;
+
 
 //    private static boolean isRunning=false;
 
@@ -33,7 +31,7 @@ public class HeartBeatThread implements Runnable{
 
             /** 休眠 */
             try {
-                Thread.sleep(HEARTBEATS_INTERVAL);
+                Thread.sleep(ClientConfig.HEARTBEATS_INTERVAL);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 ClientExceptionUtils.handle(e);

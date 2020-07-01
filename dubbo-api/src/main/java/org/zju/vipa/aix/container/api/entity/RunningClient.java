@@ -17,6 +17,9 @@ public class RunningClient implements Serializable {
      * 连入平台的时间
      */
     String since;
+    /** 最后一次向平台显示心跳的时间 */
+    transient long lastHeartbeat;
+
     GpuInfo gpuInfo;
     TaskBriefInfo taskBriefInfo;
     /**
@@ -79,5 +82,13 @@ public class RunningClient implements Serializable {
 
     public void setRunningCmds(String runningCmds) {
         this.runningCmds = runningCmds;
+    }
+
+    public long getLastHeartbeat() {
+        return lastHeartbeat;
+    }
+
+    public void setLastHeartbeat(long lastHeartbeat) {
+        this.lastHeartbeat = lastHeartbeat;
     }
 }

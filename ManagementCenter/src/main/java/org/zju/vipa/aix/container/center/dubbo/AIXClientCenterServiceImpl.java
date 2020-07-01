@@ -25,7 +25,7 @@ import java.util.Queue;
 public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     @Override
     public int getOnlineClientNum() {
-        ManagementCenter.getInstance().getClientsList()
+       return ManagementCenter.getInstance().getOnlineClientNum();
 
     }
 
