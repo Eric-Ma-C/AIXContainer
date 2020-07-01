@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @Date: 2020/6/4 16:41
  * @Author: EricMa
- * @Description: 正在运行的容器信息
+ * @Description: 正在运行的容器信息,用于前端展示
  */
 public class RunningClient implements Serializable {
 

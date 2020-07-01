@@ -81,7 +81,7 @@ public class ManagementCenter {
     public void updateGpuInfo(String token, GpuInfo info) {
         RunningClient client = clientMap.get(token);
         client.setGpuInfo(info);
-        clientMap.put(token, client);
+//        clientMap.put(token, client);
 
         DbManager.getInstance().updateDeviceGpuDetailById(cachedTokenMap.get(token), JsonUtils.toJSONString(info));
     }
@@ -89,13 +89,13 @@ public class ManagementCenter {
     public void updateRunningCmds(String token, String cmds) {
         RunningClient client = clientMap.get(token);
         client.setRunningCmds(cmds);
-        clientMap.put(token, client);
+//        clientMap.put(token, client);
     }
 
     public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo) {
         RunningClient client = clientMap.get(token);
         client.setTaskBriefInfo(briefInfo);
-        clientMap.put(token, client);
+//        clientMap.put(token, client);
     }
 
     /**

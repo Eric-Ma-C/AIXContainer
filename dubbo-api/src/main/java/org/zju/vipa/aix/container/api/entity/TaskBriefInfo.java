@@ -35,6 +35,7 @@ public class TaskBriefInfo implements Serializable {
     private String status;
 
     public TaskBriefInfo() {
+        this.name="No Task Running";
     }
 
     public TaskBriefInfo(Task task) {

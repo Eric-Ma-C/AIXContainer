@@ -132,6 +132,8 @@ public class TaskManager {
             //任务执行成功,删除任务
             Task task = taskMap.remove(token);
             shellResultMap.remove(token);
+            ManagementCenter.getInstance().updateTaskBriefInfo(token, new TaskBriefInfo());
+
             DbManager.getInstance().setTaskFinished(task.getId());
             LogUtils.info("{}任务执行结束!", token);
             return new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
