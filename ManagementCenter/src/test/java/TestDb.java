@@ -12,9 +12,9 @@ import java.util.List;
 public class TestDb {
         public static void main(String[] args) {
 //               getUserList();
-                getTaskList();
+                getClientIdByToken("gfd");
                 System.out.println("\n\n\n");
-                getWaittingTaskList();
+//                getWaittingTaskList();
         }
 
         private static void getDataturksUserList(){
@@ -29,6 +29,11 @@ public class TestDb {
                 for (Task task : taskList) {
                         System.out.println(task.toString());
                 }
+        }
+
+        private static void getClientIdByToken(String token){
+                String id = DbManager.getInstance().getClientIdByToken(token);
+
         }
 
         private static void getWaittingTaskList(){

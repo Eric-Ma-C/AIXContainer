@@ -1,11 +1,66 @@
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 
+import java.util.*;
+
 /**
  * @Date: 2020/4/20 21:13
  * @Author: EricMa
  * @Description:
  */
 public class Test {
+
+    public static void main(String[] args) {
+
+                Scanner sc = new Scanner(System.in);
+                String s1 = sc.nextLine();
+                String s2 = sc.nextLine();
+
+                //char[] cs1=s1.toCharArray();
+                //char[] cs2=s2.toCharArray();
+
+                //int ans=0;
+                //List<List<Integer>> lis=new ArrayList<>();
+                Map<Character,List<Integer>> map=new HashMap<>();
+                for(int i=0;i<s1.length();i++){
+                    if(map.containsKey(s1.charAt(i))){
+                        map.get(s1.charAt(i)).add(i);
+                    }else{
+                        List<Integer> li=new ArrayList<>();
+                        li.add(i);
+                        map.put(s1.charAt(i),li);
+                    }
+                }
+                int min=s1.length(),max=0;
+                for(int i=0;i<s2.length();i++){
+                    if(!map.containsKey(s2.charAt(i))){
+                        System.out.println(0);
+                        return;
+                    }else{
+                        List<Integer> li=map.get(s2.charAt(i));
+                        int index=li.get(0);
+                        li.remove(0);
+                        if(li.size()==0){
+                            map.remove(s2.charAt(i));
+                        }
+                        if(index<min){
+                            min=index;
+                        }
+                        if(index>max){
+                            max=index;
+                        }
+
+                    }
+                }
+
+
+                System.out.println(max-min+1);
+
+
+
+
+    }
+
+
 
     @org.junit.Test
     public void test(){

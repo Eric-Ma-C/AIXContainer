@@ -133,7 +133,7 @@ public class SocketHandler implements Runnable {
      */
     private void clientIdleAskForCmds(String token) {
         Message toSendMsg = TaskManager.getInstance().askForCmds(token);
-        if (Intent.GRAB_TASK_FAILED.equals(toSendMsg.getIntent())) {
+        if (toSendMsg == null || Intent.GRAB_TASK_FAILED.equals(toSendMsg.getIntent())) {
             /** 平台针对当前任务已没有指令可以执行,告诉容器开始抢新任务*/
             toSendMsg = new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
         }

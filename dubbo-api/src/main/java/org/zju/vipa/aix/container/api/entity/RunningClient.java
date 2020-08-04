@@ -34,6 +34,7 @@ public class RunningClient implements Serializable {
         this.id = id;
         this.token=token;
         this.since = since;
+        this.taskBriefInfo=new TaskBriefInfo();
     }
 
     public String getId() {

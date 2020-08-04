@@ -57,7 +57,7 @@ public class ManagementCenter {
             public void run() {
                 removeDeadClients();
             }
-        }, 2000 , 30000);
+        }, 2000, 30000);
 
     }
 
@@ -120,7 +120,13 @@ public class ManagementCenter {
         while (iterator.hasNext()) {
             entry = iterator.next();
             if (System.currentTimeMillis() - entry.getValue().getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL * 5) {
+
+                LogUtils.debug("\n******* Remove Dead Client: System.currentTimeMillis()={} LastHeartbeat()={} *******\n", System.currentTimeMillis(), entry.getValue().getLastHeartbeat());
+
                 /** 超过心跳间隔时间5倍未收到,认为client已离线 */
+                LogUtils.info("\n******* Remove Dead Client: {} *******\n", entry.getValue().getToken());
+
+                updateTaskBriefInfo(entry.getValue().getToken(), new TaskBriefInfo());
                 TaskManager.getInstance().removeDeadClient(entry.getValue().getToken());
                 iterator.remove();
             }
@@ -131,7 +137,7 @@ public class ManagementCenter {
      * 获取已连接容器列表
      */
     public List<RunningClient> getClientsList() {
-
+        LogUtils.debug("getClientsList={}", clientMap.toString());
         List<RunningClient> list = new ArrayList<>(clientMap.values());
         return list;
     }

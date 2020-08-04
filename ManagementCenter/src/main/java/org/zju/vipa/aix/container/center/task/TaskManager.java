@@ -86,6 +86,7 @@ public class TaskManager {
         heartbeatMessageMap.remove(token);
         taskMap.remove(token);
         shellResultMap.remove(token);
+
     }
 
     /**
