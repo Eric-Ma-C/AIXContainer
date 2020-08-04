@@ -1,7 +1,9 @@
 package org.zju.vipa.aix.container.center.db.dao.atlas;
 
 import org.apache.ibatis.annotations.Delete;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 import org.zju.vipa.aix.container.center.db.entity.atlas.TaskTask;
 
 import java.util.List;
@@ -41,5 +43,17 @@ public interface TaskTaskMapper {
 	 * @return
 	 */
 	public List<TaskTask> select_task_task(TaskTask task_task);
+
+	@Update("update task_task set status='TRAINING' , trainBy=#{trainBy} where id=#{id}")
+	int taskTobeTrained(@Param("id") int id, @Param("trainBy") String trainBy);
+
+	@Update("update task_task set status=#{status} where id=#{id}")
+	int setTaskStatus(@Param("id") String id, @Param("status") String status);
+
+	@Select("select * from task_task where processor = 'AIX'")
+	List<TaskTask> findAllList();
+
+	@Select("select * from task_task where status = 'WAITING' and processor = 'AIX' limit 5")
+	List<TaskTask> findWaittingList();
 
 }

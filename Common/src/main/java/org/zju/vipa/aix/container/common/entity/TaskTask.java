@@ -15,6 +15,14 @@ public class TaskTask implements Serializable{
   private String note;
   private int serverId;
   private int userId;
+  private String accessType;
+  private String info;
+  private String name;
+  private String processor;
+  private String status;
+  private int trainById;
+  private String trainArgs;
+  private int modelId;
 
 
   public int getId() {
@@ -122,6 +130,78 @@ public class TaskTask implements Serializable{
 
   public void setUserId(int userId) {
     this.userId = userId;
+  }
+
+
+  public String getAccessType() {
+    return accessType;
+  }
+
+  public void setAccessType(String accessType) {
+    this.accessType = accessType;
+  }
+
+
+  public String getInfo() {
+    return info;
+  }
+
+  public void setInfo(String info) {
+    this.info = info;
+  }
+
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+
+  public String getProcessor() {
+    return processor;
+  }
+
+  public void setProcessor(String processor) {
+    this.processor = processor;
+  }
+
+
+  public String getStatus() {
+    return status;
+  }
+
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
+
+  public int getTrainById() {
+    return trainById;
+  }
+
+  public void setTrainById(int trainById) {
+    this.trainById = trainById;
+  }
+
+
+  public String getTrainArgs() {
+    return trainArgs;
+  }
+
+  public void setTrainArgs(String trainArgs) {
+    this.trainArgs = trainArgs;
+  }
+
+
+  public int getModelId() {
+    return modelId;
+  }
+
+  public void setModelId(int modelId) {
+    this.modelId = modelId;
   }
 
 }

@@ -21,7 +21,6 @@ import java.util.List;
  */
 public class AixDbServiceImpl extends SqlSessionInitializer implements DbService {
 
-
     @Override
     public SqlSession getSession() {
         return super.getSession();

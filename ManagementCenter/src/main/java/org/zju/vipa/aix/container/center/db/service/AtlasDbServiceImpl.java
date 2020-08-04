@@ -1,9 +1,18 @@
 package org.zju.vipa.aix.container.center.db.service;
 
 import org.apache.ibatis.session.SqlSession;
+import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
+import org.zju.vipa.aix.container.center.db.dao.atlas.ModelsMapper;
+import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
+import org.zju.vipa.aix.container.center.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.center.db.entity.atlas.Models;
+import org.zju.vipa.aix.container.center.db.entity.atlas.TaskTask;
+import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.entity.Task;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -19,37 +28,97 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
 
     @Override
     public void closeSession() {
-
+        super.closeSession();
     }
 
     @Override
     public Boolean updateDeviceGpuDetailById(String clientId, String detail) {
-        return null;
+        // 获取映射类
+        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        aixDeviceMapper.updateDetailById(clientId,detail);
+
+        return true;
     }
 
     @Override
     public Boolean setTaskFinished(String taskId) {
-        return null;
+        // 获取映射类
+        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        atlasTaskMapper.setTaskStatus(taskId, "FINISHED");
+        return true;
     }
 
     @Override
     public Task grabTask(String clientId) {
-        return null;
+        SqlSession sqlSession=getSession();
+
+        // 获取映射类
+        TaskTaskMapper taskMapper = sqlSession.getMapper(TaskTaskMapper.class);
+        List<TaskTask> taskList = taskMapper.findWaittingList();
+        if (taskList == null || taskList.size() == 0) {
+            /** No waiting task,grab failed */
+            return null;
+        }
+        TaskTask atlasTask = taskList.get(0);
+        taskMapper.taskTobeTrained(atlasTask.getId(),  clientId);
+
+        //将atlas task转为aix task
+        Task task=new Task(atlasTask);
+                //  获取code path
+        if (DebugConfig.IS_DOWNLOAD_MODULE) {
+            //下载模型,路径为模型解压目录
+            task.setCodePath(Config.MODEL_UNZIP_PATH);
+        } else {
+            //数据库中的路径
+            ModelsMapper modelsMapper = sqlSession.getMapper(ModelsMapper.class);
+            Models atlasModel = modelsMapper.findModelById(task.getModelId());
+            String codePath = atlasModel.getCodePath();
+            task.setCodePath(codePath);
+        }
+
+
+        return task;
     }
 
     @Override
     public String getClientIdByToken(String token) {
-        return null;
+        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDevice device = deviceMapper.getDeviceByToken(token);
+        if (device == null) {
+            return null;
+        } else {
+            return device.getId()+"";
+        }
     }
 
     @Override
     public List<Task> getWaittingTaskList() {
-        return null;
+        // 获取映射类
+        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        // 直接调用接口的方法，传入参数id=1，返回Student对象
+        List<TaskTask> atlasTaskList = atlasTaskMapper.findWaittingList();
+
+        List<Task> taskList=new ArrayList<>();
+        for (TaskTask atlasTask : atlasTaskList) {
+            taskList.add(new Task(atlasTask));
+        }
+
+        return taskList;
     }
 
     @Override
     public List<Task> getTaskList() {
-        return null;
+        // 获取映射类
+        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        // 直接调用接口的方法，传入参数id=1，返回Student对象
+        List<TaskTask> atlasTaskList = atlasTaskMapper.findAllList();
+
+        List<Task> taskList=new ArrayList<>();
+        for (TaskTask atlasTask : atlasTaskList) {
+            taskList.add(new Task(atlasTask));
+        }
+
+        return taskList;
     }
 
     @Override

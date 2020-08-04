@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.common.entity;
 
 
+import org.zju.vipa.aix.container.center.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.env.EnvError;
 
 import java.io.Serializable;
@@ -17,48 +18,78 @@ public class Task implements Serializable {
     private static final long serialVersionUID = 1L;
 
 
-    /**任务id**/
+    /**
+     * 任务id
+     **/
     private String id;
 
-    /**任务名**/
+    /**
+     * 任务名
+     **/
     private String name;
 
-    /**创建人**/
+    /**
+     * 创建人
+     **/
     private String createdBy;
 
-    /**任务类型**/
+    /**
+     * 任务类型
+     **/
     private String type;
 
-    /**是否为公开任务**/
+    /**
+     * 是否为公开任务
+     **/
     private String accessType;
 
-    /**数据集id**/
+    /**
+     * 数据集id
+     **/
     private String datasetId;
 
-    /**任务的备注信息，可以用于指明任务要求**/
+    /**
+     * 任务的备注信息，可以用于指明任务要求
+     **/
     private String info;
 
-    /**更新时间**/
+    /**
+     * 更新时间
+     **/
     private java.util.Date updatedTime;
 
-    /**创建时间**/
+    /**
+     * 创建时间
+     **/
     private java.util.Date createdTime;
 
-    /**任务状态**/
+    /**
+     * 任务状态
+     **/
     private String status;
 
-    /**模型id**/
+    /**
+     * 模型id
+     **/
     private String modelId;
 
-    /**模型提供者id**/
+    /**
+     * 模型提供者id
+     **/
     private String modelProvider;
-    /** 自定义启动参数 */
+    /**
+     * 自定义启动参数
+     */
     private String modelArgs;
 
-    /**设备id**/
+    /**
+     * 设备id
+     **/
     private String trainBy;
 
-    /**训练细节**/
+    /**
+     * 训练细节
+     **/
     private String trainDetail;
     /**
      * 代码路径,一般在下载model解压后路径，也可能自定义
@@ -69,7 +100,22 @@ public class Task implements Serializable {
      */
     private transient ConcurrentLinkedQueue<EnvError> errorQueue;
 
-    public Task() {
+    public Task(TaskTask tt) {
+        id = tt.getId() + "";
+        name = tt.getName();
+        type = "";
+        accessType = tt.getAccessType();
+        datasetId = "";
+        info = tt.getInfo();
+        updatedTime = tt.getStartedTime();
+        createdTime = tt.getCreatedTime();
+        status = tt.getStatus();
+        modelId = tt.getModelId() + "";
+        modelProvider = tt.getUserId() + "";
+        modelArgs = tt.getTrainArgs();
+        trainBy = tt.getTrainById() + "";
+        trainDetail = tt.getNote();
+        codePath = "";
     }
 
     @Override
