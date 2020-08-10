@@ -12,9 +12,10 @@ import java.util.List;
 public class TestDb {
         public static void main(String[] args) {
 //               getUserList();
-                getClientIdByToken("gfd");
+//                getClientIdByToken("gfd");
                 System.out.println("\n\n\n");
-//                getWaittingTaskList();
+//                getTaskList();
+                updateDeviceDetail();
         }
 
         private static void getDataturksUserList(){
@@ -49,8 +50,8 @@ public class TestDb {
         }
 
 //        @Test
-        public void updateDeviceDetail(){
-                DbManager.getInstance().updateDeviceGpuDetailById("test","{\n" +
+        public static void updateDeviceDetail(){
+                DbManager.getInstance().updateDeviceGpuDetailById("2","{\n" +
                     "                \"driverVersion\": \"440.31\",\n" +
                     "                \"cudaVersion\": \"10.2\",\n" +
                     "                \"gpuNum\": 2,\n" +

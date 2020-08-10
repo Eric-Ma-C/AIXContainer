@@ -20,4 +20,5 @@ public class ServerMessage extends Message {
     public ServerMessage(Intent intent) {
         super(intent, token);
     }
+
 }

@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * @Date: 2020/7/31 10:26
  * @Author: EricMa
- * @Description: todo:
+ * @Description: 数据库统一接口
  */
 public interface DbService {
 
@@ -65,4 +65,11 @@ public interface DbService {
     public List<Task> getTaskList();
 
     List<DataturksUser> getDataturksUserList();
+
+    /**
+     * 登录时更新容器last_login
+     *
+     * @return
+     */
+    void updateDeviceLastLoginById(String clientId);
 }

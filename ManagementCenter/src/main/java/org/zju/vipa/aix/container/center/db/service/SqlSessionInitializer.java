@@ -5,6 +5,8 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.zju.vipa.aix.container.center.db.dao.*;
+import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
+import org.zju.vipa.aix.container.center.db.dao.atlas.ModelsMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 
@@ -35,6 +37,8 @@ public class SqlSessionInitializer {
             sqlSessionFactory.getConfiguration().addMapper(DeviceDAO.class);
             sqlSessionFactory.getConfiguration().addMapper(ModelDAO.class);
             sqlSessionFactory.getConfiguration().addMapper(TaskTaskMapper.class);
+            sqlSessionFactory.getConfiguration().addMapper(AixDeviceMapper.class);
+            sqlSessionFactory.getConfiguration().addMapper(ModelsMapper.class);
 
         } catch (Exception e) {
             ExceptionUtils.handle(e);

@@ -70,7 +70,7 @@ public class ManagementCenter {
      */
     public String getIdByToken(String token) {
         RunningClient client = clientMap.get(token);
-        String id = "";
+        String id = null;
         if (client == null) {
             /** todo 目前没有去数据库检查token   id = DbManager.getInstance().getClientIdByToken(token); */
             id = JwtUtils.decodeClinetIdByToken(token);
@@ -78,8 +78,11 @@ public class ManagementCenter {
                 /** 新设备接入 */
                 clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
             }
+        }else {
+            id=client.getId();
         }
 
+        LogUtils.debug("getIdByToken({})={}",token,id);
         return id;
     }
 

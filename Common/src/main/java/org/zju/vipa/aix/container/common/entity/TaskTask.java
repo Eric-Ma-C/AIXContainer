@@ -1,28 +1,28 @@
-package org.zju.vipa.aix.container.center.db.entity.atlas;
+package org.zju.vipa.aix.container.common.entity;
 import java.io.Serializable;
 
 public class TaskTask implements Serializable{
 
   private int id;
-  private String taskUid;
+  private String task_uid;
   private int distributed;
-  private String taskType;
+  private String task_type;
   private String task;
   private String result;
-  private java.util.Date createdTime;
-  private java.util.Date startedTime;
-  private java.util.Date completedTime;
+  private java.util.Date created_time;
+  private java.util.Date started_time;
+  private java.util.Date completed_time;
   private String note;
-  private int serverId;
-  private int userId;
-  private String accessType;
+  private int server_id;
+  private int user_id;
+  private String access_type;
   private String info;
   private String name;
   private String processor;
   private String status;
-  private int trainById;
-  private String trainArgs;
-  private int modelId;
+  private int train_by_id;
+  private String train_args;
+  private int model_id;
 
 
   public int getId() {
@@ -34,12 +34,12 @@ public class TaskTask implements Serializable{
   }
 
 
-  public String getTaskUid() {
-    return taskUid;
+  public String getTask_uid() {
+    return task_uid;
   }
 
-  public void setTaskUid(String taskUid) {
-    this.taskUid = taskUid;
+  public void setTask_uid(String task_uid) {
+    this.task_uid = task_uid;
   }
 
 
@@ -52,12 +52,12 @@ public class TaskTask implements Serializable{
   }
 
 
-  public String getTaskType() {
-    return taskType;
+  public String getTask_type() {
+    return task_type;
   }
 
-  public void setTaskType(String taskType) {
-    this.taskType = taskType;
+  public void setTask_type(String task_type) {
+    this.task_type = task_type;
   }
 
 
@@ -79,30 +79,30 @@ public class TaskTask implements Serializable{
   }
 
 
-  public java.util.Date getCreatedTime() {
-    return createdTime;
+  public java.util.Date getCreated_time() {
+    return created_time;
   }
 
-  public void setCreatedTime(java.util.Date createdTime) {
-    this.createdTime = createdTime;
-  }
-
-
-  public java.util.Date getStartedTime() {
-    return startedTime;
-  }
-
-  public void setStartedTime(java.util.Date startedTime) {
-    this.startedTime = startedTime;
+  public void setCreated_time(java.util.Date created_time) {
+    this.created_time = created_time;
   }
 
 
-  public java.util.Date getCompletedTime() {
-    return completedTime;
+  public java.util.Date getStarted_time() {
+    return started_time;
   }
 
-  public void setCompletedTime(java.util.Date completedTime) {
-    this.completedTime = completedTime;
+  public void setStarted_time(java.util.Date started_time) {
+    this.started_time = started_time;
+  }
+
+
+  public java.util.Date getCompleted_time() {
+    return completed_time;
+  }
+
+  public void setCompleted_time(java.util.Date completed_time) {
+    this.completed_time = completed_time;
   }
 
 
@@ -115,30 +115,30 @@ public class TaskTask implements Serializable{
   }
 
 
-  public int getServerId() {
-    return serverId;
+  public int getServer_id() {
+    return server_id;
   }
 
-  public void setServerId(int serverId) {
-    this.serverId = serverId;
-  }
-
-
-  public int getUserId() {
-    return userId;
-  }
-
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setServer_id(int server_id) {
+    this.server_id = server_id;
   }
 
 
-  public String getAccessType() {
-    return accessType;
+  public int getUser_id() {
+    return user_id;
   }
 
-  public void setAccessType(String accessType) {
-    this.accessType = accessType;
+  public void setUser_id(int user_id) {
+    this.user_id = user_id;
+  }
+
+
+  public String getAccess_type() {
+    return access_type;
+  }
+
+  public void setAccess_type(String access_type) {
+    this.access_type = access_type;
   }
 
 
@@ -178,30 +178,30 @@ public class TaskTask implements Serializable{
   }
 
 
-  public int getTrainById() {
-    return trainById;
+  public int getTrain_by_id() {
+    return train_by_id;
   }
 
-  public void setTrainById(int trainById) {
-    this.trainById = trainById;
-  }
-
-
-  public String getTrainArgs() {
-    return trainArgs;
-  }
-
-  public void setTrainArgs(String trainArgs) {
-    this.trainArgs = trainArgs;
+  public void setTrain_by_id(int train_by_id) {
+    this.train_by_id = train_by_id;
   }
 
 
-  public int getModelId() {
-    return modelId;
+  public String getTrain_args() {
+    return train_args;
   }
 
-  public void setModelId(int modelId) {
-    this.modelId = modelId;
+  public void setTrain_args(String train_args) {
+    this.train_args = train_args;
+  }
+
+
+  public int getModel_id() {
+    return model_id;
+  }
+
+  public void setModel_id(int model_id) {
+    this.model_id = model_id;
   }
 
 }

@@ -10,13 +10,12 @@
 <!--    <typeAliases>标签内指定的是你定义的实体类的别名，方便之后使用。-->
     </typeAliases>
 
-    <environments default="aix">
+    <environments default="atlas">
         <environment id="atlas">
             <transactionManager type="JDBC" />
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver" />
                 <property name="url" value="jdbc:mysql://10.214.211.208:3306/atlas?serverTimezone=Asia/Shanghai" />
-
                 <property name="username" value="atlas" />
                 <property name="password" value="atlas" />
             </dataSource>

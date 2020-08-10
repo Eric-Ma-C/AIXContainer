@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
+import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
@@ -197,11 +198,14 @@ public class SocketHandler implements Runnable {
         Message msg;
 
         if (ok) {
+
             msg = new ServerMessage(Intent.REGISTER, "OK");
             //写返回报文
             serverIO.response(msg);
             /** 获取id号并缓存下来 */
             String id = ManagementCenter.getInstance().getIdByToken(token);
+
+            DbManager.getInstance().updateDeviceLastLoginById(id);
 
             LogUtils.info("Container id={} registered successfully! token={}", id, token);
         } else {

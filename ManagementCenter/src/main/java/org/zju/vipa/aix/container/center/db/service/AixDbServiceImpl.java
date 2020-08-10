@@ -117,4 +117,9 @@ public class AixDbServiceImpl extends SqlSessionInitializer implements DbService
         // 直接调用接口的方法，传入参数id=1，返回Student对象
         return dataturksUserDao.getUserList();
     }
+
+    @Override
+    public void updateDeviceLastLoginById(String clientId) {
+        //不用实现
+    }
 }

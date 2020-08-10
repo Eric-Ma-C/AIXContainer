@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface AixDeviceMapper {
 
-	@Select("select * from device where token = #{token}")
+	@Select("select * from aix_device where token = #{token}")
 	public AixDevice getDeviceByToken(String token);
 
 	/**
@@ -19,8 +19,8 @@ public interface AixDeviceMapper {
 	 * @param detail
 	 * @return: int
 	 */
-	@Update("update device set detail=#{detail} where id=#{id}")
-	public int updateDetailById(@Param("id") String id, @Param("detail") String detail);
+	@Update("update aix_device set detail=#{detail} where id=#{id}")
+	public int updateDetailById(@Param("id") int id, @Param("detail") String detail);
 
 
 
@@ -58,4 +58,6 @@ public interface AixDeviceMapper {
 	 */
 	public List<AixDevice> select_aix_device(AixDevice aix_device);
 
+	@Update("update aix_device set last_login=NOW() where id=#{id}")
+    void updateLastLoginById(int id);
 }

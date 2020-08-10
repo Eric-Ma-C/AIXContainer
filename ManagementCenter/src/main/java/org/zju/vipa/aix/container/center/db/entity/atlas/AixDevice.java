@@ -1,16 +1,19 @@
 package org.zju.vipa.aix.container.center.db.entity.atlas;
 import java.io.Serializable;
 
+/**
+ * @author eric
+ */
 public class AixDevice implements Serializable{
 
   private int id;
-  private String deviceName;
-  private java.util.Date createdTime;
-  private java.util.Date lastLogin;
+  private String device_name;
+  private java.util.Date created_time;
+  private java.util.Date last_login;
   private String detail;
   private String info;
   private String token;
-  private int userId;
+  private int user_id;
 
 
   public int getId() {
@@ -22,30 +25,30 @@ public class AixDevice implements Serializable{
   }
 
 
-  public String getDeviceName() {
-    return deviceName;
+  public String getDevice_name() {
+    return device_name;
   }
 
-  public void setDeviceName(String deviceName) {
-    this.deviceName = deviceName;
-  }
-
-
-  public java.util.Date getCreatedTime() {
-    return createdTime;
-  }
-
-  public void setCreatedTime(java.util.Date createdTime) {
-    this.createdTime = createdTime;
+  public void setDevice_name(String device_name) {
+    this.device_name = device_name;
   }
 
 
-  public java.util.Date getLastLogin() {
-    return lastLogin;
+  public java.util.Date getCreated_time() {
+    return created_time;
   }
 
-  public void setLastLogin(java.util.Date lastLogin) {
-    this.lastLogin = lastLogin;
+  public void setCreated_time(java.util.Date created_time) {
+    this.created_time = created_time;
+  }
+
+
+  public java.util.Date getLast_login() {
+    return last_login;
+  }
+
+  public void setLast_login(java.util.Date last_login) {
+    this.last_login = last_login;
   }
 
 
@@ -76,12 +79,12 @@ public class AixDevice implements Serializable{
   }
 
 
-  public int getUserId() {
-    return userId;
+  public int getUser_id() {
+    return user_id;
   }
 
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setUser_id(int user_id) {
+    this.user_id = user_id;
   }
 
 }

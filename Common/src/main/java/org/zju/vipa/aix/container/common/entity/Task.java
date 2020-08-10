@@ -1,8 +1,9 @@
 package org.zju.vipa.aix.container.common.entity;
 
 
-import org.zju.vipa.aix.container.center.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.env.EnvError;
+import org.zju.vipa.aix.container.common.json.TaskInfo;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -101,19 +102,23 @@ public class Task implements Serializable {
     private transient ConcurrentLinkedQueue<EnvError> errorQueue;
 
     public Task(TaskTask tt) {
+
+        TaskInfo serializedInfo= JsonUtils.parseObject(tt.getTask(),TaskInfo.class);
+
+
         id = tt.getId() + "";
         name = tt.getName();
-        type = "";
-        accessType = tt.getAccessType();
-        datasetId = "";
+        type = serializedInfo.getTask_args().getTasks().get(0);
+        accessType = tt.getAccess_type();
+        datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());
         info = tt.getInfo();
-        updatedTime = tt.getStartedTime();
-        createdTime = tt.getCreatedTime();
+        updatedTime = tt.getStarted_time();
+        createdTime = tt.getCreated_time();
         status = tt.getStatus();
-        modelId = tt.getModelId() + "";
-        modelProvider = tt.getUserId() + "";
-        modelArgs = tt.getTrainArgs();
-        trainBy = tt.getTrainById() + "";
+        modelId = tt.getModel_id() + "";
+        modelProvider = tt.getUser_id() + "";
+        modelArgs = tt.getTrain_args();
+        trainBy = tt.getTrain_by_id() + "";
         trainDetail = tt.getNote();
         codePath = "";
     }

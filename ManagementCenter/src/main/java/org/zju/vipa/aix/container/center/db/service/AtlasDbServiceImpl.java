@@ -7,10 +7,10 @@ import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
 import org.zju.vipa.aix.container.center.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.center.db.entity.atlas.Models;
-import org.zju.vipa.aix.container.center.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.entity.TaskTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +35,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     public Boolean updateDeviceGpuDetailById(String clientId, String detail) {
         // 获取映射类
         AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
-        aixDeviceMapper.updateDetailById(clientId,detail);
+        aixDeviceMapper.updateDetailById(Integer.parseInt(clientId),detail);
 
         return true;
     }
@@ -44,7 +44,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     public Boolean setTaskFinished(String taskId) {
         // 获取映射类
         TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
-        atlasTaskMapper.setTaskStatus(taskId, "FINISHED");
+        atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "FINISHED");
         return true;
     }
 
@@ -60,7 +60,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             return null;
         }
         TaskTask atlasTask = taskList.get(0);
-        taskMapper.taskTobeTrained(atlasTask.getId(),  clientId);
+        taskMapper.taskTobeTrained(atlasTask.getId(), Integer.parseInt(clientId));
 
         //将atlas task转为aix task
         Task task=new Task(atlasTask);
@@ -71,7 +71,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         } else {
             //数据库中的路径
             ModelsMapper modelsMapper = sqlSession.getMapper(ModelsMapper.class);
-            Models atlasModel = modelsMapper.findModelById(task.getModelId());
+            Models atlasModel = modelsMapper.findModelById(Integer.parseInt(task.getModelId()));
             String codePath = atlasModel.getCodePath();
             task.setCodePath(codePath);
         }
@@ -124,5 +124,12 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     @Override
     public List<DataturksUser> getDataturksUserList() {
         return null;
+    }
+
+    @Override
+    public void updateDeviceLastLoginById(String clientId) {
+        // 获取映射类
+        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        aixDeviceMapper.updateLastLoginById(Integer.parseInt(clientId));
     }
 }

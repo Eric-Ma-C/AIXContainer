@@ -8,8 +8,8 @@ import java.util.List;
 
 public interface ModelsMapper {
 
-	@Select("select * from model where id = #{id}")
-	public Models findModelById(String id);
+	@Select("select * from models where id = #{id}")
+	public Models findModelById(int id);
 
 	/**
 	 * insert models

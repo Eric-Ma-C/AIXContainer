@@ -1,7 +1,7 @@
 package org.zju.vipa.aix.container.center.db;
 
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
-import org.zju.vipa.aix.container.center.db.service.AixDbServiceImpl;
+import org.zju.vipa.aix.container.center.db.service.AtlasDbServiceImpl;
 import org.zju.vipa.aix.container.center.db.service.DbService;
 import org.zju.vipa.aix.container.center.db.service.DbServiceProxy;
 import org.zju.vipa.aix.container.common.entity.Task;
@@ -44,18 +44,30 @@ public class DbManager implements Serializable {
      * 初始化
      */
     private void init() {
+        /** AIX数据库接口 */
+//        //1.创建委托对象
+//        AixDbServiceImpl aixDbService = new AixDbServiceImpl();
+//        //2.创建调用处理器对象
+//        DbServiceProxy dbServiceProxy = new DbServiceProxy(aixDbService);
+//        //3.动态生成代理对象
+//        dbService = (DbService) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), dbServiceProxy);
+//        //4.通过代理对象调用方法
+//        //dbService.getClientIdByToken();
+
+
+        /** Atlas数据库接口 */
         //1.创建委托对象
-        AixDbServiceImpl aixDbService = new AixDbServiceImpl();
+        AtlasDbServiceImpl atlasDbService = new AtlasDbServiceImpl();
         //2.创建调用处理器对象
-        DbServiceProxy dbServiceProxy = new DbServiceProxy(aixDbService);
+        DbServiceProxy dbServiceProxy = new DbServiceProxy(atlasDbService);
         //3.动态生成代理对象
-        dbService = (DbService) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), dbServiceProxy);
-//        dbService.getClientIdByToken();	//4.通过代理对象调用方法
+        dbService = (DbService) Proxy.newProxyInstance(AtlasDbServiceImpl.class.getClassLoader(), AtlasDbServiceImpl.class.getInterfaces(), dbServiceProxy);
+        //4.通过代理对象调用方法
+        //dbService.getClientIdByToken();
     }
 
 
     public List<DataturksUser> getDataturksUserList() {
-
 
 
         return dbService.getDataturksUserList();
@@ -120,11 +132,21 @@ public class DbManager implements Serializable {
 
     /**
      * 更新容器detail
+     *
      * @return
      */
     public Boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
 
-        return dbService.updateDeviceGpuDetailById(clientId,detail);
+        return dbService.updateDeviceGpuDetailById(clientId, detail);
+    }
+    /**
+     * 更新容器last_login
+     *
+     * @return
+     */
+    public void updateDeviceLastLoginById(final String clientId) {
+
+         dbService.updateDeviceLastLoginById(clientId);
     }
 
 }

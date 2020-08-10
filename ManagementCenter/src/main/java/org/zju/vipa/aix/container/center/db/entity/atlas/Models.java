@@ -4,15 +4,15 @@ import java.io.Serializable;
 public class Models implements Serializable{
 
   private int id;
-  private String modelName;
-  private String datasetName;
+  private String model_name;
+  private String dataset_name;
   private String md5;
   private String task;
   private String file;
-  private int isPublic;
-  private java.util.Date createdTime;
-  private int userId;
-  private String codePath;
+  private int is_public;
+  private java.util.Date created_time;
+  private int user_id;
+  private String code_path;
   private String info;
 
 
@@ -26,20 +26,20 @@ public class Models implements Serializable{
 
 
   public String getModelName() {
-    return modelName;
+    return model_name;
   }
 
-  public void setModelName(String modelName) {
-    this.modelName = modelName;
+  public void setModelName(String model_name) {
+    this.model_name = model_name;
   }
 
 
   public String getDatasetName() {
-    return datasetName;
+    return dataset_name;
   }
 
-  public void setDatasetName(String datasetName) {
-    this.datasetName = datasetName;
+  public void setDatasetName(String dataset_name) {
+    this.dataset_name = dataset_name;
   }
 
 
@@ -71,38 +71,37 @@ public class Models implements Serializable{
 
 
   public int getIsPublic() {
-    return isPublic;
+    return is_public;
   }
 
-  public void setIsPublic(int isPublic) {
-    this.isPublic = isPublic;
+  public void setIsPublic(int is_public) {
+    this.is_public = is_public;
   }
 
 
   public java.util.Date getCreatedTime() {
-    return createdTime;
+    return created_time;
   }
 
-  public void setCreatedTime(java.util.Date createdTime) {
-    this.createdTime = createdTime;
+  public void setCreatedTime(java.util.Date created_time) {
+    this.created_time = created_time;
   }
 
 
   public int getUserId() {
-    return userId;
+    return user_id;
   }
 
-  public void setUserId(int userId) {
-    this.userId = userId;
+  public void setUserId(int user_id) {
+    this.user_id = user_id;
   }
-
 
   public String getCodePath() {
-    return codePath;
+    return code_path;
   }
 
-  public void setCodePath(String codePath) {
-    this.codePath = codePath;
+  public void setCodePath(String code_path) {
+    this.code_path = code_path;
   }
 
 
