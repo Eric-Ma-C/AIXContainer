@@ -21,8 +21,6 @@ public class TaskTask implements Serializable{
   private String processor;
   private String status;
   private int train_by_id;
-  private String train_args;
-  private int model_id;
 
 
   public int getId() {
@@ -184,24 +182,6 @@ public class TaskTask implements Serializable{
 
   public void setTrain_by_id(int train_by_id) {
     this.train_by_id = train_by_id;
-  }
-
-
-  public String getTrain_args() {
-    return train_args;
-  }
-
-  public void setTrain_args(String train_args) {
-    this.train_args = train_args;
-  }
-
-
-  public int getModel_id() {
-    return model_id;
-  }
-
-  public void setModel_id(int model_id) {
-    this.model_id = model_id;
   }
 
 }

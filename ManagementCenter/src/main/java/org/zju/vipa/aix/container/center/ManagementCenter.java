@@ -8,7 +8,6 @@ import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
@@ -70,11 +69,12 @@ public class ManagementCenter {
      */
     public String getIdByToken(String token) {
         RunningClient client = clientMap.get(token);
-        String id = null;
+        String id = "";
         if (client == null) {
-            /** todo 目前没有去数据库检查token   id = DbManager.getInstance().getClientIdByToken(token); */
-            id = JwtUtils.decodeClinetIdByToken(token);
-            if (id != null) {
+            /** 去数据库检查token   */
+            id = DbManager.getInstance().getClientIdByToken(token);
+//            id = JwtUtils.decodeClinetIdByToken(token);
+            if (id != null&&id.length()>0) {
                 /** 新设备接入 */
                 clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
             }

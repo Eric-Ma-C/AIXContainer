@@ -12,7 +12,6 @@ public class Models implements Serializable{
   private int is_public;
   private java.util.Date created_time;
   private int user_id;
-  private String code_path;
   private String info;
 
 
@@ -25,20 +24,20 @@ public class Models implements Serializable{
   }
 
 
-  public String getModelName() {
+  public String getModel_name() {
     return model_name;
   }
 
-  public void setModelName(String model_name) {
+  public void setModel_name(String model_name) {
     this.model_name = model_name;
   }
 
 
-  public String getDatasetName() {
+  public String getDataset_name() {
     return dataset_name;
   }
 
-  public void setDatasetName(String dataset_name) {
+  public void setDataset_name(String dataset_name) {
     this.dataset_name = dataset_name;
   }
 
@@ -70,38 +69,30 @@ public class Models implements Serializable{
   }
 
 
-  public int getIsPublic() {
+  public int getIs_public() {
     return is_public;
   }
 
-  public void setIsPublic(int is_public) {
+  public void setIs_public(int is_public) {
     this.is_public = is_public;
   }
 
 
-  public java.util.Date getCreatedTime() {
+  public java.util.Date getCreated_time() {
     return created_time;
   }
 
-  public void setCreatedTime(java.util.Date created_time) {
+  public void setCreated_time(java.util.Date created_time) {
     this.created_time = created_time;
   }
 
 
-  public int getUserId() {
+  public int getUser_id() {
     return user_id;
   }
 
-  public void setUserId(int user_id) {
+  public void setUser_id(int user_id) {
     this.user_id = user_id;
-  }
-
-  public String getCodePath() {
-    return code_path;
-  }
-
-  public void setCodePath(String code_path) {
-    this.code_path = code_path;
   }
 
 

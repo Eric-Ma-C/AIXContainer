@@ -13,8 +13,8 @@ import org.zju.vipa.aix.container.common.entity.Task;
  */
 public class ErrorParser {
 
-    public static EnvError handle(String token, String value, Task task) {
-        if (value == null) {
+    public static EnvError handle(String token, String errorInfo, Task task) {
+        if (errorInfo == null) {
             return null;
         }
         String repairCmds = null;
@@ -22,7 +22,8 @@ public class ErrorParser {
 
         ErrorType[] types = ErrorType.values();
         for (ErrorType type : types) {
-            if (value.contains(type.getKeyWords())) {
+            //逐一对比，可能会比较慢
+            if (errorInfo.contains(type.getKeyWords())) {
                 errorType = type;
                 break;
             }
@@ -34,7 +35,7 @@ public class ErrorParser {
                 return null;
             case MODULE_NOT_FOUND:
                 /** 自动安装一些conda库 */
-                String promptName = value.substring(value.indexOf("named") + 7, value.length() - 1);
+                String promptName = errorInfo.substring(errorInfo.indexOf("named") + 7, errorInfo.length() - 1);
                 String moduleName = getModuleNameByPrompt(promptName);
 
                 repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + startCmds;
@@ -79,7 +80,7 @@ public class ErrorParser {
         Logger logger = LoggerFactory.getLogger(ErrorParser.class);
         logger.info("{}:\n'{}'添加至error列表中，repairCmds={}", token, errorType.name(), repairCmds);
 
-        return new EnvError(errorType, value, repairCmds);
+        return new EnvError(errorType, errorInfo, repairCmds);
     }
 
 

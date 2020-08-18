@@ -7,6 +7,7 @@ import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
 import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
 import org.zju.vipa.aix.container.center.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.center.db.entity.atlas.Models;
+import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.entity.Task;
@@ -49,9 +50,18 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     }
 
     @Override
+    public Boolean setTaskFailed(String taskId) {
+        // 获取映射类
+        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "FAILED");
+        return true;
+    }
+
+    @Override
     public Task grabTask(String clientId) {
         SqlSession sqlSession=getSession();
 
+        LogUtils.debug("grabTask sqlSession={}",sqlSession);
         // 获取映射类
         TaskTaskMapper taskMapper = sqlSession.getMapper(TaskTaskMapper.class);
         List<TaskTask> taskList = taskMapper.findWaittingList();
@@ -72,7 +82,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             //数据库中的路径
             ModelsMapper modelsMapper = sqlSession.getMapper(ModelsMapper.class);
             Models atlasModel = modelsMapper.findModelById(Integer.parseInt(task.getModelId()));
-            String codePath = atlasModel.getCodePath();
+            String codePath = atlasModel.getFile();
             task.setCodePath(codePath);
         }
 

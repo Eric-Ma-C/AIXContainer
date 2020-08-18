@@ -197,17 +197,17 @@ public class SocketHandler implements Runnable {
         boolean ok = JwtUtils.verify(token);
         Message msg;
 
-        if (ok) {
 
-            msg = new ServerMessage(Intent.REGISTER, "OK");
-            //写返回报文
-            serverIO.response(msg);
-            /** 获取id号并缓存下来 */
-            String id = ManagementCenter.getInstance().getIdByToken(token);
+        /** 尝试获取id号并缓存下来 */
+        String id = ok ? ManagementCenter.getInstance().getIdByToken(token) : null;
+        if (id != null && id.length() > 0) {
 
             DbManager.getInstance().updateDeviceLastLoginById(id);
 
             LogUtils.info("Container id={} registered successfully! token={}", id, token);
+            msg = new ServerMessage(Intent.REGISTER, "OK");
+            //写返回报文
+            serverIO.response(msg);
         } else {
             msg = new ServerMessage(Intent.REGISTER, "DENIED");
             //写返回报文

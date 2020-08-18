@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.common.entity;
 
 
+import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.env.EnvError;
 import org.zju.vipa.aix.container.common.json.TaskInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
@@ -100,6 +101,22 @@ public class Task implements Serializable {
      * 任务环境配置过程中的报错列表
      */
     private transient ConcurrentLinkedQueue<EnvError> errorQueue;
+//    /**
+//     * 本任务最后一条执行报错信息
+//     */
+//    private transient String lastErrorInfo;
+
+
+
+    /**
+     * 该任务执行过程中连续出现未解决错误的次数，超过一定阈值判断为环境配置失败
+     */
+    private transient int unknownErrorTime;
+
+    /**
+     * 任务环境配置失败的标志（数据库置为FAILED），askForCmds会检查该字段，失败则告诉客户端放弃此任务，重新抢任务
+     */
+    private transient boolean isFailed=false;
 
     public Task(TaskTask tt) {
 
@@ -110,17 +127,17 @@ public class Task implements Serializable {
         name = tt.getName();
         type = serializedInfo.getTask_args().getTasks().get(0);
         accessType = tt.getAccess_type();
-        datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());
+        datasetId = "";// null   String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());
         info = tt.getInfo();
         updatedTime = tt.getStarted_time();
         createdTime = tt.getCreated_time();
         status = tt.getStatus();
-        modelId = tt.getModel_id() + "";
+        modelId = serializedInfo.getTask_args().getTeacher_models().get(0).getId() + "";
         modelProvider = tt.getUser_id() + "";
-        modelArgs = tt.getTrain_args();
+        modelArgs = "";
         trainBy = tt.getTrain_by_id() + "";
         trainDetail = tt.getNote();
-        codePath = "";
+        codePath = Config.MODEL_UNZIP_PATH;
     }
 
     @Override
@@ -143,6 +160,16 @@ public class Task implements Serializable {
             ", trainDetail='" + trainDetail + '\'' +
             ", codePath='" + codePath + '\'' +
             '}';
+    }
+
+    public void addUnknownErrorTime() {
+        /** 连续出现500次未知错误则放弃任务 */
+        if (this.unknownErrorTime ++>500) {
+            isFailed=true;
+        }
+    }
+    public void clearUnknownErrorTime() {
+            unknownErrorTime=0;
     }
 
     public String getCodePath() {
@@ -286,5 +313,9 @@ public class Task implements Serializable {
 
     public void setTrainDetail(String trainDetail) {
         this.trainDetail = trainDetail;
+    }
+
+    public boolean isFailed() {
+        return isFailed;
     }
 }

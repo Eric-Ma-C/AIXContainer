@@ -115,6 +115,15 @@ public class DbManager implements Serializable {
 
         return dbService.setTaskFinished(taskId);
     }
+    /**
+     * 任务训练状态更新为失败
+     *
+     * @return: java.util.List<Task>
+     */
+    public Boolean setTaskFailed(final String taskId) {
+
+        return dbService.setTaskFailed(taskId);
+    }
 
     /**
      * 根据token查询数据库有无该设备
@@ -141,7 +150,6 @@ public class DbManager implements Serializable {
     }
     /**
      * 更新容器last_login
-     *
      * @return
      */
     public void updateDeviceLastLoginById(final String clientId) {

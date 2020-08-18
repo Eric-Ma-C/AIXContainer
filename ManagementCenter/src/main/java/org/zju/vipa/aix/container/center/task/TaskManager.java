@@ -225,15 +225,22 @@ public class TaskManager {
                 addSerialMessage(token, msg2);
 
 
-            } else { /**  task ！= null，说明有任务正在配置环境 */
+            } else {
+                /**  task ！= null，说明有任务正在配置环境 */
 
                 LogUtils.info("{}发现已有任务{}", token, task);
+
+                if (task.isFailed()){
+                    /** 未知原因启动失败次数过多，导致任务执行失败 */
+                    handleTaskFailed(token);
+                    return null;
+                }
 
                 /** 没有待执行任务，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error("{}:\n Client遇到了一些问题，正在尝试重新启动模型训练...", token);
+                    LogUtils.error("{}:\n Client训练遇到了未知问题，正在尝试重新启动模型训练...", token);
 
                     String codePath = task.getCodePath();
                     String modelArgs = task.getModelArgs();
@@ -266,6 +273,13 @@ public class TaskManager {
         }
 
         return toSendMsg;
+    }
+
+    /** 任务执行失败的处理*/
+    private void handleTaskFailed(String token) {
+        Task task = taskMap.get(token);
+        DbManager.getInstance().setTaskFailed(task.getId());
+        taskMap.remove(token);
     }
 
 
@@ -361,16 +375,22 @@ public class TaskManager {
      * @return: void
      */
     public void handleError(Message message) {
-        String value = message.getValue();
+        String errorInfo = message.getValue();
         String token = message.getToken();
 
         synchronized (token.intern()) {
             Task task = taskMap.get(token);
-            EnvError error = ErrorParser.handle(token, value, task);
+            EnvError error = ErrorParser.handle(token, errorInfo, task);
 
             /** 目前容器仅支持单任务，可以直接添加至容器Task对象的error列表中 */
-            if (task != null && error != null) {
-                task.addEnvError(error);
+            if (task != null ) {
+                if (error != null) {
+                    task.clearUnknownErrorTime();
+                    task.addEnvError(error);
+                }else {
+                    //未知错误达到一定程度就会判为任务执行失败
+                    task.addUnknownErrorTime();
+                }
             }
         }
     }

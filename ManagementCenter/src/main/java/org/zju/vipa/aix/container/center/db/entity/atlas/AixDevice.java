@@ -1,9 +1,6 @@
 package org.zju.vipa.aix.container.center.db.entity.atlas;
 import java.io.Serializable;
 
-/**
- * @author eric
- */
 public class AixDevice implements Serializable{
 
   private int id;

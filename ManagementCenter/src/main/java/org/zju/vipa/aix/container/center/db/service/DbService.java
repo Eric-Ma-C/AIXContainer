@@ -34,7 +34,6 @@ public interface DbService {
     /**
      * 任务训练状态更新为完成
      *
-     * @return: java.util.List<Task>
      */
     Boolean setTaskFinished(final String taskId);
     /**
@@ -72,4 +71,10 @@ public interface DbService {
      * @return
      */
     void updateDeviceLastLoginById(String clientId);
+    /**
+     * 任务训练状态更新为失败
+     *
+     * @return: java.util.List<Task>
+     */
+    Boolean setTaskFailed(String taskId);
 }

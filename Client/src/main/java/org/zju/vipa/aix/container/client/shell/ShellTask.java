@@ -98,7 +98,7 @@ public class ShellTask implements RealtimeProcessListener {
 
         String moduleName = ClientErrorParser.handleModuleNotFoundError(newStdErr);
         if (moduleName != null) {
-            /** 平台不用尝试解析错误类型了 */
+            /** 不用上传平台尝试解析错误类型了 */
             if (handleShellErrorListener != null) {
                 handleShellErrorListener.onHandle(moduleName);
             }

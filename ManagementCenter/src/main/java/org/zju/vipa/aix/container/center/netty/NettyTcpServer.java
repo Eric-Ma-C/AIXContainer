@@ -33,8 +33,9 @@ public class NettyTcpServer {
     public static void start() {
 //        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("bossGroup", true));
 //        EventLoopGroup workGroup = new NioEventLoopGroup(8, new DefaultThreadFactory("workGroup", true));
-
+        //主reactor
         EventLoopGroup bossGroup = new NioEventLoopGroup();
+        //从reactor
         EventLoopGroup workGroup = new NioEventLoopGroup();
 
         try {

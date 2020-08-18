@@ -50,6 +50,15 @@ public class AixDbServiceImpl extends SqlSessionInitializer implements DbService
     }
 
     @Override
+    public Boolean setTaskFailed(String taskId) {
+        // 获取映射类
+        TaskDAO taskDAO = getSession().getMapper(TaskDAO.class);
+        taskDAO.setTaskStatus(taskId, "FAILED");
+
+        return true;
+    }
+
+    @Override
     public Task grabTask(String clientId) {
         SqlSession sqlSession=getSession();
 
