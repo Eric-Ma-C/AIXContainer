@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.zju.vipa.aix.container.common.entity.TaskTask;
+import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 
 import java.util.List;
 

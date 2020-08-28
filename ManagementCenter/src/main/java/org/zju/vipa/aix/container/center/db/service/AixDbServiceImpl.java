@@ -5,12 +5,13 @@ import org.zju.vipa.aix.container.center.db.dao.DataturksUserDAO;
 import org.zju.vipa.aix.container.center.db.dao.DeviceDAO;
 import org.zju.vipa.aix.container.center.db.dao.ModelDAO;
 import org.zju.vipa.aix.container.center.db.dao.TaskDAO;
-import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
-import org.zju.vipa.aix.container.center.db.entity.Device;
-import org.zju.vipa.aix.container.center.db.entity.Model;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.Device;
+import org.zju.vipa.aix.container.common.db.entity.aix.Model;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
 import java.util.List;
 
@@ -97,6 +98,17 @@ public class AixDbServiceImpl extends SqlSessionInitializer implements DbService
             return null;
         } else {
             return device.getId();
+        }
+    }
+
+    @Override
+    public AixDevice getClientByToken(String token) {
+        DeviceDAO deviceDAO = getSession().getMapper(DeviceDAO.class);
+        Device device = deviceDAO.getDeviceByToken(token);
+        if (device == null) {
+            return null;
+        } else {
+            return new AixDevice(device);
         }
     }
 

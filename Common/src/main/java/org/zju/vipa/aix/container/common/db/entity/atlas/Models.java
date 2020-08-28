@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.db.entity.atlas;
+package org.zju.vipa.aix.container.common.db.entity.atlas;
 import java.io.Serializable;
 
 public class Models implements Serializable{

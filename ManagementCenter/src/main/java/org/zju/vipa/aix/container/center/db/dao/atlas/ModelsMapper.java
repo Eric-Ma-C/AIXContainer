@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.db.dao.atlas;
 
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
-import org.zju.vipa.aix.container.center.db.entity.atlas.Models;
+import org.zju.vipa.aix.container.common.db.entity.atlas.Models;
 
 import java.util.List;
 

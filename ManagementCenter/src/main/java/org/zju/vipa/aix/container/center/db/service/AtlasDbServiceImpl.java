@@ -4,14 +4,14 @@ import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.ModelsMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
-import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
-import org.zju.vipa.aix.container.center.db.entity.atlas.AixDevice;
-import org.zju.vipa.aix.container.center.db.entity.atlas.Models;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
-import org.zju.vipa.aix.container.common.entity.Task;
-import org.zju.vipa.aix.container.common.entity.TaskTask;
+import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.common.db.entity.atlas.Models;
+import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,6 +99,18 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             return device.getId()+"";
         }
     }
+
+    @Override
+    public AixDevice getClientByToken(String token) {
+        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDevice device = deviceMapper.getDeviceByToken(token);
+        if (device == null) {
+            return null;
+        } else {
+            return device;
+        }
+    }
+
 
     @Override
     public List<Task> getWaittingTaskList() {

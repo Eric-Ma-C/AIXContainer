@@ -1,7 +1,7 @@
 package org.zju.vipa.aix.container.api;
 
 import org.zju.vipa.aix.container.api.entity.RunningClient;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Message;
 

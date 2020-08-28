@@ -1,7 +1,7 @@
 package org.zju.vipa.aix.container.center.db.dao;
 
 import org.apache.ibatis.annotations.Select;
-import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.env.EnvError;
 import org.zju.vipa.aix.container.common.env.ErrorParser;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
@@ -143,7 +143,7 @@ public class TaskManager {
             //任务执行成功,删除任务
             Task task = taskMap.remove(token);
             shellResultMap.remove(token);
-            ManagementCenter.getInstance().updateTaskBriefInfo(token, new TaskBriefInfo());
+            ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
             DbManager.getInstance().setTaskFinished(task.getId());
             LogUtils.info("{}任务执行结束!", token);

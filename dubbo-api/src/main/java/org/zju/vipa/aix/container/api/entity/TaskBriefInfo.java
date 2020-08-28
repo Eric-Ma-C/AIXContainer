@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.api.entity;
 
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -35,7 +35,6 @@ public class TaskBriefInfo implements Serializable {
     private String status;
 
     public TaskBriefInfo() {
-        this.name="No Task Running";
     }
 
     public TaskBriefInfo(Task task) {

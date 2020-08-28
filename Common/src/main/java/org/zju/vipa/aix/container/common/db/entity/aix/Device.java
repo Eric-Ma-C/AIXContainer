@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.db.entity;
+package org.zju.vipa.aix.container.common.db.entity.aix;
 import java.io.Serializable;
 
 public class Device implements Serializable{

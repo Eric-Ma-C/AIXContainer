@@ -3,6 +3,7 @@ package org.zju.vipa.aix.container.center;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.center.dubbo.RpcServer;
 import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
@@ -15,7 +16,6 @@ import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
-import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -65,18 +65,22 @@ public class ManagementCenter {
      * 根据token获取容器id
      *
      * @param token
-     * @return: java.lang.String 返回null代表数据库无此设备
+     * @return: java.lang.String 返回""代表数据库无此设备
      */
     public String getIdByToken(String token) {
         RunningClient client = clientMap.get(token);
         String id = "";
+        AixDevice device;
         if (client == null) {
             /** 去数据库检查token   */
-            id = DbManager.getInstance().getClientIdByToken(token);
+            device = DbManager.getInstance().getClientByToken(token);
+
 //            id = JwtUtils.decodeClinetIdByToken(token);
-            if (id != null&&id.length()>0) {
+            if (device != null) {
+                id= String.valueOf(device.getId());
                 /** 新设备接入 */
-                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
+//                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
+                clientMap.put(token, new RunningClient(device));
             }
         }else {
             id=client.getId();
@@ -129,7 +133,7 @@ public class ManagementCenter {
                 /** 超过心跳间隔时间5倍未收到,认为client已离线 */
                 LogUtils.info("\n******* Remove Dead Client: {} *******\n", entry.getValue().getToken());
 
-                updateTaskBriefInfo(entry.getValue().getToken(), new TaskBriefInfo());
+                updateTaskBriefInfo(entry.getValue().getToken(), null);
                 TaskManager.getInstance().removeDeadClient(entry.getValue().getToken());
                 iterator.remove();
             }

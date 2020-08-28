@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.center.db.dao;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.zju.vipa.aix.container.center.db.entity.Device;
+import org.zju.vipa.aix.container.common.db.entity.aix.Device;
 
 /**
  * @Date: 2020/3/23 20:15

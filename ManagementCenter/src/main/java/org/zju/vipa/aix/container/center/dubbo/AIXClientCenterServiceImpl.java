@@ -8,7 +8,7 @@ import org.zju.vipa.aix.container.center.log.ServerLogReader;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;

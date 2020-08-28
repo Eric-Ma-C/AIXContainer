@@ -1,8 +1,9 @@
 package org.zju.vipa.aix.container.center.db.service;
 
 import org.apache.ibatis.session.SqlSession;
-import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
 import java.util.List;
 
@@ -49,6 +50,15 @@ public interface DbService {
      * @return: java.lang.String
      */
      String getClientIdByToken(final String token);
+
+    /**
+     * 根据token查询设备
+     *
+     * @param token
+     * @return: java.lang.String
+     */
+    AixDevice getClientByToken(final String token);
+
     /**
      * 获取等待状态的任务列表，抢任务
      *

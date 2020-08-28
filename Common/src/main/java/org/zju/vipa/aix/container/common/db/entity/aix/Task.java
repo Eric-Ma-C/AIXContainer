@@ -1,7 +1,8 @@
-package org.zju.vipa.aix.container.common.entity;
+package org.zju.vipa.aix.container.common.db.entity.aix;
 
 
 import org.zju.vipa.aix.container.common.config.Config;
+import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.env.EnvError;
 import org.zju.vipa.aix.container.common.json.Fields;
 import org.zju.vipa.aix.container.common.json.TaskInfo;

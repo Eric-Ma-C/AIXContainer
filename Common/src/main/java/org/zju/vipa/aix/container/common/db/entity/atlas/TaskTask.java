@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.common.entity;
+package org.zju.vipa.aix.container.common.db.entity.atlas;
 import java.io.Serializable;
 
 public class TaskTask implements Serializable{

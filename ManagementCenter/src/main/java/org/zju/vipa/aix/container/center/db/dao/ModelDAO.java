@@ -1,8 +1,9 @@
 package org.zju.vipa.aix.container.center.db.dao;
 
 import org.apache.ibatis.annotations.Select;
+import org.zju.vipa.aix.container.common.db.entity.aix.Model;
+
 //import org.apache.ibatis.annotations.Mapper;
-import org.zju.vipa.aix.container.center.db.entity.Model;
 
 /**
  * @Date: 2020/3/20 9:36

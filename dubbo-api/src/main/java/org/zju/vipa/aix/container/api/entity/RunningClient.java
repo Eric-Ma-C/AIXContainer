@@ -1,8 +1,12 @@
 package org.zju.vipa.aix.container.api.entity;
 
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
+import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @Date: 2020/6/4 16:41
@@ -12,16 +16,21 @@ import java.io.Serializable;
 public class RunningClient implements Serializable {
 
     String id;
+    String name;
     String token;
     /**
      * 连入平台的时间
      */
     String since;
+    String userId;
+    String info;
     /** 最后一次向平台显示心跳的时间 */
     transient long lastHeartbeat;
 
     GpuInfo gpuInfo;
-    TaskBriefInfo taskBriefInfo;
+
+    String firstTaskName;
+    List<TaskBriefInfo> taskBriefInfoList;
     /**
      * 正在运行的指令
      */
@@ -30,11 +39,25 @@ public class RunningClient implements Serializable {
     public RunningClient() {
     }
 
+    @Deprecated
     public RunningClient(String id,String token, String since) {
         this.id = id;
         this.token=token;
         this.since = since;
-        this.taskBriefInfo=new TaskBriefInfo();
+        this.taskBriefInfoList=new ArrayList<>();
+        this.firstTaskName="No Task";
+    }
+
+    public RunningClient(AixDevice device) {
+
+        this.name=device.getDevice_name();
+        this.info=device.getInfo();
+        this.userId= String.valueOf(device.getUser_id());
+        this.id = String.valueOf(device.getId());
+        this.token=device.getToken();
+        this.since = TimeUtils.getCurrentTimeStr();
+        this.taskBriefInfoList=new ArrayList<>();
+        this.firstTaskName="No Task";
     }
 
     public String getId() {
@@ -69,12 +92,36 @@ public class RunningClient implements Serializable {
         this.gpuInfo = gpuInfo;
     }
 
-    public TaskBriefInfo getTaskBriefInfo() {
-        return taskBriefInfo;
+    public List<TaskBriefInfo> getTaskBriefInfoList() {
+        return taskBriefInfoList;
     }
 
-    public void setTaskBriefInfo(TaskBriefInfo taskBriefInfo) {
-        this.taskBriefInfo = taskBriefInfo;
+    public void setTaskBriefInfoList(List<TaskBriefInfo> taskBriefInfoList) {
+        this.taskBriefInfoList = taskBriefInfoList;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public String getInfo() {
+        return info;
+    }
+
+    public void setInfo(String info) {
+        this.info = info;
     }
 
     public String getRunningCmds() {
@@ -91,5 +138,23 @@ public class RunningClient implements Serializable {
 
     public void setLastHeartbeat(long lastHeartbeat) {
         this.lastHeartbeat = lastHeartbeat;
+    }
+
+    public String getFirstTaskName() {
+        return firstTaskName;
+    }
+
+    public void setFirstTaskName(String firstTaskName) {
+        this.firstTaskName = firstTaskName;
+    }
+
+    public void setTaskBriefInfo(TaskBriefInfo briefInfo) {
+        this.taskBriefInfoList.clear();
+        if (briefInfo!=null){
+            this.taskBriefInfoList.add(briefInfo);
+            firstTaskName=briefInfo.getName();
+        }else {
+            firstTaskName="No Task";
+        }
     }
 }

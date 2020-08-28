@@ -4,7 +4,7 @@ import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.zju.vipa.aix.container.center.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
 import java.util.List;
 
@@ -48,7 +48,7 @@ public interface AixDeviceMapper {
 	 * @param id
 	 * @return
 	 */
-	@Select("select t.* from aix_device t where t.id = #{id}")
+	@Select("select * from aix_device where id = #{id}")
 	public AixDevice selectById(int id);
 
 	/**

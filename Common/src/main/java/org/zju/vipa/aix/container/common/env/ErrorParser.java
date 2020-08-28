@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.config.ErrorType;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 
 /**
  * @Date: 2020/3/26 21:03

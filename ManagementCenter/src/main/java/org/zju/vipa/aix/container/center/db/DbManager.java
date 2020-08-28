@@ -1,10 +1,11 @@
 package org.zju.vipa.aix.container.center.db;
 
-import org.zju.vipa.aix.container.center.db.entity.DataturksUser;
 import org.zju.vipa.aix.container.center.db.service.AtlasDbServiceImpl;
 import org.zju.vipa.aix.container.center.db.service.DbService;
 import org.zju.vipa.aix.container.center.db.service.DbServiceProxy;
-import org.zju.vipa.aix.container.common.entity.Task;
+import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
@@ -133,6 +134,18 @@ public class DbManager implements Serializable {
 
         return dbService.getClientIdByToken(token);
 
+
+    }
+
+    /**
+     * 根据token查询数据库有无该设备
+     *
+     * @param token
+     * @return: java.lang.String
+     */
+    public AixDevice getClientByToken(final String token) {
+
+        return dbService.getClientByToken(token);
 
     }
 
