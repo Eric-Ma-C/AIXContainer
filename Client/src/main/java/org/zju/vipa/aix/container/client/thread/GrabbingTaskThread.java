@@ -21,9 +21,10 @@ public class GrabbingTaskThread {
 
     private static Runnable runnable;
     /**
-     * 初始抢任务间隔时间 1s
+     * 初始抢任务间隔时间 5s
      */
-    private static int grabbingInterval = 1000;
+    private static final int INITIAL_GRABBING_INTERVAL = 5000;
+    private static int grabbingInterval = INITIAL_GRABBING_INTERVAL;
 
     private static volatile boolean exit = true;
 
@@ -57,13 +58,14 @@ public class GrabbingTaskThread {
                     /** 若抢到了任务，会在新线程执行任务 */
                     boolean ok = TcpClient.getInstance().grabTask(info);
                     if (!ok) {/** 没抢到 */
-                        if (Client.grabTaskFailedCount++ > 10) {
+                        if (++Client.grabTaskFailedCount > 10) {
                             /** 减慢抢任务频率 */
-                            grabbingInterval = Client.grabTaskFailedCount* 1000 + new Random().nextInt(1000);
+                            grabbingInterval += new Random().nextInt(1000);
                         }
                         if (Client.grabTaskFailedCount > ClientConfig.MAX_GRAB_TASK_INTERVAL_SECONDS) {
                             /** 复位 */
                             Client.grabTaskFailedCount = 0;
+                            grabbingInterval = INITIAL_GRABBING_INTERVAL;
                         }
                         ClientLogUtils.info("暂时没有抢到任务,准备第{}次尝试,请耐心等待...", Client.grabTaskFailedCount);
 

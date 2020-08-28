@@ -7,7 +7,7 @@ package org.zju.vipa.aix.container.common.config;
  */
 public class ClientConfig {
     /** 抢任务最大时间间隔,推荐300 即5min*/
-    public static final int MAX_GRAB_TASK_INTERVAL_SECONDS=60;
+    public static final int MAX_GRAB_TASK_INTERVAL_SECONDS=30;
 
     /**
      *  容器心跳包间隔时间 15s  todo 自动调整
