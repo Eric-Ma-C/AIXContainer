@@ -86,7 +86,6 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             task.setCodePath(codePath);
         }
 
-
         return task;
     }
 

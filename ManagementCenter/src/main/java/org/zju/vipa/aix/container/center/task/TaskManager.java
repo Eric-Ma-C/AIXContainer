@@ -42,7 +42,7 @@ public class TaskManager {
      */
     private Map<String, Task> taskMap;
     /**
-     * 最近一次指令执行状态映射，< token,Boolean >
+     * 最近一次指令执行状态映射，< token , Boolean >
      */
     private Map<String, Boolean> shellResultMap;
 
@@ -249,7 +249,6 @@ public class TaskManager {
                     msg.addCustomData("modelArgs", modelArgs);
                     addSerialMessage(token, msg);
 
-
                 } else {
                     /** 检测到可解决错误,一次加入待发送消息队列 */
                     while (!errorQueue.isEmpty()) {
@@ -259,10 +258,8 @@ public class TaskManager {
                         addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, repairCmds));
                     }
                 }
-
             }
         }
-
 
         /** 待发送的指令消息 */
         Message toSendMsg = getMessageByToken(token);

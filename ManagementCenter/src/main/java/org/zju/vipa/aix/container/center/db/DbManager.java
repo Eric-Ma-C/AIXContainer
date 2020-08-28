@@ -80,10 +80,7 @@ public class DbManager implements Serializable {
      * @return: java.util.List<Task>列表
      */
     public List<Task> getTaskList() {
-
-
         return dbService.getTaskList();
-
     }
 
     /**
@@ -153,7 +150,6 @@ public class DbManager implements Serializable {
      * @return
      */
     public void updateDeviceLastLoginById(final String clientId) {
-
          dbService.updateDeviceLastLoginById(clientId);
     }
 

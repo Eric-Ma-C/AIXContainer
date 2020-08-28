@@ -3,11 +3,13 @@ package org.zju.vipa.aix.container.common.entity;
 
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.env.EnvError;
+import org.zju.vipa.aix.container.common.json.Fields;
 import org.zju.vipa.aix.container.common.json.TaskInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -127,7 +129,7 @@ public class Task implements Serializable {
         name = tt.getName();
         type = serializedInfo.getTask_args().getTasks().get(0);
         accessType = tt.getAccess_type();
-        datasetId = "";// null   String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());
+        datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());// null   ;
         info = tt.getInfo();
         updatedTime = tt.getStarted_time();
         createdTime = tt.getCreated_time();
@@ -135,6 +137,14 @@ public class Task implements Serializable {
         modelId = serializedInfo.getTask_args().getTeacher_models().get(0).getId() + "";
         modelProvider = tt.getUser_id() + "";
         modelArgs = "";
+        List<Fields> fieldsList = serializedInfo.getTask_args().getAlgorithms().getFields();
+        for (Fields field : fieldsList) {
+           if ("model_args".equals(field.getField_name())) {
+               modelArgs=field.getField_value();
+               break;
+           }
+       }
+
         trainBy = tt.getTrain_by_id() + "";
         trainDetail = tt.getNote();
         codePath = Config.MODEL_UNZIP_PATH;
