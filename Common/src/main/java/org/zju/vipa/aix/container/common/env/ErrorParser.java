@@ -73,9 +73,8 @@ public class ErrorParser {
                 repairCmds="sudo apt-get update &&sudo apt-get install -y libsm6 libxext6 && " + startCmds;
                 break;
             case CONDA_SOURCE_304_ERROR:
-                /** conda换源 */
-                AIXEnvConfig.cha();
-                repairCmds=startCmds;
+                /** conda index cache被污染，使用conda clean -i 清理 */
+                repairCmds="conda clean -i && "+startCmds;
                 break;
             default:
                 /**  其他错误,什么都不做  */

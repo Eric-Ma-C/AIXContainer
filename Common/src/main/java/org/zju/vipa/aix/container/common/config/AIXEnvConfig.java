@@ -2,8 +2,6 @@ package org.zju.vipa.aix.container.common.config;
 
 import org.zju.vipa.aix.container.common.env.PipSource;
 
-import java.util.Random;
-
 /**
  * @Date: 2020/3/26 18:39
  * @Author: EricMa
@@ -39,15 +37,15 @@ public class AIXEnvConfig {
         PIP_SOURCE = PipSource.nextUrl();
     }
 
-    /**
-     * 换一个conda源
-     */
-    public static void changeCondaSource() {
-
-        condaSourceId += new Random().nextInt(pipUrls.length-1);
-        pipSourceId %= pipUrls.length;
-        PIP_SOURCE = pipUrls[pipSourceId];
-    }
+//    /**
+//     * 换conda源，需要重写客户端的conda配置文件
+//     */
+//    public static void changeCondaSource() {
+//
+//        condaSourceId += new Random().nextInt(pipUrls.length-1);
+//        pipSourceId %= pipUrls.length;
+//        PIP_SOURCE = pipUrls[pipSourceId];
+//    }
 
     /**
      * conda配置创建命令

@@ -219,7 +219,7 @@ public class SocketHandler implements Runnable {
 
 
     /**
-     * todo  设置conda源
+     *   设置conda源
      *
      * @param:
      * @return:

@@ -38,9 +38,13 @@ public enum PipSource {
         return pipSources[0].url;
     }
 
+    public static String currentUrl() {
+        return pipSources[pipSourceId].url;
+    }
+
     public static String nextUrl() {
         pipSourceId += new Random().nextInt(pipSources.length-1);
         pipSourceId %= pipSources.length;
-        return pipSources[pipSourceId].url;
+        return currentUrl();
     }
 }
