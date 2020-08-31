@@ -115,7 +115,7 @@ public class SocketServer {
         initThreadPool();
 
         //创建Socket对象
-        mServerSocket = new ServerSocket(NetworkConfig.SERVER_PORT_MESSAGE);
+        mServerSocket = new ServerSocket(NetworkConfig.SERVER_PORT_LISTENING);
 
 
         while (true) {

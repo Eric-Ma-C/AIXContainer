@@ -47,7 +47,7 @@ public class SocketIoImpl implements ClientIO {
         String response = null;
         try {
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_LISTENING);
             //设置读取超时时间
             socket.setSoTimeout(readTimeOut);
 
@@ -104,7 +104,7 @@ public class SocketIoImpl implements ClientIO {
         try {
             /** 短连接方式 */
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_LISTENING);
             //设置读取超时时间
             socket.setSoTimeout(NetworkConfig.SOCKET_READ_TIMEOUT_DEFAULT);
 
@@ -191,7 +191,7 @@ public class SocketIoImpl implements ClientIO {
         Socket socket = null;
         try {
             //创建Socket对象
-            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_MESSAGE);
+            socket = new Socket(InetAddress.getByName(NetworkConfig.SERVER_IP), NetworkConfig.SERVER_PORT_LISTENING);
             /** 设置读取超时时间,上传不容易，多等一下成功确认 */
             socket.setSoTimeout(30 * 1000);
 

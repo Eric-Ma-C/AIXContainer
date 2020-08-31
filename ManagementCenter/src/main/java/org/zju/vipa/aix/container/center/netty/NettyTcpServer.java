@@ -80,7 +80,7 @@ public class NettyTcpServer {
 
             LogUtils.info("Netty服务端开启等待Client连接...");
 
-            ChannelFuture channelFuture = bootstrap.bind(NetworkConfig.SERVER_PORT_MESSAGE).sync();
+            ChannelFuture channelFuture = bootstrap.bind(NetworkConfig.SERVER_PORT_LISTENING).sync();
 
             /** 启动文件上传服务器 */
             FileUploadServer.start();

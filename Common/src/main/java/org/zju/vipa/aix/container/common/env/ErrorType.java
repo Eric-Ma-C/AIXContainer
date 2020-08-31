@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.common.config;
+package org.zju.vipa.aix.container.common.env;
 
 /**
  * @Date: 2020/3/31 18:20
@@ -65,7 +65,13 @@ public enum ErrorType {
      *
      * apt update && apt install -y libsm6 libxext6
      */
-    IMPORTERROR_LIBSM_SO_6("ImportError: libSM.so.6: cannot open shared object file: No such file or directory");
+    IMPORTERROR_LIBSM_SO_6("ImportError: libSM.so.6: cannot open shared object file: No such file or directory"),
+
+    /**
+     * conda源失效
+     *
+     */
+    CONDA_SOURCE_304_ERROR("raise Response304ContentUnchanged()");
 
 
 

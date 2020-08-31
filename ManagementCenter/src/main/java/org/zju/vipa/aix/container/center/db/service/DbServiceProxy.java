@@ -28,6 +28,7 @@ public class DbServiceProxy implements InvocationHandler {
 //        final DbService service = (DbService) proxy;
 //        proxy instanceof DbService == true
 
+     //TODO    两个都抢到任务？？
         SqlSession sqlSession = dbService.getSession();
         try {
             Object ret = method.invoke(dbService, args);

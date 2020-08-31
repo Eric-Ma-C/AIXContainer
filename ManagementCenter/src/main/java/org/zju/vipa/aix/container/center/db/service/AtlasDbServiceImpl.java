@@ -69,8 +69,24 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             /** No waiting task,grab failed */
             return null;
         }
+
+//        for (TaskTask task : taskList) {
+//            System.out.println(Thread.currentThread().getId()+":"+task.getName());
+//        }
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
+
         TaskTask atlasTask = taskList.get(0);
         taskMapper.taskTobeTrained(atlasTask.getId(), Integer.parseInt(clientId));
+
+
+
+
+
 
         //将atlas task转为aix task
         Task task=new Task(atlasTask);
@@ -85,6 +101,13 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             String codePath = atlasModel.getFile();
             task.setCodePath(codePath);
         }
+
+
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
         return task;
     }

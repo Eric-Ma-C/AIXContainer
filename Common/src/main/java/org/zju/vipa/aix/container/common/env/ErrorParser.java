@@ -3,7 +3,6 @@ package org.zju.vipa.aix.container.common.env;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
-import org.zju.vipa.aix.container.common.config.ErrorType;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 
 /**
@@ -72,6 +71,11 @@ public class ErrorParser {
                 break;
             case IMPORTERROR_LIBSM_SO_6:
                 repairCmds="sudo apt-get update &&sudo apt-get install -y libsm6 libxext6 && " + startCmds;
+                break;
+            case CONDA_SOURCE_304_ERROR:
+                /** conda换源 */
+                AIXEnvConfig.cha();
+                repairCmds=startCmds;
                 break;
             default:
                 /**  其他错误,什么都不做  */

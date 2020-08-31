@@ -76,7 +76,7 @@ public class NettyTcpClient {
      * @return: void
      */
     public void sendMsg(String sendData) throws InterruptedException {
-        Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_MESSAGE);
+        Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_LISTENING);
         if (channel == null) {
             ClientLogUtils.debug("Netty建立连接失败!");
             return;
@@ -97,7 +97,7 @@ public class NettyTcpClient {
      * 同步方法，向服务器发送消息
      */
     public Message sendMsgAndGetResponse(String sendData, int timeout) throws InterruptedException {
-        Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_MESSAGE);
+        Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_LISTENING);
         if (channel == null) {
             ClientLogUtils.error("Netty建立连接失败!");
             return null;

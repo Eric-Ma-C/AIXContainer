@@ -65,6 +65,15 @@ public class NetworkConfig {
     public static final String KAFKA_GROUP_ID = "aix-group";
     public static final String KAFKA_TOPIC="client-realtime-log";
 
+
+
+
+
+
+
+
+
+
     //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static String SERVER_IP = VIPA_207_IP;
     public static String DOWNLOAD_SERVER_IP = VIPA_207_IP;
@@ -86,7 +95,7 @@ public class NetworkConfig {
     /**
      * 消息交换 tcp自定义端口号
      */
-    public static final int SERVER_PORT_MESSAGE = 10007;
+    public static final int SERVER_PORT_LISTENING = 10007;
     /**
      * 文件上传 tcp自定义端口号
      */

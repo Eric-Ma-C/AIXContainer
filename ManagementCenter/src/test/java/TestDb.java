@@ -13,9 +13,17 @@ public class TestDb {
         public static void main(String[] args) {
 //               getUserList();
 //                getClientIdByToken("gfd");
-                System.out.println("\n\n\n");
+//                System.out.println("\n\n\n");
 //                getTaskList();
-                updateDeviceDetail();
+//                updateDeviceDetail();
+
+                DbManager.getInstance().grabTask("2");
+                try {
+                        Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                        e.printStackTrace();
+                }
+                DbManager.getInstance().grabTask("3");
         }
 
         private static void getDataturksUserList(){
