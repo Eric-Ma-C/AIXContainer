@@ -51,6 +51,10 @@ public enum Intent {
      */
     SHELL_TASK,
     /**
+     * 强行停止当前执行的shell指令
+     */
+    STOP_TASK,
+    /**
      * 请求conda国内源
      */
     CONDA_SOURCE,

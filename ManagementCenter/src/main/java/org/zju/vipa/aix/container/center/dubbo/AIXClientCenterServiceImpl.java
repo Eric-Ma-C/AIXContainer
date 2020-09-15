@@ -5,9 +5,8 @@ import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ServerLogReader;
-import org.zju.vipa.aix.container.center.task.TaskManager;
-import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
+import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
@@ -25,7 +24,7 @@ import java.util.Queue;
 public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     @Override
     public int getOnlineClientNum() {
-       return ManagementCenter.getInstance().getOnlineClientNum();
+        return ManagementCenter.getInstance().getOnlineClientNum();
 
     }
 
@@ -52,7 +51,7 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     @Override
     public List<Message> getMessageQueueByToken(String token) {
         Queue<Message> queue = TaskManagerService.getMessageQueueByToken(token);
-        if (queue==null){
+        if (queue == null) {
             return null;
         }
         return new ArrayList<>(queue);
@@ -72,16 +71,24 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public void clientLogInit(String token) {
-        ClientRealTimeLogProducer.client_token=token;
-        ClientRealTimeLogProducer.isActive=true;
-        TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_DETAIL));
+        ClientRealTimeLogProducer.client_token = token;
+        ClientRealTimeLogProducer.isActive = true;
+        TaskManagerService.addHeartbeatMessage(token, new ServerMessage(Intent.REAL_TIME_LOG_SHOW_DETAIL));
     }
 
     @Override
     public void clientLogStop(String token) {
-        ClientRealTimeLogProducer.isActive=false;
-        ClientRealTimeLogProducer.client_token=null;
-        TaskManager.getInstance().addHeartbeatMessage(token,new ServerMessage(Intent.REAL_TIME_LOG_SHOW_BRIEF));
+        ClientRealTimeLogProducer.isActive = false;
+        ClientRealTimeLogProducer.client_token = null;
+        TaskManagerService.addHeartbeatMessage(token, new ServerMessage(Intent.REAL_TIME_LOG_SHOW_BRIEF));
+    }
+
+    @Override
+    public void clientTaskStop(String token) {
+        //删除平台上记录的容器任务
+        TaskManagerService.stopTask(token);
+        // 发送信息使容器停止执行当前指令
+        TaskManagerService.addHeartbeatMessage(token, new ServerMessage(Intent.STOP_TASK));
     }
 
     @Override

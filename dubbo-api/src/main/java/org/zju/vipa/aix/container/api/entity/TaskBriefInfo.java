@@ -21,7 +21,6 @@ public class TaskBriefInfo implements Serializable {
     /**是否为公开任务**/
     private String accessType;
 
-
     /**任务的备注信息，可以用于指明任务要求**/
     private String info;
 

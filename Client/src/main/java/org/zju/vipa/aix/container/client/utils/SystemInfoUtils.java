@@ -58,14 +58,15 @@ public class SystemInfoUtils {
     }
 
     public static GpuInfo getGpuInfo() {
+        //未拿到数据时，返回空信息，避免前端解析出错
         ShellUtils.CommandResult result = ShellUtils.execCommand("nvidia-smi -q -x");
         if (result.result != 0) {
             ClientLogUtils.error(result.errorMsg);
-            return null;
+            return GpuInfo.unknownGpuInfo();
         }
 
-//        return parseInfo(result.responseMsg);
-        return XmlUtils.parseGpuInfo(result.responseMsg);
+        GpuInfo gpuInfo = XmlUtils.parseGpuInfo(result.responseMsg);
+        return gpuInfo==null?GpuInfo.unknownGpuInfo():gpuInfo;
     }
 
     public static GpuInfo parseInfo(String str){

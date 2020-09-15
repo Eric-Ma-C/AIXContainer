@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.center.task;
 
+import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.message.Message;
 
@@ -33,4 +34,10 @@ public class TaskManagerService {
         return TaskManager.getInstance().getTaskByToken(token);
     }
 
+    public static void addHeartbeatMessage(String token, ServerMessage msg){
+        TaskManager.getInstance().addHeartbeatMessage(token,msg);
+    }
+    public static void stopTask(String token ){
+        TaskManager.getInstance().stopTask(token);
+    }
 }

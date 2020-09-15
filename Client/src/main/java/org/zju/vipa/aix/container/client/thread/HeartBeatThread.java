@@ -11,6 +11,7 @@ import org.zju.vipa.aix.container.common.config.ClientConfig;
  * @Author: EricMa
  * @Description: 心跳线程
  * 定时汇报容器状态
+ * 抢到任务后仍然运行
  * 平台长时间未收到心跳则被判定为容器离线,下次连接需要重新向平台注册
  */
 public class HeartBeatThread implements Runnable{

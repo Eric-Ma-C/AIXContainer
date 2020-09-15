@@ -114,9 +114,20 @@ public class TcpClient {
             case REAL_TIME_LOG_SHOW_BRIEF:
                 realTimeLogShowBrief();
                 break;
+            case STOP_TASK:
+                stopTask();
+                break;
             default:
                 break;
         }
+    }
+
+    /**
+     * 强行停止任务（shell指令）
+     * @return:
+     */
+    private void stopTask() {
+        ClientTaskController.getInstance().stopCurrentTask();
     }
 
     private void realTimeLogShowDetail() {

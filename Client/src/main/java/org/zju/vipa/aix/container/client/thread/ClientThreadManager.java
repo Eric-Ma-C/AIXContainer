@@ -23,6 +23,11 @@ public class ClientThreadManager {
      */
     private long lastUploadTime = 0;
     ScheduledExecutorService uploadLogService;
+    /**
+     * 线程池
+     */
+    private static ThreadPoolExecutor mThreadPoolExecutor;
+
 
     private static class ClientThreadManagerHolder {
         private static final ClientThreadManager INSTANCE = new ClientThreadManager();
@@ -39,17 +44,15 @@ public class ClientThreadManager {
         return ClientThreadManagerHolder.INSTANCE;
     }
 
-    /**
-     * 线程池
-     */
-    private static ThreadPoolExecutor mThreadPoolExecutor;
+
 
     /**
      * 执行新任务
      */
-    public void startNewTask(Runnable runnable) {
+    public Future startNewTask(Runnable runnable) {
         ClientLogUtils.debug("ClientThreadManager.startNewTask() runnable={}", runnable);
-        mThreadPoolExecutor.execute(runnable);
+//        mThreadPoolExecutor.execute(runnable);
+        return mThreadPoolExecutor.submit(runnable);
     }
 
     /**

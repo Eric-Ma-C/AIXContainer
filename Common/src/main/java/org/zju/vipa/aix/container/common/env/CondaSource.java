@@ -5,7 +5,7 @@ import java.util.Random;
 /**
  * @Date: 2020/8/31 14:55
  * @Author: EricMa
- * @Description: conda源
+ * @Description: conda源  todo 国内还有哪些源没有挂？
  */
 public enum CondaSource {
 

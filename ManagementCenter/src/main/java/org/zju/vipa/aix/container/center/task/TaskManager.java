@@ -31,18 +31,19 @@ public class TaskManager {
     /**
      * 按token存储的消息队列,存放需要顺序执行的消息，< token,messages >
      */
-    private Map<String, ConcurrentLinkedQueue<Message>> serialMessageMap;
+    private Map<String, ConcurrentLinkedQueue<Message>> serialTaskMessageMap;
 
     /**
-     * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级操作,不应该影响到正在执行的任务,比如开启详细实时日志上传，< token,messages >
+     * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级操作,
+     * 不应该影响到正在执行的任务,比如开启详细实时日志上传，< token,messages >
      */
     private Map<String, ConcurrentLinkedQueue<Message>> heartbeatMessageMap;
     /**
-     * client-任务映射表，< token,task >
+     * client-任务  映射表，< token,task >
      */
     private Map<String, Task> taskMap;
     /**
-     * 最近一次指令执行状态映射，< token , Boolean >
+     * 记录每个容器最近一次指令执行成功状态，< token , Boolean >
      */
     private Map<String, Boolean> shellResultMap;
 
@@ -62,7 +63,7 @@ public class TaskManager {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
-        serialMessageMap = new ConcurrentHashMap<>();
+        serialTaskMessageMap = new ConcurrentHashMap<>();
         heartbeatMessageMap = new ConcurrentHashMap<>();
         taskMap = new ConcurrentHashMap<>();
         shellResultMap = new ConcurrentHashMap<>();
@@ -82,7 +83,7 @@ public class TaskManager {
 
     /** 删除无心跳client的数据 */
     public void removeDeadClient(String token) {
-        serialMessageMap.remove(token);
+        serialTaskMessageMap.remove(token);
         heartbeatMessageMap.remove(token);
         taskMap.remove(token);
         shellResultMap.remove(token);
@@ -102,7 +103,7 @@ public class TaskManager {
      * 获取某容器的待发送队列
      */
     protected Queue<Message> getMessageQueueByToken(String token) {
-        return serialMessageMap.get(token);
+        return serialTaskMessageMap.get(token);
     }
 
     /**
@@ -289,12 +290,12 @@ public class TaskManager {
         Message message = null;
 
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = serialMessageMap.get(token);
+            ConcurrentLinkedQueue<Message> messageList = serialTaskMessageMap.get(token);
             if (messageList != null) {
                 message = messageList.poll();
                 LogUtils.debug("{}队列还剩{}个待发送消息", token, messageList.size());
                 if (messageList.size() == 0) {
-                    serialMessageMap.remove(token);
+                    serialTaskMessageMap.remove(token);
                 }
             }
         }
@@ -312,12 +313,12 @@ public class TaskManager {
     private void addSerialMessage(String token, Message msg) {
         /** 锁粒度细化为token */
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = serialMessageMap.get(token);
+            ConcurrentLinkedQueue<Message> messageList = serialTaskMessageMap.get(token);
 
             if (messageList == null) {
                 //TODO 太久没用的token删除,相当于客户端离线
                 messageList = new ConcurrentLinkedQueue<>();
-                serialMessageMap.put(token, messageList);
+                serialTaskMessageMap.put(token, messageList);
             }
             messageList.offer(msg);
 //            messageMap.put(token, messageList);
@@ -348,7 +349,7 @@ public class TaskManager {
     /**
      * 新增随心跳返回的消息
      */
-    public void addHeartbeatMessage(String token, Message msg) {
+    protected void addHeartbeatMessage(String token, Message msg) {
         /** 锁粒度细化为token */
 //        synchronized (token.intern()) {
         ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
@@ -382,7 +383,7 @@ public class TaskManager {
             /** 目前容器仅支持单任务，可以直接添加至容器Task对象的error列表中 */
             if (task != null ) {
                 if (error != null) {
-                    task.clearUnknownErrorTime();
+//                    task.clearUnknownErrorTime();
                     task.addEnvError(error);
                 }else {
                     //未知错误达到一定程度就会判为任务执行失败
@@ -390,6 +391,18 @@ public class TaskManager {
                 }
             }
         }
+    }
+
+    /**
+     *   强行停止容器任务
+     *   删除任务信息
+     * @param token
+     * @return:
+     */
+    protected void stopTask(String token){
+
+        serialTaskMessageMap.remove(token);
+        taskMap.remove(token);
     }
 
 }

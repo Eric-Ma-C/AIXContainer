@@ -179,9 +179,11 @@ public class Task implements Serializable {
             isFailed=true;
         }
     }
-    public void clearUnknownErrorTime() {
-            unknownErrorTime=0;
-    }
+
+
+//    public void clearUnknownErrorTime() {
+//            unknownErrorTime=0;
+//    }
 
     public String getCodePath() {
         return codePath;

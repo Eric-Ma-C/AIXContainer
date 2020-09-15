@@ -25,27 +25,28 @@ public interface AIXClientCenterService {
     int getActiveClientNum();
 
     /**
-     *  获取一次center实时日志,读到日志文件结尾,一般有多行
+     * 获取一次center实时日志,读到日志文件结尾,一般有多行
+     *
      * @param
      * @return: java.lang.String
      */
     String serverLogReadToEnd();
 
     /**
-     *   开始获取center实时日志
+     * 开始获取center实时日志
+     *
      * @param
      * @return: void
      */
     void serverLogInit();
 
     /**
-     *   停止获取center实时日志
+     * 停止获取center实时日志
+     *
      * @param
      * @return: void
      */
     void serverLogStop();
-
-
 
 
     /**
@@ -56,30 +57,50 @@ public interface AIXClientCenterService {
 
     /**
      * 获取某容器的待发送队列
+     *
+     * @param token 容器token
+     * @return: void
      */
-     List<Message> getMessageQueueByToken(String token) ;
+    List<Message> getMessageQueueByToken(String token);
 
     /**
      * 获取某容器的当前任务
+     *
+     * @param token 容器token
+     * @return: void
      */
-     Task getTaskByToken(String token);
+    Task getTaskByToken(String token);
 
     /**
      * 获取某容器的当前gpu状态
+     *
+     * @param token 容器token
+     * @return: void
      */
     GpuInfo getGpuInfoByToken(String token);
 
     /**
-     *   开始获取client实时日志
-     * @param
+     * 开始获取client实时日志
+     *
+     * @param token 容器token
      * @return: void
      */
     void clientLogInit(String token);
 
     /**
-     *   停止获取client实时日志
-     * @param
+     * 停止获取client实时日志
+     *
+     * @param token 容器token
      * @return: void
      */
     void clientLogStop(String token);
+
+    /**
+     * 强行停止client正在执行的任务
+     *
+     * @param token 容器token
+     * @return: void
+     */
+    void clientTaskStop(String token);
+
 }

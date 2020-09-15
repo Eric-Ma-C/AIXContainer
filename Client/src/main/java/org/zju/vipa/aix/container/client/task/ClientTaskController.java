@@ -13,6 +13,7 @@ import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 
 
 /**
@@ -30,6 +31,10 @@ public class ClientTaskController {
      * 当前执行的task
      */
     private BaseTask currentTask;
+    /**
+     * 当前task执行的异步结果
+     */
+    private Future currentTaskFuture;
 
 //
 //    private String envFilePath;
@@ -65,7 +70,8 @@ public class ClientTaskController {
     public void start() {
 
         /** 上传验证容器token */
-        boolean isSuccessful = TcpClient.getInstance().registerContainer(TokenUtils.getDeviceToken());
+        boolean isSuccessful = TcpClient.getInstance().registerContainer(
+            TokenUtils.getDeviceToken());
         /** 此处判断可以减少非法token的容器发送大量无效抢任务请求 */
         if (isSuccessful) {
             /** 验证成功，开始心跳,抢任务线程 */
@@ -84,6 +90,19 @@ public class ClientTaskController {
         } else {
             ClientLogUtils.error("容器注册失败，请检查token配置。");
         }
+    }
+
+    /**
+     *   停止当前正在执行的task
+     * @param
+     * @return:
+     */
+    public void stopCurrentTask(){
+        if (currentTaskFuture!=null){
+            currentTaskFuture.cancel(true);
+        }
+        ClientLogUtils.error("Task stopped:{}", currentTask);
+        execNewTask();
     }
 
     /**
@@ -109,7 +128,8 @@ public class ClientTaskController {
      */
     private synchronized void execNewTask() {
 
-        boolean noTaskRunning = (currentTask == null || TaskState.FINISHED.match(currentTask.getState()));
+        boolean noTaskRunning = (currentTask == null ||
+            TaskState.FINISHED.match(currentTask.getState()));
 
         if (!noTaskRunning) {
             ClientLogUtils.info("Current task has not finished.Wait for execution.");
@@ -130,30 +150,32 @@ public class ClientTaskController {
             ClientLogUtils.debug("ClientTaskController.execNewTask:{}", currentTask);
 
             /** 在新线程执行新任务 */
-            ClientThreadManager.getInstance().startNewTask(currentTask.getRunnable(new BaseTask.TaskStateListener() {
-                @Override
-                public void onBegin() {
-                    ClientLogUtils.info("\n\n\n----- Task begin -----:\n{}\n", currentTask);
+            currentTaskFuture = ClientThreadManager.getInstance().startNewTask(currentTask.getRunnable(
+                new BaseTask.TaskStateListener() {
+                    @Override
+                    public void onBegin() {
+                        ClientLogUtils.info("\n\n\n----- Task begin -----:\n{}\n", currentTask);
 
-                }
-
-                @Override
-                public void onFinished() {
-                    ClientLogUtils.info("\n-----  Task finished in {}  -----:\n{}\n\n\n", TimeUtils.getInterval(currentTask.getExecTime()), currentTask);
-                    String repairCmds = currentTask.getRepairCmds();
-                    if (repairCmds != null) {
-                        ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
-                        /** 修复运行环境 */
-                        BaseTask task = new ClientShellTask(repairCmds);
-                        task.setTaskInfo(currentTask.getCodePath(), currentTask.getModelArgs());
-                        addTask(task);
-                    } else {
-                        execNewTask();
                     }
 
+                    @Override
+                    public void onFinished() {
+                        ClientLogUtils.info("\n-----  Task finished in {}  -----:\n{}\n\n\n",
+                            TimeUtils.getInterval(currentTask.getExecTime()), currentTask);
+                        String repairCmds = currentTask.getRepairCmds();
+                        if (repairCmds != null) {
+                            ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
+                            /** 修复运行环境 */
+                            BaseTask task = new ClientShellTask(repairCmds);
+                            task.setTaskInfo(currentTask.getCodePath(), currentTask.getModelArgs());
+                            addTask(task);
+                        } else {
+                            execNewTask();
+                        }
 
-                }
-            }));
+
+                    }
+                }));
 
         }
     }

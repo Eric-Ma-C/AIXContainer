@@ -20,6 +20,14 @@ public class GpuInfo implements Serializable {
 
     }
 
+    public static GpuInfo unknownGpuInfo(){
+        GpuInfo unknownInfo = new GpuInfo();
+        unknownInfo.setGpuNum(0);
+        unknownInfo.setCudaVersion("unknown");
+        unknownInfo.setDriverVersion("unknown");
+        return unknownInfo;
+    }
+
     public static class Gpu implements Serializable{
         String id,name, temperature, powerDraw, powerLimit,memUsed,memAll;
         private List<Process> processes;
