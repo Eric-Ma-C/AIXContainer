@@ -388,6 +388,7 @@ public class TaskManager {
                 }else {
                     //未知错误达到一定程度就会判为任务执行失败
                     task.addUnknownErrorTime();
+                    LogUtils.debug("Task {} UnknownErrorTime={}",task.getName(),task.getUnknownErrorTime());
                 }
             }
         }

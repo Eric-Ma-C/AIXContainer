@@ -17,7 +17,7 @@ public enum Intent {
      */
     ACK,
     /**
-     * 心跳ping,附带gpu信息
+     * 心跳ping,附带容器运行（gpu，状态）信息，
      * center可能回应pong,也可能回应一些控制指令
      */
     PING,

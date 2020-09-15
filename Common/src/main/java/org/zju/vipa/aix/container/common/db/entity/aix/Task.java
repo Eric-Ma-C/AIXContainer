@@ -110,6 +110,9 @@ public class Task implements Serializable {
 //    private transient String lastErrorInfo;
 
 
+    public int getUnknownErrorTime() {
+        return unknownErrorTime;
+    }
 
     /**
      * 该任务执行过程中连续出现未解决错误的次数，超过一定阈值判断为环境配置失败
@@ -178,6 +181,7 @@ public class Task implements Serializable {
         if (this.unknownErrorTime ++>500) {
             isFailed=true;
         }
+
     }
 
 
