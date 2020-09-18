@@ -276,8 +276,17 @@ public class TaskManager {
     /** 任务执行失败的处理*/
     private void handleTaskFailed(String token) {
         Task task = taskMap.get(token);
-        DbManager.getInstance().setTaskFailed(task.getId());
+        shellResultMap.remove(token);
         taskMap.remove(token);
+
+        ManagementCenter.getInstance().updateRunningCmds(token, "");
+        ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
+
+        //修改数据库
+        DbManager.getInstance().setTaskFailed(task.getId());
+
+        LogUtils.error("{}任务执行失败，重新开始抢任务!", token);
+
     }
 
 
