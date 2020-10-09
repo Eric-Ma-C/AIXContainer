@@ -6,7 +6,6 @@ public class TaskTask implements Serializable{
   private int id;
   private String task_uid;
   private int distributed;
-  private String task_type;
   private String task;
   private String result;
   private java.util.Date created_time;
@@ -15,12 +14,16 @@ public class TaskTask implements Serializable{
   private String note;
   private int server_id;
   private int user_id;
-  private String access_type;
   private String info;
   private String name;
   private String processor;
   private String status;
   private int train_by_id;
+  private int flowchart_id;
+  private String node_uid;
+  private int is_public;
+  private String stage_type;
+  private int multiple_task_id;
 
 
   public int getId() {
@@ -47,15 +50,6 @@ public class TaskTask implements Serializable{
 
   public void setDistributed(int distributed) {
     this.distributed = distributed;
-  }
-
-
-  public String getTask_type() {
-    return task_type;
-  }
-
-  public void setTask_type(String task_type) {
-    this.task_type = task_type;
   }
 
 
@@ -131,15 +125,6 @@ public class TaskTask implements Serializable{
   }
 
 
-  public String getAccess_type() {
-    return access_type;
-  }
-
-  public void setAccess_type(String access_type) {
-    this.access_type = access_type;
-  }
-
-
   public String getInfo() {
     return info;
   }
@@ -182,6 +167,51 @@ public class TaskTask implements Serializable{
 
   public void setTrain_by_id(int train_by_id) {
     this.train_by_id = train_by_id;
+  }
+
+
+  public int getFlowchart_id() {
+    return flowchart_id;
+  }
+
+  public void setFlowchart_id(int flowchart_id) {
+    this.flowchart_id = flowchart_id;
+  }
+
+
+  public String getNode_uid() {
+    return node_uid;
+  }
+
+  public void setNode_uid(String node_uid) {
+    this.node_uid = node_uid;
+  }
+
+
+  public int getIs_public() {
+    return is_public;
+  }
+
+  public void setIs_public(int is_public) {
+    this.is_public = is_public;
+  }
+
+
+  public String getStage_type() {
+    return stage_type;
+  }
+
+  public void setStage_type(String stage_type) {
+    this.stage_type = stage_type;
+  }
+
+
+  public int getMultiple_task_id() {
+    return multiple_task_id;
+  }
+
+  public void setMultiple_task_id(int multiple_task_id) {
+    this.multiple_task_id = multiple_task_id;
   }
 
 }

@@ -410,7 +410,6 @@ public class TaskManager {
      * @return:
      */
     protected void stopTask(String token){
-
         serialTaskMessageMap.remove(token);
         taskMap.remove(token);
     }

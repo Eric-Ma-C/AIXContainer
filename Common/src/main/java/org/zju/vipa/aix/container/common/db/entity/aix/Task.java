@@ -122,17 +122,17 @@ public class Task implements Serializable {
     /**
      * 任务环境配置失败的标志（数据库置为FAILED），askForCmds会检查该字段，失败则告诉客户端放弃此任务，重新抢任务
      */
-    private transient boolean isFailed=false;
+    private transient boolean isFailed = false;
 
     public Task(TaskTask tt) {
 
-        TaskInfo serializedInfo= JsonUtils.parseObject(tt.getTask(),TaskInfo.class);
+        TaskInfo serializedInfo = JsonUtils.parseObject(tt.getTask(), TaskInfo.class);
 
 
         id = tt.getId() + "";
         name = tt.getName();
         type = serializedInfo.getTask_args().getTasks().get(0);
-        accessType = tt.getAccess_type();
+        accessType = "";
         datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());// null   ;
         info = tt.getInfo();
         updatedTime = tt.getStarted_time();
@@ -143,11 +143,12 @@ public class Task implements Serializable {
         modelArgs = "";
         List<Fields> fieldsList = serializedInfo.getTask_args().getAlgorithms().getFields();
         for (Fields field : fieldsList) {
-           if ("model_args".equals(field.getField_name())) {
-               modelArgs=field.getField_value();
-               break;
-           }
-       }
+            if ("model_args".equals(field.getField_name())) {
+                modelArgs = field.getField_value();
+                break;
+            }
+        }
+        modelArgs += " stage_type=" + tt.getStage_type();
 
         trainBy = tt.getTrain_by_id() + "";
         trainDetail = tt.getNote();
@@ -178,8 +179,8 @@ public class Task implements Serializable {
 
     public void addUnknownErrorTime() {
         /** 连续出现500次未知错误则放弃任务 */
-        if (this.unknownErrorTime ++>500) {
-            isFailed=true;
+        if (this.unknownErrorTime++ > 500) {
+            isFailed = true;
         }
 
     }

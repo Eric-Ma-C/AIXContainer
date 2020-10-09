@@ -13,6 +13,8 @@ public class Models implements Serializable{
   private java.util.Date created_time;
   private int user_id;
   private String info;
+  private String args;
+  private String metrics;
 
 
   public int getId() {
@@ -102,6 +104,24 @@ public class Models implements Serializable{
 
   public void setInfo(String info) {
     this.info = info;
+  }
+
+
+  public String getArgs() {
+    return args;
+  }
+
+  public void setArgs(String args) {
+    this.args = args;
+  }
+
+
+  public String getMetrics() {
+    return metrics;
+  }
+
+  public void setMetrics(String metrics) {
+    this.metrics = metrics;
   }
 
 }

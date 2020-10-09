@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.common.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.common.exception.ExceptionHandlerImpl;
 
@@ -39,5 +40,14 @@ public class JsonUtils {
 
 
         return obj;
+    }
+
+    public static String getValue(String jsonStr,String key){
+        JSONObject jsonObject = JSON.parseObject(jsonStr);
+        Object obj = jsonObject.get(key);
+        if (obj instanceof String) {
+            return (String) obj;
+        }
+        return "";
     }
 }
