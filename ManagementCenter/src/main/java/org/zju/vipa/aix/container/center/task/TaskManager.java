@@ -198,7 +198,7 @@ public class TaskManager {
                 /** 分成两条指令执行，否则可能会卡住? */
 //                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
                 String condaEnvCreateCmds = "ls";
-                String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs);
+                String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs,token);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
 
@@ -245,7 +245,7 @@ public class TaskManager {
 
                     String codePath = task.getCodePath();
                     String modelArgs = task.getModelArgs();
-                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath, modelArgs));
+                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath, modelArgs,token));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
                     addSerialMessage(token, msg);

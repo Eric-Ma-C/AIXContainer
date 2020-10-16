@@ -62,7 +62,7 @@ public class SocketHandler implements Runnable {
                 clientIdleAskForCmds(msg.getToken());
                 break;
             case CONDA_SOURCE:
-                getCondaSource();
+                returnNewCondaSource();
                 break;
             case GET_CONDA_ENV_FILE_BY_TASKID:
                 getCondaEnvFileByTaskId(msg.getValue());
@@ -219,12 +219,12 @@ public class SocketHandler implements Runnable {
 
 
     /**
-     *   设置conda源
+     *   更新conda源
      *
      * @param:
      * @return:
      */
-    private void getCondaSource() {
+    private void returnNewCondaSource() {
 //        Message msg = new Message(Intent.CONDA_SOURCE,"test");
         Message msg = new ServerMessage(Intent.CONDA_SOURCE, NetworkConfig.DEFAULT_CONDA_SOURCE);
 

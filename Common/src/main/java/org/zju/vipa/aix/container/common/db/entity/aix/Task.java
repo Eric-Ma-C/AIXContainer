@@ -148,7 +148,8 @@ public class Task implements Serializable {
                 break;
             }
         }
-        modelArgs += " stage_type=" + tt.getStage_type();
+        modelArgs += " --id=" + tt.getId();
+        modelArgs += " --stage_type=" + tt.getStage_type();
 
         trainBy = tt.getTrain_by_id() + "";
         trainDetail = tt.getNote();

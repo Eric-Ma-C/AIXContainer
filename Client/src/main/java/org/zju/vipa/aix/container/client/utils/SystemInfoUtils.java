@@ -66,10 +66,10 @@ public class SystemInfoUtils {
         }
 
         GpuInfo gpuInfo = XmlUtils.parseGpuInfo(result.responseMsg);
-        return gpuInfo==null?GpuInfo.unknownGpuInfo():gpuInfo;
+        return gpuInfo == null ? GpuInfo.unknownGpuInfo() : gpuInfo;
     }
 
-    public static GpuInfo parseInfo(String str){
+    public static GpuInfo parseInfo(String str) {
         List<String> info = Arrays.asList(str.split("\\s+"));
 
         GpuInfo gpuInfo = new GpuInfo();
@@ -112,9 +112,9 @@ public class SystemInfoUtils {
     public static SystemBriefInfo getSystemBriefInfo() {
         OperatingSystemMXBean osBean = getOsBean();
         /** cpu */
-        int cpuRate = (int) (osBean.getSystemLoadAverage() / osBean.getAvailableProcessors()*100);
+        int cpuRate = (int) (osBean.getSystemLoadAverage() / osBean.getAvailableProcessors() * 100);
         /** memory */
-        int ramRate = (int) (osBean.getFreePhysicalMemorySize() * 1.0 / osBean.getTotalPhysicalMemorySize()*100);
+        int ramRate = (int) (osBean.getFreePhysicalMemorySize() * 1.0 / osBean.getTotalPhysicalMemorySize() * 100);
 
         return new SystemBriefInfo(cpuRate, ramRate);
     }

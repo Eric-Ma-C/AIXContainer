@@ -282,7 +282,7 @@ public class TcpClient {
      * 重新设置conda国内源
      */
 
-    public String getCondaSource() {
+    public String getNewCondaSource() {
         ClientMessage message = new ClientMessage(Intent.CONDA_SOURCE);
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);

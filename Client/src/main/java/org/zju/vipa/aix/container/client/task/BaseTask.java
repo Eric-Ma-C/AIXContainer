@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.client.task;
 
 
+import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
 import org.zju.vipa.aix.container.client.shell.ShellTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
@@ -66,13 +67,14 @@ public abstract class BaseTask {
         return modelArgs;
     }
 
+    /** 用于容器离线自动重启任务 */
     public void setTaskInfo(String codePath, String modelArgs) {
         this.codePath = codePath;
         this.modelArgs = modelArgs;
         shellErrorListener=new ShellTask.HandleShellErrorListener() {
             @Override
             public void onHandle(String moduleName) {
-                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath,BaseTask.this.modelArgs);
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath,BaseTask.this.modelArgs, Client.TOKEN);
                 ClientLogUtils.info("Auto generate repairCmds={}",repairCmds);
 
             }

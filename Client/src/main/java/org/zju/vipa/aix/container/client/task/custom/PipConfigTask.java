@@ -28,7 +28,7 @@ public class PipConfigTask extends BaseTask {
      * @return:
      */
     private void setCondaSource() {
-        String src = TcpClient.getInstance().getCondaSource();
+        String src = TcpClient.getInstance().getNewCondaSource();
 
         new ShellTask("tee /home/aix/.condarc << EOF\n" + src + "\nEOF").exec();
 //        FileUtils.write(src, condarcPath);

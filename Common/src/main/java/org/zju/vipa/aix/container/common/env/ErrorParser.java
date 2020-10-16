@@ -27,7 +27,7 @@ public class ErrorParser {
                 break;
             }
         }
-        String startCmds = AIXEnvConfig.getStartCmds(task.getCodePath(),task.getModelArgs());
+        String startCmds = AIXEnvConfig.getStartCmds(task.getCodePath(),task.getModelArgs(),token);
         switch (errorType) {
             case UNKNOWN:
                 /** 可能是一些非关键描述信息，无法提取错误类别 */

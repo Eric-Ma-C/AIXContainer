@@ -85,12 +85,11 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
 
 
 
-
-
-
         //将atlas task转为aix task
         Task task=new Task(atlasTask);
-                //  获取code path
+        task.setStatus("TRAINING");
+
+        //  获取code path
         if (DebugConfig.IS_DOWNLOAD_MODULE) {
             //下载模型,路径为模型解压目录
             task.setCodePath(Config.MODEL_UNZIP_PATH);

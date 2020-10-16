@@ -23,7 +23,6 @@ public class AIXEnvConfig {
     public static final String CONDA_ACTIVATE_CMD = "source " + MINICONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
 
 
-
     private static String PIP_SOURCE = PipSource.defaultUrl();
     private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
     //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
@@ -51,6 +50,9 @@ public class AIXEnvConfig {
      * conda配置创建命令
      */
     public static String getCondaEnvCreateCmds(String codePath) {
+        while (codePath.endsWith("/")) {
+            codePath = codePath.substring(0, codePath.length() - 1);
+        }
 
         return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";//--json
 //        return getPipEnvCreateCmds(codePath);
@@ -75,12 +77,12 @@ public class AIXEnvConfig {
     /**
      * 启动命令
      */
-    public static String getStartCmds(String codePath, String modelArgs) {
+    public static String getStartCmds(String codePath, String modelArgs, String deviceToken) {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
 
 
         /** UniversalModel */
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py " + modelArgs;
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py " + modelArgs + " --device_token=" + deviceToken;
 
 
         /** yolo */
