@@ -1,10 +1,11 @@
 # AIXContainer
-The management module of containers running machine learning algorithms from zju-vipa AI+X platform
+The management project of docker containers running machine learning algorithms from zju-vipa AI+X platform
 
-AIXContainer分为三部分:
+AIXContainer分为四部分:
 - **Client**           容器客户端
 - **ManagementCenter**   平台管理服务器
 - **Common**             公共模块
+- **dubbo-api**          Dubbo接口定义
 
 ## Client   
 容器客户端,常驻容器中(ContainerManager)
@@ -42,4 +43,3 @@ AIXContainer分为三部分:
 
 # 流程图
 
-![image](https://github.com/Eric-Ma-C/AIXContainer/edit/master/container-flow-chart.png)
