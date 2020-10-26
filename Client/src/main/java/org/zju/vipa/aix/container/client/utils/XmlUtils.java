@@ -16,7 +16,12 @@ import java.util.List;
  */
 public class XmlUtils {
     public static GpuInfo parseGpuInfo(String info) {
-        info = info.substring(info.indexOf("<nvidia_smi_log>"));
+        int index = info.indexOf("<nvidia_smi_log>");
+        if (index<0){
+            ClientLogUtils.error(true,"parseGpuInfo失败，info={}",info);
+            return null;
+        }
+        info = info.substring(index);
         Document document;
 
         //利用dom4j读取xml
