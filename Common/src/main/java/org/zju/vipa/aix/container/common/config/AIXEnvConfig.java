@@ -10,7 +10,7 @@ import org.zju.vipa.aix.container.common.env.PipSource;
 public class AIXEnvConfig {
     private static final String CONDA_ENV_NAME = "aix-task";
     //    public static final String CONDA_ENV_NAME ="clean_yolo";
-    private static final String MINICONDA_DIR = "/home/aix/miniconda3/";
+    private static final String CONDA_DIR = "/home/aix/anaconda3/";
     /**
      * conda源更新指令
      */
@@ -20,7 +20,7 @@ public class AIXEnvConfig {
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
 
     public static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + NetworkConfig.DEFAULT_CONDA_SOURCE + "\" > /home/aix/.condarc && conda clean -i";
-    public static final String CONDA_ACTIVATE_CMD = "source " + MINICONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
+    public static final String CONDA_ACTIVATE_CMD = "source " + CONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
 
 
     private static String PIP_SOURCE = PipSource.defaultUrl();

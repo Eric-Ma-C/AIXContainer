@@ -74,7 +74,8 @@ public abstract class BaseTask {
         shellErrorListener=new ShellTask.HandleShellErrorListener() {
             @Override
             public void onHandle(String moduleName) {
-                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && " + AIXEnvConfig.getStartCmds(BaseTask.this.codePath,BaseTask.this.modelArgs, Client.TOKEN);
+                repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && "
+                    + AIXEnvConfig.getStartCmds(BaseTask.this.codePath,BaseTask.this.modelArgs, Client.TOKEN);
                 ClientLogUtils.info("Auto generate repairCmds={}",repairCmds);
 
             }
