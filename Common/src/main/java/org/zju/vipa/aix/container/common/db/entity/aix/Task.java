@@ -124,8 +124,13 @@ public class Task implements Serializable {
      */
     private transient boolean isFailed = false;
 
-    public Task(TaskTask tt) {
+    public Task() {
+    }
 
+    public Task(TaskTask tt) {
+        if (tt==null) {
+            return;
+        }
         TaskInfo serializedInfo = JsonUtils.parseObject(tt.getTask(), TaskInfo.class);
 
 
@@ -155,6 +160,7 @@ public class Task implements Serializable {
         trainDetail = tt.getNote();
         codePath = Config.MODEL_UNZIP_PATH;
     }
+
 
     @Override
     public String toString() {

@@ -3,7 +3,7 @@ package org.zju.vipa.aix.container.client.task;
 
 import org.zju.vipa.aix.container.client.Client;
 import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
-import org.zju.vipa.aix.container.client.shell.ShellTask;
+import org.zju.vipa.aix.container.client.shell.ShellProcess;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -56,7 +56,7 @@ public abstract class BaseTask {
      */
     private String modelArgs = null;
 
-    protected ShellTask.HandleShellErrorListener shellErrorListener;
+    protected ShellProcess.HandleShellErrorListener shellErrorListener;
 
 
     public String getCodePath() {
@@ -71,7 +71,7 @@ public abstract class BaseTask {
     public void setTaskInfo(String codePath, String modelArgs) {
         this.codePath = codePath;
         this.modelArgs = modelArgs;
-        shellErrorListener=new ShellTask.HandleShellErrorListener() {
+        shellErrorListener=new ShellProcess.HandleShellErrorListener() {
             @Override
             public void onHandle(String moduleName) {
                 repairCmds = AIXEnvConfig.getPipInstallCmds(moduleName) + " && "
@@ -94,9 +94,9 @@ public abstract class BaseTask {
         return state;
     }
 
-//    public void setState(TaskState state) {
-//        this.state = state;
-//    }
+    public void setState(TaskState state) {
+        this.state = state;
+    }
 
     public String[] getCommands() {
 //        if (commands == null) {
@@ -126,7 +126,13 @@ public abstract class BaseTask {
         runnable = new Runnable() {
             @Override
             public void run() {
+                //设置线程名字
+                String name = Arrays.toString(commands);
+                if (name.length()>15) {
+                    name=name.substring(0,15)+"...";
+                }
 
+                Thread.currentThread().setName(name);
 
                 listener.onBegin();
                 beginTime = System.currentTimeMillis();
@@ -136,7 +142,7 @@ public abstract class BaseTask {
                     public void onResponse(Message message) {
 //                      目前  message.getIntent()== Intent.ACK
                         /** 指令执行完毕拿到服务器响应才视为执行完毕 */
-                        state = TaskState.FINISHED;
+                        state = TaskState.STOPPED;
                         endTime = System.currentTimeMillis();
                         listener.onFinished();
                     }

@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.db.service;
 
 import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
-import org.zju.vipa.aix.container.center.db.dao.atlas.ModelsMapper;
+import org.zju.vipa.aix.container.center.db.dao.atlas.CodesMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.Config;
@@ -10,7 +10,7 @@ import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
-import org.zju.vipa.aix.container.common.db.entity.atlas.Models;
+import org.zju.vipa.aix.container.common.db.entity.atlas.Codes;
 import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 
 import java.util.ArrayList;
@@ -95,9 +95,13 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             task.setCodePath(Config.MODEL_UNZIP_PATH);
         } else {
             //数据库中的路径
-            ModelsMapper modelsMapper = sqlSession.getMapper(ModelsMapper.class);
-            Models atlasModel = modelsMapper.findModelById(Integer.parseInt(task.getModelId()));
-            String codePath = atlasModel.getFile();
+//            ModelsMapper modelsMapper = sqlSession.getMapper(ModelsMapper.class);
+//            Models atlasModel = modelsMapper.findModelById(Integer.parseInt(task.getModelId()));
+//            String codePath = atlasModel.getFile();
+//            task.setCodePath(codePath);
+            CodesMapper codesMapper = sqlSession.getMapper(CodesMapper.class);
+            Codes atlasCodes = codesMapper.findCodesById(Integer.parseInt(task.getModelId()));
+            String codePath = atlasCodes.getFile();
             task.setCodePath(codePath);
         }
 

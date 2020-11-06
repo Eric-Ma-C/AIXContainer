@@ -7,6 +7,7 @@ import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.task.TaskManager;
+import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
@@ -328,12 +329,19 @@ public class SocketHandler implements Runnable {
      * shell指令执行结束
      */
     private void shellResult(Message message) {
-        boolean success = false;
-        if (Message.SHELL_RESULT_SUCCESS.equals(message.getCustomData(Message.SHELL_RESULT_KEY))) {
-            success = true;
+        String result = message.getCustomData(Message.SHELL_RESULT_KEY);
+        boolean isSuccess = false;
+        if (Message.SHELL_RESULT_SUCCESS.equals(result)) {
+            isSuccess = true;
         }
-        TaskManager.getInstance().setLastShellResult(message.getToken(), success);
+        TaskManager.getInstance().setLastShellResult(message.getToken(), isSuccess);
 
+        if (Message.SHELL_RESULT_USER_STOPPED.equals(result)) {
+            //TODO 通知前端关闭等待对话框
+            //删除平台上记录的容器任务
+            TaskManagerService.userStopTask(message.getToken());
+
+        }
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
 
 

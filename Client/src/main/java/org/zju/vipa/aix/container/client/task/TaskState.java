@@ -10,8 +10,10 @@ public enum TaskState {
     WAITING,
     /** 执行 */
     RUNNING,
-    /** 执行完毕 */
-    FINISHED;
+    /** 被中断状态，正在停止 */
+    STOPPING,
+    /** 执行完毕,停止状态*/
+    STOPPED;
 
     @Override
     public String toString() {

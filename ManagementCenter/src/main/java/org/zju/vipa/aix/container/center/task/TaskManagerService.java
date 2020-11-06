@@ -37,7 +37,7 @@ public class TaskManagerService {
     public static void addHeartbeatMessage(String token, ServerMessage msg){
         TaskManager.getInstance().addHeartbeatMessage(token,msg);
     }
-    public static void stopTask(String token ){
-        TaskManager.getInstance().stopTask(token);
+    public static void userStopTask(String token ){
+        TaskManager.getInstance().userStopTask(token);
     }
 }

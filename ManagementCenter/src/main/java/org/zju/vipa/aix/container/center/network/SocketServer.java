@@ -48,7 +48,7 @@ public class SocketServer {
 
     /**
      * 初始化线程池，注意根据服务器硬件参数修改线程池参数
-     *
+     *  todo jmeter测试不同参数的并发量
      * @return: void
      */
     private static void initThreadPool() {
@@ -57,7 +57,7 @@ public class SocketServer {
         /** 最大线程池大小 */
         int maximumPoolSize = 250;
         /** 线程最大空闲时间 */
-        long keepAliveTime = 10;
+        long keepAliveTime = 20;
         TimeUnit unit = TimeUnit.SECONDS;
         /** 线程等待队列 */
         BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(500);

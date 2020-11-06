@@ -93,16 +93,29 @@ public class ClientTaskController {
     }
 
     /**
-     *   停止当前正在执行的task
+     * 停止当前正在执行的task
+     *
      * @param
      * @return:
      */
-    public void stopCurrentTask(){
-        if (currentTaskFuture!=null){
+    public void stopCurrentTask() {
+        if (currentTaskFuture != null) {
             currentTaskFuture.cancel(true);
+            //任务置为正在停止状态，等待执行结果汇报服务器后置为STOPPED
+            currentTask.setState(TaskState.STOPPING);
         }
-        ClientLogUtils.error("Task stopped:{}", currentTask);
-        execNewTask();
+        //等待停止任务异步操作完成
+        while (currentTask.getState() != TaskState.STOPPED) {
+            try {
+                Thread.sleep(3000);
+                ClientLogUtils.info("Waiting for task to finished...");
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
+
+        ClientLogUtils.worning("Task stopped:{}", currentTask);
+//        execNewTask();
     }
 
     /**
@@ -129,7 +142,7 @@ public class ClientTaskController {
     private synchronized void execNewTask() {
 
         boolean noTaskRunning = (currentTask == null ||
-            TaskState.FINISHED.match(currentTask.getState()));
+            TaskState.STOPPED.match(currentTask.getState()));
 
         if (!noTaskRunning) {
             ClientLogUtils.info("Current task has not finished.Wait for execution.");
@@ -170,7 +183,11 @@ public class ClientTaskController {
                             task.setTaskInfo(currentTask.getCodePath(), currentTask.getModelArgs());
                             addTask(task);
                         } else {
+//                            currentTask=null;
+
+//                            if (currentTask.getState()!= TaskState.STOPPING) {
                             execNewTask();
+//                            }
                         }
 
 

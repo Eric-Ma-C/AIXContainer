@@ -15,7 +15,7 @@ import java.io.IOException;
  * @Author: EricMa
  * @Description: 非阻塞 execute shell command
  */
-public class ShellTask implements RealtimeProcessListener {
+public class ShellProcess implements RealtimeProcessListener {
 
     private RealtimeProcess mRealtimeProcess = null;
     private HandleShellErrorListener handleShellErrorListener;
@@ -23,19 +23,19 @@ public class ShellTask implements RealtimeProcessListener {
     private String command;
 //    private String cmdDir;
 
-    public ShellTask(String cmd, String cmdDir) {
+    public ShellProcess(String cmd, String cmdDir) {
         mRealtimeProcess = new RealtimeProcess(this);
         mRealtimeProcess.setExecDir(cmdDir);
         mRealtimeProcess.setCommand(cmd);
     }
 
-    public ShellTask(String cmd) {
+    public ShellProcess(String cmd) {
         mRealtimeProcess = new RealtimeProcess(this);
         mRealtimeProcess.setExecDir(System.getProperty("user.home"));
         mRealtimeProcess.setCommand(cmd);
     }
 
-    public ShellTask(String[] cmds) {
+    public ShellProcess(String[] cmds) {
         mRealtimeProcess = new RealtimeProcess(this);
         mRealtimeProcess.setExecDir(System.getProperty("user.home"));
         String cmdList = "";
@@ -120,7 +120,6 @@ public class ShellTask implements RealtimeProcessListener {
     public void onProcessFinished(int resultCode) {
         /** 指令执行结果一直都需要上传,用于判断任务执行完毕 */
         ClientLogUtils.info(false, "resultCode={},cmds={}", resultCode, command);
-
 
         Message resMsg = TcpClient.getInstance().reportTaskFinished(resultCode, command);
         if (serverResponseListener != null) {

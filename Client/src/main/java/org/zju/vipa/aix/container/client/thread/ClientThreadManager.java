@@ -45,7 +45,6 @@ public class ClientThreadManager {
     }
 
 
-
     /**
      * 执行新任务
      */
@@ -135,17 +134,18 @@ public class ClientThreadManager {
         /** 超过corePoolSize后,线程最大空闲时间,超出后将被销毁 */
         long keepAliveTime = 60;
         TimeUnit unit = TimeUnit.SECONDS;
-        /** 超过maximumPoolSize后的线程等待队列 */
-        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(20);
+        /** 超过maximumPoolSize后的线程等待队列，客户端使用size=0不等待 */
+        BlockingQueue<Runnable> workQueue = new SynchronousQueue<>();
+//        BlockingQueue<Runnable> workQueue = new ArrayBlockingQueue<>(0);
         /** 线程创建工厂 */
         ThreadFactory threadFactory = new ClientTreadFactory();
         /** 超出workQueue容量后的拒绝策略 */
         RejectedExecutionHandler handler = new ClientIgnorePolicy();
 
         mThreadPoolExecutor = new ThreadPoolExecutor(
-            corePoolSize, maximumPoolSize,
-            keepAliveTime, unit,
-            workQueue, threadFactory, handler);
+                corePoolSize, maximumPoolSize,
+                keepAliveTime, unit,
+                workQueue, threadFactory, handler);
 
         // 预启动所有核心线程
         mThreadPoolExecutor.prestartAllCoreThreads();

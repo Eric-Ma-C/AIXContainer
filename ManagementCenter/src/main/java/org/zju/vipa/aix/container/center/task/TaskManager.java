@@ -34,7 +34,7 @@ public class TaskManager {
     private Map<String, ConcurrentLinkedQueue<Message>> serialTaskMessageMap;
 
     /**
-     * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级操作,
+     * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级控制操作,
      * 不应该影响到正在执行的任务,比如开启详细实时日志上传，< token,messages >
      */
     private Map<String, ConcurrentLinkedQueue<Message>> heartbeatMessageMap;
@@ -409,9 +409,9 @@ public class TaskManager {
      * @param token
      * @return:
      */
-    protected void stopTask(String token){
-        serialTaskMessageMap.remove(token);
-        taskMap.remove(token);
+    protected void userStopTask(String token){
+        /** 处理逻辑暂时和任务失败一样 */
+        handleTaskFailed(token);
     }
 
 }

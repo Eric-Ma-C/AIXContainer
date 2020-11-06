@@ -20,18 +20,21 @@ public class Message implements Serializable {
      */
     public static final String END_STRING = "EOF-AIX-MESSAGE";
     /**
-     * shell执行结果字符串
+     * shell执行结果KEY
      */
     public static final String SHELL_RESULT_KEY = "SHELL_RESULT_KEY";
     /**
-     * shell执行结果字符串
+     * shell执行结果TAG
      */
     public static final String SHELL_RESULT_SUCCESS = "SHELL_RESULT_SUCCESS";
     /**
-     * shell执行结果字符串
+     * shell执行结果TAG  任务执行失败
      */
     public static final String SHELL_RESULT_FAILED = "SHELL_RESULT_FAILED";
-
+    /**
+     * shell执行结果TAG  用户手动停止任务成功
+     */
+    public static final String SHELL_RESULT_USER_STOPPED = "SHELL_RESULT_USER_STOPPED";
 
     /**
      * 消息字符编码格式

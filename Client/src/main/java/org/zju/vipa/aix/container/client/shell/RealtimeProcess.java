@@ -85,8 +85,9 @@ public class RealtimeProcess {
 
         // 不重定向错误输出
         mProcessBuilder.redirectErrorStream(false);
+
         /** 启动process */
-        exec(mProcessBuilder.start());
+        handleProcessOutput(mProcessBuilder.start());
 
         //test env
 //        ClientLogUtils.info(mProcessBuilder.environment().toString(), true);
@@ -157,7 +158,7 @@ public class RealtimeProcess {
      * @param process 任务执行线程
      * @return: void
      */
-    private void exec(final Process process) throws IOException {
+    private void handleProcessOutput(final Process process) throws IOException {
         // 获取标准输出
         readStdout = new BufferedReader(new InputStreamReader(process.getInputStream()));
         // 获取错误输出
@@ -167,6 +168,7 @@ public class RealtimeProcess {
         ClientThreadManager.getInstance().startNewTask(new Runnable() {
             @Override
             public void run() {
+                Thread.currentThread().setName("process output");
                 try {
                     // 逐行读取,readLine()只有在数据流发生异常或者另一端被close()掉时，才会返回null值
                     while ((stdOutTmp = readStdout.readLine()) != null || (stdErrTmp = readStderr.readLine()) != null) {
@@ -204,6 +206,8 @@ public class RealtimeProcess {
             latch.await();
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
+            resultCode=-1;
+//            ClientExceptionUtils.handle(e);
         } finally {
             /** 关闭IO流 */
             if (readStderr != null) {

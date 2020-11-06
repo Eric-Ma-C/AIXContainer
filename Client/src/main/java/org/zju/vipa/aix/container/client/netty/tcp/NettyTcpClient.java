@@ -63,8 +63,8 @@ public class NettyTcpClient {
         try {
             channel = bootstrap.connect(host, port).sync().channel();
         } catch (InterruptedException e) {
+            ClientLogUtils.error("连接Server(IP={},PORT={})失败,InterruptedException={}", host, port,e);
             Thread.currentThread().interrupt();
-            ClientLogUtils.error("连接Server(IP{},PORT{})失败", host, port);
         }
         return channel;
     }

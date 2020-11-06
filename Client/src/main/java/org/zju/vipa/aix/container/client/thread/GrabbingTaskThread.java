@@ -46,6 +46,7 @@ public class GrabbingTaskThread {
         runnable = new Runnable() {
             @Override
             public void run() {
+                Thread.currentThread().setName("grabbing task");
                 exit = false;
                 ClientLogUtils.info("Start grabbing task.");
                 while (!exit) {

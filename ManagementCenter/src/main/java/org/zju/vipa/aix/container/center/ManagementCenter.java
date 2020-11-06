@@ -126,15 +126,17 @@ public class ManagementCenter {
         Map.Entry<String, RunningClient> entry;
         while (iterator.hasNext()) {
             entry = iterator.next();
-            if (System.currentTimeMillis() - entry.getValue().getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL * 5) {
+            RunningClient client=entry.getValue();
+            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL * 5) {
 
                 LogUtils.debug("\n******* Remove Dead Client: System.currentTimeMillis()={} LastHeartbeat()={} *******\n", System.currentTimeMillis(), entry.getValue().getLastHeartbeat());
 
                 /** 超过心跳间隔时间5倍未收到,认为client已离线 */
-                LogUtils.info("\n******* Remove Dead Client: {} *******\n", entry.getValue().getToken());
+                LogUtils.info("\n******* Remove Dead Client: {} *******\n", client.getToken());
 
-                updateTaskBriefInfo(entry.getValue().getToken(), null);
-                TaskManager.getInstance().removeDeadClient(entry.getValue().getToken());
+                /** 删除TaskManger中的容器信息  */
+                TaskManager.getInstance().removeDeadClient(client.getToken());
+                /** 从在线容器列表中删除记录 */
                 iterator.remove();
             }
         }
@@ -156,6 +158,10 @@ public class ManagementCenter {
         return clientMap.size();
     }
 
+    /**
+     * Server 主入口
+     * @return:
+     */
     public static void main(String[] args) {
         System.out.println("Starting AIX Container Manager...");
 

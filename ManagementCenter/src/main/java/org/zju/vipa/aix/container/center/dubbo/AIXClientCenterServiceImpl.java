@@ -85,9 +85,7 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public void clientTaskStop(String token) {
-        //删除平台上记录的容器任务
-        TaskManagerService.stopTask(token);
-        // 发送信息使容器停止执行当前指令
+        // 发送信息使容器停止执行当前指令，当容器回复后再删除平台任务记录
         TaskManagerService.addHeartbeatMessage(token, new ServerMessage(Intent.STOP_TASK));
     }
 

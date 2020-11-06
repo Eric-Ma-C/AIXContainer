@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.client.task.custom;
 
 import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.shell.ServerResponseListener;
-import org.zju.vipa.aix.container.client.shell.ShellTask;
+import org.zju.vipa.aix.container.client.shell.ShellProcess;
 import org.zju.vipa.aix.container.client.task.BaseTask;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 
@@ -30,7 +30,7 @@ public class YoloCigarTask extends BaseTask {
     private void setCondaSource() {
         String src = TcpClient.getInstance().getNewCondaSource();
 
-        new ShellTask("tee /home/aix/.condarc << EOF\n" + src + "\nEOF").exec();
+        new ShellProcess("tee /home/aix/.condarc << EOF\n" + src + "\nEOF").exec();
 //        FileUtils.write(src, condarcPath);
     }
 
@@ -64,7 +64,7 @@ public class YoloCigarTask extends BaseTask {
         /** 获取yml路径 */
         getCondaYmlPath();
 
-        new ShellTask(getCommands()).exec(shellErrorListener,responseListener);
+        new ShellProcess(getCommands()).exec(shellErrorListener,responseListener);
 
     }
 }

@@ -23,7 +23,8 @@ public class HeartBeatThread implements Runnable{
 
     @Override
     public void run() {
-        ClientLogUtils.info("Start heart beat.");
+        Thread.currentThread().setName("heartbeat");
+        ClientLogUtils.info("Start heartbeat.");
         while (true) {
 
 //                    SystemBriefInfo info = SystemInfoUtils.getSystemBriefInfo();

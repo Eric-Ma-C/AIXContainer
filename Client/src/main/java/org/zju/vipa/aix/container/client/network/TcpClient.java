@@ -65,9 +65,16 @@ public class TcpClient {
         if (resultCode==0) {
             msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_SUCCESS);
         }else {
-            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
+            if (Thread.interrupted()) {
+                ClientLogUtils.worning("用户中断任务");
+                msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_USER_STOPPED);
+            }else {
+                msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
+            }
         }
+        //发送数据
         Message resMsg = clientIO.sendMsgAndGetResponse(msg);
+
         if (resMsg==null){
             ClientLogUtils.error("reportTaskFinished() get no response!");
         }
