@@ -194,18 +194,23 @@ public class TaskManager {
                 String codePath = task.getCodePath();
                 String modelArgs = task.getModelArgs();
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
+
+
 //         todo 测试 跳过配conda环境
                 /** 分成两条指令执行，否则可能会卡住? */
-//                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
-                String condaEnvCreateCmds = "ls";
+                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
+//                String condaEnvCreateCmds = "ls";
+
                 String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs,token);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
 
-                /** 添加待发送任务至列表 */
-//                addMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
+                /** test 添加待发送任务至列表 */
+                /** 删除虚拟环境配置 */
+                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
+//                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "source /home/aix/.bashrc && echo $PATH"));
-                /** 检查shell */
+                /** test 检查shell */
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $PATH"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $0"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $-"));

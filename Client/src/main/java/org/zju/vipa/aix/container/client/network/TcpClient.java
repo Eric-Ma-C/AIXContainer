@@ -365,7 +365,7 @@ public class TcpClient {
     }
 
     /**
-     * 心跳汇报容器状态（cpu，gpu，内存占用率等等）
+     * 心跳线程汇报容器状态（cpu，gpu，内存占用率等等）
      * 上传gpu cuda和显存占用信息
      */
     public void heartbeatReport(GpuInfo info) {

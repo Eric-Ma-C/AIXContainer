@@ -45,6 +45,7 @@ public enum Intent {
     /**
      * 执行特定任务
      */
+    @Deprecated
     TASK,
     /**
      * 执行特定的shell指令

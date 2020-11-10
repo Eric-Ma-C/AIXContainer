@@ -65,7 +65,8 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         // 获取映射类
         TaskTaskMapper taskMapper = sqlSession.getMapper(TaskTaskMapper.class);
         List<TaskTask> taskList = taskMapper.findWaittingList();
-        if (taskList == null || taskList.size() == 0) {
+        int len = taskList.size();
+        if (taskList == null ||  len == 0) {
             /** No waiting task,grab failed */
             return null;
         }
@@ -80,9 +81,12 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
 //        }
 
 
-        TaskTask atlasTask = taskList.get(0);
-        taskMapper.taskTobeTrained(atlasTask.getId(), Integer.parseInt(clientId));
-
+        TaskTask atlasTask = taskList.get((int) (System.currentTimeMillis()%len));
+        int count = taskMapper.taskTobeTrained(atlasTask.getId(), Integer.parseInt(clientId));
+        if (count==0) {
+            /** 乐观锁检测出  多线程导致的事务并发冲突，抢任务失败  没有写数据库所以不需要回滚，故不需要抛异常 */
+            return null;
+        }
 
 
         //将atlas task转为aix task
@@ -101,6 +105,9 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
 //            task.setCodePath(codePath);
             CodesMapper codesMapper = sqlSession.getMapper(CodesMapper.class);
             Codes atlasCodes = codesMapper.findCodesById(Integer.parseInt(task.getModelId()));
+            if (atlasCodes==null){
+                LogUtils.error("Codes表中没有任务记录");
+            }
             String codePath = atlasCodes.getFile();
             task.setCodePath(codePath);
         }

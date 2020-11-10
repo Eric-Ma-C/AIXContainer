@@ -100,21 +100,49 @@ public class ClientTaskController {
      */
     public void stopCurrentTask() {
         if (currentTaskFuture != null) {
-            currentTaskFuture.cancel(true);
-            //任务置为正在停止状态，等待执行结果汇报服务器后置为STOPPED
-            currentTask.setState(TaskState.STOPPING);
-        }
-        //等待停止任务异步操作完成
-        while (currentTask.getState() != TaskState.STOPPED) {
-            try {
-                Thread.sleep(3000);
-                ClientLogUtils.info("Waiting for task to finished...");
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
-        }
+           if (!currentTaskFuture.isCancelled()){
+               /** stop the task */
+               boolean canCancel = currentTaskFuture.cancel(true);
+               ClientLogUtils.debug("currentTaskFuture.cancel(true) canCancel={}",canCancel);
 
-        ClientLogUtils.worning("Task stopped:{}", currentTask);
+               /** 删除本地待执行任务 */
+               currentTask.setRepairCmds(null);
+               taskQueue.clear();
+           }
+
+//           if (currentTaskFuture.isDone()){
+//               //任务置为停止状态，一般是因为异常终止
+//               currentTask.setState(TaskState.STOPPED);
+//               ClientLogUtils.debug("currentTaskFuture.isDone()=true");
+//
+//           }else {
+               //任务置为正在停止状态，等待执行结果汇报服务器后置为STOPPED
+               currentTask.setState(TaskState.STOPPING);
+               ClientLogUtils.debug("currentTask.setState(TaskState.STOPPING)");
+
+//           }
+
+        }
+        /** 在新的线程中等待任务结束，避免心跳线程等待任务结束过久（没发心跳包）使平台误以为容器离线 */
+        ClientThreadManager.getInstance().startNewTask(new Runnable() {
+            @Override
+            public void run() {
+                Thread.currentThread().setName("waiting");
+                //等待停止任务异步操作完成
+                while (currentTask.getState() != TaskState.STOPPED) {
+                    try {
+                        Thread.sleep(3000);
+                        ClientLogUtils.info("Waiting for task to finished...");
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                }
+
+                ClientLogUtils.worning("Task stopped:{}", currentTask);
+
+            }
+        });
+
 //        execNewTask();
     }
 

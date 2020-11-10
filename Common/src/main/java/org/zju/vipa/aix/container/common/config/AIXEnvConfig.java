@@ -15,7 +15,8 @@ public class AIXEnvConfig {
      * conda源更新指令
      */
 //    private static final String CONDA_CREATE_CMD = "conda env create -n " + CONDA_ENV_NAME + " python=3.6.2";
-    private static final String CONDA_CREATE_CMD = "conda env create -n " + CONDA_ENV_NAME;
+    private static final String CONDA_CREATE_CMD = "conda-env create -n " + CONDA_ENV_NAME;
+    public static final String CONDA_REMOVE_ALL_CMD = "conda remove -n " + CONDA_ENV_NAME+" --all -y";
     //    private static final String CONDA_CREATE_FROM_FILE_CMD =CONDA_CREATE_CMD + " python=3.6.2";
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
 

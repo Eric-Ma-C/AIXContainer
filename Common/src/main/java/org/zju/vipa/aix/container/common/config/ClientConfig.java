@@ -19,5 +19,5 @@ public class ClientConfig {
     /**
      * 容器心跳包间隔时间 15s  需不需要自动调整？
      */
-    public static final int HEARTBEATS_INTERVAL = 15 * 1000;
+    public static final int HEARTBEATS_INTERVAL_MS = 15 * 1000;
 }

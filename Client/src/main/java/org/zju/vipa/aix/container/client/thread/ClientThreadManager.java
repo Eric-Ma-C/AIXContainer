@@ -46,7 +46,9 @@ public class ClientThreadManager {
 
 
     /**
-     * 执行新任务
+     *   提交任意新任务执行
+     * @param runnable 提交的任务
+     * @return: java.util.concurrent.Future 异步结果
      */
     public Future startNewTask(Runnable runnable) {
         ClientLogUtils.debug("ClientThreadManager.startNewTask() runnable={}", runnable);
@@ -174,14 +176,13 @@ public class ClientThreadManager {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
             /** 直接拒绝不执行新任务 */
-            doLog(r, e);
+            doRejectedLog(r, e);
         }
 
         /**
-         * 可做日志记录等
+         * 日志
          */
-        private void doLog(Runnable r, ThreadPoolExecutor e) {
-            //
+        private void doRejectedLog(Runnable r, ThreadPoolExecutor e) {
             ClientLogUtils.error("{} rejected from {}", r.toString(), e.toString());
 //          System.out.println("completedTaskCount: " + e.getCompletedTaskCount());
         }

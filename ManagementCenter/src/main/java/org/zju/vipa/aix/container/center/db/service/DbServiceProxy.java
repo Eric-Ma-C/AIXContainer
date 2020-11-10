@@ -22,13 +22,13 @@ public class DbServiceProxy implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-        if("getSession".equals(method.getName())||"closeSession".equals(method.getName())){
+        if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
             return method.invoke(dbService, args);
         }
 //        final DbService service = (DbService) proxy;
 //        proxy instanceof DbService == true
 
-     //TODO    两个都抢到任务？？
+        /** sqlSession和method的session应该是同一个 */
         SqlSession sqlSession = dbService.getSession();
         try {
             Object ret = method.invoke(dbService, args);
@@ -42,8 +42,6 @@ public class DbServiceProxy implements InvocationHandler {
         } finally {
             dbService.closeSession();
         }
-
-
 
 
     }

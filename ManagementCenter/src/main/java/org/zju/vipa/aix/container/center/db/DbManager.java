@@ -48,7 +48,7 @@ public class DbManager implements Serializable {
         /** AIX数据库接口 */
 //        //1.创建委托对象
 //        AixDbServiceImpl aixDbService = new AixDbServiceImpl();
-//        //2.创建调用处理器对象
+//        //2.创建调用处理器(InvocationHandler)对象
 //        DbServiceProxy dbServiceProxy = new DbServiceProxy(aixDbService);
 //        //3.动态生成代理对象
 //        dbService = (DbService) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), dbServiceProxy);
@@ -57,11 +57,11 @@ public class DbManager implements Serializable {
 
 
         /** Atlas数据库接口 */
-        //1.创建委托对象
+        //1.创建委托对象(DbService)
         AtlasDbServiceImpl atlasDbService = new AtlasDbServiceImpl();
-        //2.创建调用处理器对象
+        //2.传入委托对象，创建调用处理器对象(InvocationHandler)
         DbServiceProxy dbServiceProxy = new DbServiceProxy(atlasDbService);
-        //3.动态生成代理对象
+        //3.传入委托对象接口和调用处理器，动态生成代理对象
         dbService = (DbService) Proxy.newProxyInstance(AtlasDbServiceImpl.class.getClassLoader(), AtlasDbServiceImpl.class.getInterfaces(), dbServiceProxy);
         //4.通过代理对象调用方法
         //dbService.getClientIdByToken();

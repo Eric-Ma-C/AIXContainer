@@ -44,7 +44,7 @@ public interface TaskTaskMapper {
 	 */
 	public List<TaskTask> select_task_task(TaskTask task_task);
 
-	@Update("update task_task set status='TRAINING' , train_by_id=#{trainById} where id=#{id}")
+	@Update("update task_task set status='TRAINING' , train_by_id=#{trainById} where id=#{id} AND status='WAITING'")
 	int taskTobeTrained(@Param("id") int id, @Param("trainById") int trainById);
 
 	@Update("update task_task set status=#{status} where id=#{id}")

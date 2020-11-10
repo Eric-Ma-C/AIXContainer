@@ -17,8 +17,9 @@ import java.lang.reflect.Proxy;
 /**
  * @Date: 2020/5/21 19:14
  * @Author: EricMa
- * @Description: todo 管理自动事务SqlSession
+ * @Description: 原来的实现，弃用
  */
+@Deprecated
 public class SqlSessionManager {
     private static SqlSessionFactory sqlSessionFactory;
 //    private final SqlSession sqlSessionProxy;

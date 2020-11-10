@@ -15,6 +15,7 @@ import java.io.Reader;
  * @Author: EricMa
  * @Description: 封装 sql session
  */
+@Deprecated
 public class SqlSessionProxy {
 
     private static SqlSessionFactory sqlSessionFactory;

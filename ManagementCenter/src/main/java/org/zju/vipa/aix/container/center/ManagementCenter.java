@@ -127,7 +127,7 @@ public class ManagementCenter {
         while (iterator.hasNext()) {
             entry = iterator.next();
             RunningClient client=entry.getValue();
-            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL * 5) {
+            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 5) {
 
                 LogUtils.debug("\n******* Remove Dead Client: System.currentTimeMillis()={} LastHeartbeat()={} *******\n", System.currentTimeMillis(), entry.getValue().getLastHeartbeat());
 

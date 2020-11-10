@@ -33,7 +33,7 @@ public class HeartBeatThread implements Runnable{
 
             /** 休眠 */
             try {
-                Thread.sleep(ClientConfig.HEARTBEATS_INTERVAL);
+                Thread.sleep(ClientConfig.HEARTBEATS_INTERVAL_MS);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
                 ClientExceptionUtils.handle(e);
