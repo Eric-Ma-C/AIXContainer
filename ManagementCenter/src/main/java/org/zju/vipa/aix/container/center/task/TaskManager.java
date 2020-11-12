@@ -269,11 +269,6 @@ public class TaskManager {
 
         /** 待发送的指令消息 */
         Message toSendMsg = getMessageByToken(token);
-        if (toSendMsg != null) {
-            ManagementCenter.getInstance().updateRunningCmds(token, toSendMsg.getValue());
-        } else {
-            ManagementCenter.getInstance().updateRunningCmds(token, "");
-        }
 
         return toSendMsg;
     }
@@ -318,6 +313,12 @@ public class TaskManager {
         }
 
         LogUtils.info("{}:\n从队列中获取待发送消息：{}", message.getTokenSuffix(), message);
+
+        if (message != null&&Intent.SHELL_TASK.match(message.getIntent())) {
+            ManagementCenter.getInstance().updateRunningCmds(token, message.getValue());
+        } else {
+            ManagementCenter.getInstance().updateRunningCmds(token, "");
+        }
         return message;
     }
 
@@ -402,7 +403,7 @@ public class TaskManager {
                 }else {
                     //未知错误达到一定程度就会判为任务执行失败
                     task.addUnknownErrorTime();
-                    LogUtils.debug("Task {} UnknownErrorTime={}",task.getName(),task.getUnknownErrorTime());
+                    LogUtils.debug("Task {} UnknownErrorTime={}",task.getId(),task.getUnknownErrorTime());
                 }
             }
         }
