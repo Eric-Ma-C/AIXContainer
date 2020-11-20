@@ -101,6 +101,11 @@ public class Task implements Serializable {
      */
     private transient String codePath;
     /**
+     * 配置环境结束后，任务启动前，附加执行的代码
+     * 可以用来调整环境等
+     */
+    private transient String preCmds;
+    /**
      * 任务环境配置过程中的报错列表
      */
     private transient ConcurrentLinkedQueue<EnvError> errorQueue;
@@ -181,6 +186,10 @@ public class Task implements Serializable {
             ", trainBy='" + trainBy + '\'' +
             ", trainDetail='" + trainDetail + '\'' +
             ", codePath='" + codePath + '\'' +
+            ", preCoed='" + preCmds + '\'' +
+            ", errorQueue=" + errorQueue +
+            ", unknownErrorTime=" + unknownErrorTime +
+            ", isFailed=" + isFailed +
             '}';
     }
 
@@ -203,6 +212,14 @@ public class Task implements Serializable {
 
     public void setCodePath(String codePath) {
         this.codePath = codePath;
+    }
+
+    public String getPreCmds() {
+        return preCmds;
+    }
+
+    public void setPreCmds(String preCmds) {
+        this.preCmds = preCmds;
     }
 
     public ConcurrentLinkedQueue<EnvError> getErrorQueue() {

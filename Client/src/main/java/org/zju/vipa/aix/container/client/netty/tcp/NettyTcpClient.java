@@ -51,7 +51,7 @@ public class NettyTcpClient {
         b.group(group).channel(NioSocketChannel.class);
         /** 设置超时 */
         b.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, NetworkConfig.SOCKET_READ_TIMEOUT_DEFAULT);
-
+        /** 设置初始化Handler */
         b.handler(new AIXChannelInitializer());
 //        b.option(ChannelOption.SO_KEEPALIVE, true);
         return b;
@@ -106,7 +106,7 @@ public class NettyTcpClient {
         try {
             /** 初始化阻塞拦截器 */
             CountDownLatch latch = new CountDownLatch(1);
-            ClientInboundMsgHandler handler = (ClientInboundMsgHandler) channel.pipeline().get(ClientInboundMsgHandler.name);
+            ClientInboundMsgHandler handler = (ClientInboundMsgHandler) channel.pipeline().get(ClientInboundMsgHandler.NAME);
             handler.setLatch(latch);
 
             /** 写数据 */

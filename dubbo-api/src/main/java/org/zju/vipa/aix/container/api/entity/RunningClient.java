@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @Date: 2020/6/4 16:41
  * @Author: EricMa
- * @Description: 正在运行的容器信息,用于前端展示
+ * @Description: 正在运行的容器信息, 用于前端展示
  */
 public class RunningClient implements Serializable {
 
@@ -24,40 +24,56 @@ public class RunningClient implements Serializable {
     String since;
     String userId;
     String info;
-    /** 最后一次向平台显示心跳的时间 */
+    /**
+     * 最后一次向平台显示心跳的时间
+     */
     transient long lastHeartbeat;
 
     GpuInfo gpuInfo;
 
     String firstTaskName;
     List<TaskBriefInfo> taskBriefInfoList;
+
     /**
      * 正在运行的指令
      */
     String runningCmds;
+    /**
+     * 最近一次报错信息，一般有多行
+     */
+    String latestErrors;
+    /**
+     * 最后一次报错时间，用于区分Error批次
+     */
+    transient long lastErrorTime;
 
     public RunningClient() {
     }
 
     @Deprecated
-    public RunningClient(String id,String token, String since) {
+    public RunningClient(String id, String token, String since) {
         this.id = id;
-        this.token=token;
+        this.token = token;
         this.since = since;
-        this.taskBriefInfoList=new ArrayList<>();
-        this.firstTaskName="No Task";
+        this.taskBriefInfoList = new ArrayList<>();
+        this.firstTaskName = "No Task";
+        this.runningCmds="";
+        this.latestErrors="";
+
     }
 
     public RunningClient(AixDevice device) {
 
-        this.name=device.getDevice_name();
-        this.info=device.getInfo();
-        this.userId= String.valueOf(device.getUser_id());
+        this.name = device.getDevice_name();
+        this.info = device.getInfo();
+        this.userId = String.valueOf(device.getUser_id());
         this.id = String.valueOf(device.getId());
-        this.token=device.getToken();
+        this.token = device.getToken();
         this.since = TimeUtils.getCurrentTimeStr();
-        this.taskBriefInfoList=new ArrayList<>();
-        this.firstTaskName="No Task";
+        this.taskBriefInfoList = new ArrayList<>();
+        this.firstTaskName = "No Task";
+        this.runningCmds="";
+        this.latestErrors="";
     }
 
     public String getId() {
@@ -148,13 +164,42 @@ public class RunningClient implements Serializable {
         this.firstTaskName = firstTaskName;
     }
 
+    public String getLatestErrors() {
+        return latestErrors;
+    }
+
+    public void setLatestErrors(String latestErrors) {
+        this.latestErrors = latestErrors;
+    }
+
+    /** 新增一条错误信息，按时间自动切分
+     * @param error
+     * @return: void
+     */
+    public void addLatestErrors(String error) {
+        long millis = System.currentTimeMillis();
+        if (millis - lastErrorTime > 2000) {
+            clearLatestErrors();
+        }
+        error = error + "\n";
+        latestErrors = latestErrors + error;
+
+        lastErrorTime = millis;
+    }
+
+    private void clearLatestErrors() {
+        this.latestErrors = TimeUtils.getCurrentTimeStr()+"\n";
+    }
+
     public void setTaskBriefInfo(TaskBriefInfo briefInfo) {
         this.taskBriefInfoList.clear();
-        if (briefInfo!=null){
+        if (briefInfo != null) {
             this.taskBriefInfoList.add(briefInfo);
-            firstTaskName=briefInfo.getName();
-        }else {
-            firstTaskName="No Task";
+            firstTaskName = briefInfo.getName();
+        } else {
+            firstTaskName = "No Task";
         }
     }
+
+
 }

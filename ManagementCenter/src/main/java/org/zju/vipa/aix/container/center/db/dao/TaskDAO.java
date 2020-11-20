@@ -19,7 +19,6 @@ public interface TaskDAO {
     //    @Update("update task")
     int update(Task task);
 
-    //TODO 方便测试用
 //    @Update("update task set status='WAITING' , trainBy=#{trainBy} where id=#{id}")
     @Update("update task set status='TRAINING' , trainBy=#{trainBy} where id=#{id}")
     int taskTobeTrained(@Param("id") String id,  @Param("trainBy") String trainBy);

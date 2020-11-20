@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.common.config;
 
+import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.env.PipSource;
 
 /**
@@ -16,7 +17,7 @@ public class AIXEnvConfig {
      */
 //    private static final String CONDA_CREATE_CMD = "conda env create -n " + CONDA_ENV_NAME + " python=3.6.2";
     private static final String CONDA_CREATE_CMD = "conda-env create -n " + CONDA_ENV_NAME;
-    public static final String CONDA_REMOVE_ALL_CMD = "conda remove -n " + CONDA_ENV_NAME+" --all -y";
+    public static final String CONDA_REMOVE_ALL_CMD = "conda remove -n " + CONDA_ENV_NAME + " --all -y";
     //    private static final String CONDA_CREATE_FROM_FILE_CMD =CONDA_CREATE_CMD + " python=3.6.2";
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
 
@@ -50,12 +51,18 @@ public class AIXEnvConfig {
     /**
      * conda配置创建命令
      */
-    public static String getCondaEnvCreateCmds(String codePath) {
+    public static String getCondaEnvCreateCmds(Task task) {
+        String codePath = task.getCodePath();
+        String preCmds = task.getPreCmds();
         while (codePath.endsWith("/")) {
             codePath = codePath.substring(0, codePath.length() - 1);
         }
+        if (preCmds==null||"".equals(preCmds)) {
+            return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";
+        }else {
+            return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml && "+preCmds;
+        }
 
-        return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";//--json
 //        return getPipEnvCreateCmds(codePath);
     }
 
@@ -75,15 +82,27 @@ public class AIXEnvConfig {
         return PIP_INSTALL + " -r " + codePath + "/requirements.txt";
     }
 
+
     /**
      * 启动命令
      */
     public static String getStartCmds(String codePath, String modelArgs, String deviceToken) {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
+        /** UniversalModel */
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py " + modelArgs + " --device_token=" + deviceToken;
+
+    }
+
+        /**
+         * (重新)启动命令
+         */
+    public static String getStartCmds(Task task, String deviceToken) {
+//        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
 
 
         /** UniversalModel */
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py " + modelArgs + " --device_token=" + deviceToken;
+        return CONDA_ACTIVATE_CMD + " && cd " + task.getCodePath() +
+            " && python main.py " + task.getModelArgs() + " --device_token=" + deviceToken;
 
 
         /** yolo */

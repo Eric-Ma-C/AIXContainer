@@ -109,6 +109,16 @@ public class ManagementCenter {
         client.setRunningCmds(cmds);
     }
 
+    public void updateLatestError(String token, String error) {
+        RunningClient client = clientMap.get(token);
+        if (client == null) {
+            return;
+        }
+        client.addLatestErrors(error);
+
+        LogUtils.debug("updateLatestError={}",client.getLatestErrors());
+    }
+
     public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo) {
         RunningClient client = clientMap.get(token);
         if (client == null) {

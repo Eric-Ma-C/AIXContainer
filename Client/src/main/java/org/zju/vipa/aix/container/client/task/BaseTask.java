@@ -124,6 +124,8 @@ public abstract class BaseTask {
         listener = taskStateListener;
 
         runnable = new Runnable() {
+
+
             @Override
             public void run() {
                 //设置线程名字

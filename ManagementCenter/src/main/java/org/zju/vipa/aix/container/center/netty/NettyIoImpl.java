@@ -23,6 +23,7 @@ import java.io.IOException;
 public class NettyIoImpl implements ServerIO {
 //    private static final Logger LOGGER = LoggerFactory.getLogger(NettyIoImpl.class);
 
+    /** netty当前通道上下文 */
     ChannelHandlerContext context;
 
     public NettyIoImpl(ChannelHandlerContext context) {
@@ -47,7 +48,7 @@ public class NettyIoImpl implements ServerIO {
 
     @Override
     public void response(Message msg) {
-        /** 默认是关闭的 */
+        /** 默认是关闭的(短连接) */
         response(msg, true);
     }
 

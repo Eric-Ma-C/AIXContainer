@@ -17,7 +17,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class ClientInboundMsgHandler extends SimpleChannelInboundHandler<String> {
 
-    public static final String name="ClientInboundMsgHandler";
+    public static final String NAME ="ClientInboundMsgHandler";
     /**
      * ref http://tutorials.jenkov.com/netty/netty-tcp-client.html
      */

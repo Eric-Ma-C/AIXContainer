@@ -368,9 +368,11 @@ public class SocketHandler implements Runnable {
     }
 
     private void shellErrorHandle(Message message) {
-        shellError(message);
+        LogUtils.error("shellError: {}", message.getValue());
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
         TaskManager.getInstance().handleError(message);
+        /** 用于显示 */
+        ManagementCenter.getInstance().updateLatestError(message.getToken(),message.getValue());
     }
 
     /**

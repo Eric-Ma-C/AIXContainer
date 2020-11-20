@@ -1,25 +1,22 @@
 package org.zju.vipa.aix.container.common.db.entity.atlas;
-
-
 import java.io.Serializable;
 
-public class Codes implements Serializable {
+public class Codes implements Serializable{
 
-  private long id;
+  private int id;
   private String name;
   private String task;
   private String file;
+  private String pre_cmd;
   private String args;
   private String metrics;
 
-  public Codes() {
-  }
 
-  public long getId() {
+  public int getId() {
     return id;
   }
 
-  public void setId(long id) {
+  public void setId(int id) {
     this.id = id;
   }
 
@@ -48,6 +45,15 @@ public class Codes implements Serializable {
 
   public void setFile(String file) {
     this.file = file;
+  }
+
+
+  public String getPre_cmd() {
+    return pre_cmd;
+  }
+
+  public void setPre_cmd(String pre_cmd) {
+    this.pre_cmd = pre_cmd;
   }
 
 

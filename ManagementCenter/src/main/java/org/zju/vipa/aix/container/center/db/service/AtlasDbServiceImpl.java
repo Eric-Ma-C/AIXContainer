@@ -84,7 +84,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         TaskTask atlasTask = taskList.get((int) (System.currentTimeMillis()%len));
         int count = taskMapper.taskTobeTrained(atlasTask.getId(), Integer.parseInt(clientId));
         if (count==0) {
-            /** 乐观锁检测出  多线程导致的事务并发冲突，抢任务失败  没有写数据库所以不需要回滚，故不需要抛异常 */
+            /**  乐观锁检测出  多线程导致的事务并发冲突，抢任务失败  没有写数据库所以不需要回滚，故不需要抛异常 */
             return null;
         }
 
@@ -110,6 +110,8 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
             }
             String codePath = atlasCodes.getFile();
             task.setCodePath(codePath);
+            String preCmd = atlasCodes.getPre_cmd();
+            task.setPreCmds(preCmd);
         }
 
 

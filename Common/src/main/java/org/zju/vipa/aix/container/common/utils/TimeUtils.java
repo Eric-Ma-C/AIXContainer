@@ -495,13 +495,6 @@ public class TimeUtils {
     }
 
 
-    public static String getTimeStr() {
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy HH:mm:ss:SSS");
-
-        String formatStr = formatter.format(new Date());
-        return formatStr;
-    }
-
     /** 获取当前时间 */
     public static String getCurrentTimeStr(){
         SimpleDateFormat sdf = new SimpleDateFormat();

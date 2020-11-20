@@ -115,6 +115,7 @@ public enum Intent {
     /**
      * shell指令执行错误信息,不需要平台解析，只记录log
      */
+    @Deprecated
     SHELL_ERROR,
     /**
      * shell指令执行错误信息,寻求平台解析

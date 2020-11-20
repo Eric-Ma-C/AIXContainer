@@ -16,7 +16,7 @@ import org.zju.vipa.aix.container.common.utils.JsonUtils;
  * @Description:
  */
 public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
-
+//SimpleChannelHandler
     /**
      * 处理客户端发来的消息
      */
@@ -99,6 +99,12 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
         if (DebugConfig.OPEN_NETTY_LOG) {
             LogUtils.info("客户端channel:{}与服务端连接开启", ctx.channel().id());
         }
+    }
+
+    @Override
+    public void channelRegistered(ChannelHandlerContext ctx) throws Exception {
+        /** todo 统计客户端ip一秒发几次请求，过高屏蔽 */
+        super.channelRegistered(ctx);
     }
 
     /**

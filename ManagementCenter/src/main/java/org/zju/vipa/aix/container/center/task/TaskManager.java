@@ -196,12 +196,11 @@ public class TaskManager {
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
 
 
-//         todo 测试 跳过配conda环境
                 /** 分成两条指令执行，否则可能会卡住? */
-                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(codePath);
+                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(task);
 //                String condaEnvCreateCmds = "ls";
 
-                String startCmds = AIXEnvConfig.getStartCmds(codePath, modelArgs,token);
+                String startCmds = AIXEnvConfig.getStartCmds(task,token);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
 
@@ -227,7 +226,13 @@ public class TaskManager {
                 Message msg2 = new ServerMessage(Intent.SHELL_TASK, startCmds);
                 msg2.addCustomData("codePath", codePath);
                 msg2.addCustomData("modelArgs", modelArgs);
+//                配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等
+//                String preCmds = task.getPreCmds();
+
                 addSerialMessage(token, msg1);
+//                if (preCmds!=null&&!"".equals(preCmds)){
+//                    addSerialMessage(token,new ServerMessage(Intent.SHELL_TASK, preCmds));
+//                }
                 addSerialMessage(token, msg2);
 
 
@@ -250,7 +255,7 @@ public class TaskManager {
 
                     String codePath = task.getCodePath();
                     String modelArgs = task.getModelArgs();
-                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(codePath, modelArgs,token));
+                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task,token));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
                     addSerialMessage(token, msg);

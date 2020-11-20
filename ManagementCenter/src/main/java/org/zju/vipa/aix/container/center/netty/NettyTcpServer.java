@@ -29,7 +29,6 @@ public class NettyTcpServer {
      */
     public static ChannelGroup group = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
-
     public static void start() {
 //        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("bossGroup", true));
 //        EventLoopGroup workGroup = new NioEventLoopGroup(8, new DefaultThreadFactory("workGroup", true));
@@ -63,7 +62,8 @@ public class NettyTcpServer {
 
 //                    pipeline.addLast(new );
 
-                    /** 处理String类型的message */
+                    /** 字节-> String
+                     处理String类型的message */
                     pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
                     pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
 

@@ -40,14 +40,14 @@ public class AIXChannelInitializer extends ChannelInitializer<Channel> {
 //        pipeline.addLast(new ObjectEncoder());
 //        pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 
-        /** 只对String类型起作用? */
+        /** 是否只对String类型起作用? */
         pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
         pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
 
 //        pipeline.addLast(new ChunkedWriteHandler());
 
 
-        pipeline.addLast(ClientInboundMsgHandler.name, new ClientInboundMsgHandler());
+        pipeline.addLast(ClientInboundMsgHandler.NAME, new ClientInboundMsgHandler());
 //        pipeline.addLast(new )
     }
 

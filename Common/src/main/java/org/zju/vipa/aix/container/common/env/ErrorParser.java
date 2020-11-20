@@ -27,7 +27,7 @@ public class ErrorParser {
                 break;
             }
         }
-        String startCmds = AIXEnvConfig.getStartCmds(task.getCodePath(),task.getModelArgs(),token);
+        String startCmds = AIXEnvConfig.getStartCmds(task,token);
         switch (errorType) {
             case UNKNOWN:
                 /** 可能是一些非关键描述信息，无法提取错误类别 */
@@ -45,7 +45,7 @@ public class ErrorParser {
                 break;
             case CONDA_PREFIX_NOT_FOUND:
                 /** 重新安装conda环境 */
-                repairCmds = AIXEnvConfig.getCondaEnvCreateCmds(task.getCodePath()) + " && " + startCmds;
+                repairCmds = AIXEnvConfig.getCondaEnvCreateCmds(task) + " && " + startCmds;
                 break;
             case CUDA_OUT_OF_MEMORY:
                 /**  内存不够,等一会儿重启任务  */
