@@ -60,6 +60,16 @@ public class ManagementCenter {
 
     }
 
+    /** 获取容器正在运行的命令 */
+    public String getRunningCmdsByToken(String token){
+        RunningClient client = clientMap.get(token);
+        if (client != null) {
+            return client.getRunningCmds();
+        }else {
+            return null;
+        }
+    }
+
 
     /**
      * 根据token获取容器id

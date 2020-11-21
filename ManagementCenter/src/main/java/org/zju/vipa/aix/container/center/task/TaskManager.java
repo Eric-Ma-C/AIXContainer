@@ -15,6 +15,7 @@ import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
@@ -81,7 +82,9 @@ public class TaskManager {
     }
 
 
-    /** 删除无心跳client的数据 */
+    /**
+     * 删除无心跳client的数据
+     */
     public void removeDeadClient(String token) {
         serialTaskMessageMap.remove(token);
         heartbeatMessageMap.remove(token);
@@ -200,7 +203,7 @@ public class TaskManager {
                 String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(task);
 //                String condaEnvCreateCmds = "ls";
 
-                String startCmds = AIXEnvConfig.getStartCmds(task,token);
+                String startCmds = AIXEnvConfig.getStartCmds(task, token);
 //                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
 //
 
@@ -227,12 +230,12 @@ public class TaskManager {
                 msg2.addCustomData("codePath", codePath);
                 msg2.addCustomData("modelArgs", modelArgs);
 //                配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等
-//                String preCmds = task.getPreCmds();
+                String preCmds = task.getPreCmds();
 
                 addSerialMessage(token, msg1);
-//                if (preCmds!=null&&!"".equals(preCmds)){
-//                    addSerialMessage(token,new ServerMessage(Intent.SHELL_TASK, preCmds));
-//                }
+                if (preCmds != null && !"".equals(preCmds)) {
+                    addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
+                }
                 addSerialMessage(token, msg2);
 
 
@@ -241,7 +244,7 @@ public class TaskManager {
 
                 LogUtils.info("{}发现已有任务{}", token, task);
 
-                if (task.isFailed()){
+                if (task.isFailed()) {
                     /** 未知原因启动失败次数过多，导致任务执行失败 */
                     handleTaskFailed(token);
                     return null;
@@ -255,7 +258,7 @@ public class TaskManager {
 
                     String codePath = task.getCodePath();
                     String modelArgs = task.getModelArgs();
-                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task,token));
+                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task, token));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
                     addSerialMessage(token, msg);
@@ -264,9 +267,11 @@ public class TaskManager {
                     /** 检测到可解决错误,一次加入待发送消息队列 */
                     while (!errorQueue.isEmpty()) {
                         EnvError error = errorQueue.poll();
-                        String repairCmds = error.getRepairCmds();
-                        /** 添加一条待发送任务至列表 */
-                        addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, repairCmds));
+                        List<String> repairCmds = error.getRepairCmdList();
+                        for (String cmd : repairCmds) {
+                            /** 添加一条待发送任务至列表 */
+                            addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, cmd));
+                        }
                     }
                 }
             }
@@ -278,7 +283,9 @@ public class TaskManager {
         return toSendMsg;
     }
 
-    /** 任务执行失败的处理*/
+    /**
+     * 任务执行失败的处理
+     */
     private void handleTaskFailed(String token) {
         Task task = taskMap.get(token);
         shellResultMap.remove(token);
@@ -319,7 +326,7 @@ public class TaskManager {
 
         LogUtils.info("{}:\n从队列中获取待发送消息：{}", message.getTokenSuffix(), message);
 
-        if (message != null&&Intent.SHELL_TASK.match(message.getIntent())) {
+        if (message != null && Intent.SHELL_TASK.match(message.getIntent())) {
             ManagementCenter.getInstance().updateRunningCmds(token, message.getValue());
         } else {
             ManagementCenter.getInstance().updateRunningCmds(token, "");
@@ -396,31 +403,42 @@ public class TaskManager {
         String errorInfo = message.getValue();
         String token = message.getToken();
 
+
         synchronized (token.intern()) {
             Task task = taskMap.get(token);
-            EnvError error = ErrorParser.handle(token, errorInfo, task);
+            String runningCmds = ManagementCenter.getInstance().getRunningCmdsByToken(token);
+
 
             /** 目前容器仅支持单任务，可以直接添加至容器Task对象的error列表中 */
-            if (task != null ) {
+            if (task != null) {
+                EnvError error = ErrorParser.handle(token, runningCmds, errorInfo, task);
+
+//                if (task.getPreCmds().equals(runningCmds)) {
+//                    /** 是preCmds，直接重新运行preCmds */
+//                    error = new EnvError(ErrorType.PRE_CMDS_ERROR, errorInfo, task.getPreCmds());
+//                }
+
+
                 if (error != null) {
 //                    task.clearUnknownErrorTime();
                     task.addEnvError(error);
-                }else {
+                } else {
                     //未知错误达到一定程度就会判为任务执行失败
                     task.addUnknownErrorTime();
-                    LogUtils.debug("Task {} UnknownErrorTime={}",task.getId(),task.getUnknownErrorTime());
+                    LogUtils.debug("Task {} UnknownErrorTime={}", task.getId(), task.getUnknownErrorTime());
                 }
             }
         }
     }
 
     /**
-     *   强行停止容器任务
-     *   删除任务信息
+     * 强行停止容器任务
+     * 删除任务信息
+     *
      * @param token
      * @return:
      */
-    protected void userStopTask(String token){
+    protected void userStopTask(String token) {
         /** 处理逻辑暂时和任务失败一样 */
         handleTaskFailed(token);
     }

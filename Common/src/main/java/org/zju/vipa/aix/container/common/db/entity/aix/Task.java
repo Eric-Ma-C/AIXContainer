@@ -215,7 +215,11 @@ public class Task implements Serializable {
     }
 
     public String getPreCmds() {
-        return preCmds;
+        if (preCmds != null) {
+            return preCmds;
+        }else {
+            return "";
+        }
     }
 
     public void setPreCmds(String preCmds) {

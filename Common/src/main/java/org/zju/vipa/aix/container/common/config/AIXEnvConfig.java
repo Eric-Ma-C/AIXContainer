@@ -53,15 +53,12 @@ public class AIXEnvConfig {
      */
     public static String getCondaEnvCreateCmds(Task task) {
         String codePath = task.getCodePath();
-        String preCmds = task.getPreCmds();
         while (codePath.endsWith("/")) {
             codePath = codePath.substring(0, codePath.length() - 1);
         }
-        if (preCmds==null||"".equals(preCmds)) {
-            return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";
-        }else {
-            return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml && "+preCmds;
-        }
+
+        return CONDA_CREATE_CMD + " -f " + codePath + "/environment.yml";
+
 
 //        return getPipEnvCreateCmds(codePath);
     }

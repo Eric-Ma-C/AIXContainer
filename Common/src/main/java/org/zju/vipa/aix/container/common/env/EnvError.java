@@ -1,5 +1,8 @@
 package org.zju.vipa.aix.container.common.env;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Date: 2020/3/17 22:46
  * @Author: EricMa
@@ -10,12 +13,19 @@ public class EnvError {
     private String details;
 
     /** 可能的修复语句 */
-    private String repairCmds;
+    private List<String> repairCmdList;
 
-    public EnvError(ErrorType type, String details, String repairCmds) {
+    public EnvError(ErrorType type, String details, String repairCmd) {
         this.type = type;
         this.details = details;
-        this.repairCmds = repairCmds;
+        this.repairCmdList = new ArrayList<>();
+        this.repairCmdList.add(repairCmd);
+    }
+
+    public EnvError(ErrorType type, String details,  List<String> repairCmdList) {
+        this.type = type;
+        this.details = details;
+        this.repairCmdList = repairCmdList;
     }
 
     public ErrorType getType() {
@@ -26,12 +36,20 @@ public class EnvError {
         this.type = type;
     }
 
-    public String getRepairCmds() {
-        return repairCmds;
+    public List<String> getRepairCmdList() {
+        return repairCmdList;
     }
 
-    public void setRepairCmds(String repairCmds) {
-        this.repairCmds = repairCmds;
+    public void setRepairCmdList(List<String> repairCmdList) {
+        this.repairCmdList = repairCmdList;
+    }
+
+    @Deprecated
+    public void addRepairCmd(String repairCmd) {
+        if (repairCmdList==null) {
+            repairCmdList=new ArrayList<>();
+        }
+        repairCmdList.add(repairCmd);
     }
 
     public String getDetails() {

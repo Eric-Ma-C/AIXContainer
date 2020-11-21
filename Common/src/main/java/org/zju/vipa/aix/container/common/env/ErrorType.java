@@ -11,6 +11,18 @@ public enum ErrorType {
      */
     UNKNOWN("Unknown error,or not important info"),
     /**
+     * preCmds错误
+     */
+    PRE_CMDS_ERROR("PRE_CMDS_ERROR"),
+    /**
+     * 网络连接不稳定
+     */
+    HTTP_RETRY("HTTP errors are often intermittent, and a simple retry will get you on your way."),
+    /**
+     * 没有gcc
+     */
+    GCC_NOT_FOUND("unable to execute 'gcc': No such file or directory"),
+    /**
      * 任务运行报错，一般可以通过pip安装对应的库
      */
     MODULE_NOT_FOUND("ModuleNotFoundError: No module named"),
@@ -55,10 +67,10 @@ public enum ErrorType {
      */
     PIP_SOURCE_NO_MATCHING_DISTRIBUTION("No matching distribution found for"),
     /**
-     * pip源失效
-     * 换源
+     * 网络超时
+     * 可能是pip源失效,换源
      */
-    PIP_SOURCE_READ_TIMED_OUT("HTTPSConnectionPool(host="),
+    PIP_SOURCE_READ_TIMED_OUT("ReadTimeoutError: HTTPSConnectionPool"),
 
     /**
      * cv2缺少c库

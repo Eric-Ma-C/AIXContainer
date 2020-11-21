@@ -195,14 +195,14 @@ public class ClientTaskController {
                 new BaseTask.TaskStateListener() {
                     @Override
                     public void onBegin() {
-                        ClientLogUtils.info("\n\n\n----- Task begin -----:\n{}\n", currentTask);
+                        ClientLogUtils.info("\n\n\n----- Task begin -----:\n{}", currentTask);
 
                     }
 
                     @Override
                     public void onFinished() {
-                        ClientLogUtils.info("\n-----  Task finished in {}  -----:\n{}\n\n\n",
-                            TimeUtils.getInterval(currentTask.getExecTime()), currentTask);
+                        ClientLogUtils.info("{}\n-----  Task finished in {}  -----\n\n\n",currentTask,
+                            TimeUtils.getInterval(currentTask.getExecTime()));
                         String repairCmds = currentTask.getRepairCmds();
                         if (repairCmds != null) {
                             ClientLogUtils.debug("currentTask.getRepairCmds()={}", repairCmds);
