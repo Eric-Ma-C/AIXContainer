@@ -196,6 +196,7 @@ public class TaskManager {
 
                 String codePath = task.getCodePath();
                 String modelArgs = task.getModelArgs();
+                /** 更新conda源 */
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
 
 

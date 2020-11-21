@@ -58,6 +58,7 @@ public enum Intent {
     /**
      * 请求conda国内源
      */
+    @Deprecated
     CONDA_SOURCE,
 
 

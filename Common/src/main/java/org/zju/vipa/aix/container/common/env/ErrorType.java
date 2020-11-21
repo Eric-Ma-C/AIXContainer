@@ -19,6 +19,10 @@ public enum ErrorType {
      */
     HTTP_RETRY("HTTP errors are often intermittent, and a simple retry will get you on your way."),
     /**
+     * 网络连接不稳定导致apt-get update失败
+     */
+    APT_RETRY("Some index files failed to download."),
+    /**
      * 没有gcc
      */
     GCC_NOT_FOUND("unable to execute 'gcc': No such file or directory"),

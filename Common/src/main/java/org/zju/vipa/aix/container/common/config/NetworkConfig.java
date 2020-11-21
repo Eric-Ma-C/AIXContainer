@@ -123,24 +123,5 @@ public class NetworkConfig {
     public static final String CENTER_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJhaXgtY2VudGVyIn0.-l8OW-Z9ebMS7TJA1rYUt4xFk8Bu8pG2T6qssV_77NU";
 
 
-    /**
-     * conda源地址
-     */
-    public static final String DEFAULT_CONDA_SOURCE = "channels:\n" +
-        "  - defaults\n" +
-        "show_channel_urls: true\n" +
-        "channel_alias: https://mirrors.tuna.tsinghua.edu.cn/anaconda\n" +
-        "default_channels:\n" +
-        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main\n" +
-        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/free\n" +
-        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/r\n" +
-        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/pro\n" +
-        "  - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/msys2\n" +
-        "custom_channels:\n" +
-        "  conda-forge: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  msys2: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  bioconda: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  menpo: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  pytorch: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud\n" +
-        "  simpleitk: https://mirrors.tuna.tsinghua.edu.cn/anaconda/cloud";
+
 }

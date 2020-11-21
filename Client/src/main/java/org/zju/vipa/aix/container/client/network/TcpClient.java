@@ -13,6 +13,7 @@ import org.zju.vipa.aix.container.client.thread.GrabbingTaskThread;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.Sources;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
@@ -294,7 +295,7 @@ public class TcpClient {
 
         Message resMsg = clientIO.sendMsgAndGetResponse(message);
         if (resMsg == null) {
-            return NetworkConfig.DEFAULT_CONDA_SOURCE;
+            return Sources.CONDA_SOURCE_TUNA;
         } else {
             return resMsg.getValue();
         }

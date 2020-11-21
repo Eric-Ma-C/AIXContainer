@@ -43,7 +43,7 @@ public enum PipSource {
     }
 
     public static String nextUrl() {
-        pipSourceId += new Random().nextInt(pipSources.length-1);
+        pipSourceId += (new Random().nextInt(pipSources.length-2)+1);
         pipSourceId %= pipSources.length;
         return currentUrl();
     }

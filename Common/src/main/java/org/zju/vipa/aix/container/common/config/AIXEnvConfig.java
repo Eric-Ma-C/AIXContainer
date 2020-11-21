@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.common.config;
 
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.env.AptSource;
 import org.zju.vipa.aix.container.common.env.PipSource;
 
 /**
@@ -21,7 +22,7 @@ public class AIXEnvConfig {
     //    private static final String CONDA_CREATE_FROM_FILE_CMD =CONDA_CREATE_CMD + " python=3.6.2";
     private static final String CONDA_CREATE_PIP_CMD = CONDA_CREATE_CMD + " pip -y";
 
-    public static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + NetworkConfig.DEFAULT_CONDA_SOURCE + "\" > /home/aix/.condarc && conda clean -i";
+    public static final String UPDATE_CONDA_SOURCE_CMD = "echo \"" + Sources.CONDA_SOURCE_TUNA + "\" > /home/aix/.condarc && conda clean -i";
     public static final String CONDA_ACTIVATE_CMD = "source " + CONDA_DIR + "bin/activate " + CONDA_ENV_NAME;
 
 
@@ -30,6 +31,7 @@ public class AIXEnvConfig {
     //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
     private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 
+    public static final String CHANGE_APT_SOURCE_CMD = "sudo echo \"" + AptSource.nextUrl() + "\" > /etc/apt/sources.list";
 
     /**
      * 换一个pip源

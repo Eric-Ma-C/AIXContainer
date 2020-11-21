@@ -46,8 +46,13 @@ public class ErrorParser {
             case HTTP_RETRY:
                 repairCmds.add(runningCmds);
                 break;
+            case APT_RETRY:
+                repairCmds.add(AIXEnvConfig.CHANGE_APT_SOURCE_CMD);
+                repairCmds.add(runningCmds);
+
+                break;
             case GCC_NOT_FOUND:
-                repairCmds.add("sudo apt-get install gcc -y");
+                repairCmds.add("sudo apt-get update && sudo apt-get install gcc -y");
                 break;
             case MODULE_NOT_FOUND:
                 /** 自动安装一些conda库 */
@@ -96,7 +101,7 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
                 break;
             case IMPORTERROR_LIBSM_SO_6:
-                repairCmds.add("sudo apt-get update &&sudo apt-get install -y libsm6 libxext6");
+                repairCmds.add("sudo apt-get update && sudo apt-get install -y libsm6 libxext6");
                 repairCmds.add(startCmds);
 
                 break;

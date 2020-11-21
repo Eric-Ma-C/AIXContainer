@@ -10,7 +10,7 @@ import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
-import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.config.Sources;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -227,7 +227,7 @@ public class SocketHandler implements Runnable {
      */
     private void returnNewCondaSource() {
 //        Message msg = new Message(Intent.CONDA_SOURCE,"test");
-        Message msg = new ServerMessage(Intent.CONDA_SOURCE, NetworkConfig.DEFAULT_CONDA_SOURCE);
+        Message msg = new ServerMessage(Intent.CONDA_SOURCE, Sources.CONDA_SOURCE_TUNA);
 
         //写返回报文
         serverIO.response(msg);
