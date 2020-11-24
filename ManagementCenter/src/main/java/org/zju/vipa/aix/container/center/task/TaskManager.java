@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -32,13 +33,13 @@ public class TaskManager {
     /**
      * 按token存储的消息队列,存放需要顺序执行的消息，< token,messages >
      */
-    private Map<String, ConcurrentLinkedQueue<Message>> serialTaskMessageMap;
+    private Map<String, ConcurrentLinkedDeque<Message>> serialTaskMessageMap;
 
     /**
      * 按token存储的消息队列,存放随心跳信息发送的消息,一般为轻量级控制操作,
      * 不应该影响到正在执行的任务,比如开启详细实时日志上传，< token,messages >
      */
-    private Map<String, ConcurrentLinkedQueue<Message>> heartbeatMessageMap;
+    private Map<String, ConcurrentLinkedDeque<Message>> heartbeatMessageMap;
     /**
      * client-任务  映射表，< token,task >
      */
@@ -128,11 +129,13 @@ public class TaskManager {
 
     /**
      * 获取当前task已有的未发送的指令
+     * 包括存储在task的errorQueue中的指令
      *
      * @param token
      * @return: Message 为空则表示当前任务已执行完毕,准备抢新的任务
      */
     public Message getExistingTaskCmds(String token) {
+//        addErrorQueueMsgs2SerialMQ(token,);
         Message message = getMessageByToken(token);
         if (message != null) {
             /** 消息队列中有待发送消息，直接取出 */
@@ -167,14 +170,14 @@ public class TaskManager {
      */
     public Message askForCmds(String token) {
 
-        Message message = getExistingTaskCmds(token);
-        if (message != null) {
-            return message;
-        }
+//        Message message = getExistingTaskCmds(token);
+//        if (message != null) {
+//            return message;
+//        }
 
 
-        /** 若没有待发送消息且
-         * 若上次client指令执行没有成功,则需要尝试添加修复环境的命令;
+        /** 若没有待发送消息 且 上次client指令执行没有成功,则需要尝试添加修复环境的命令;
+         *
          * 若没有上次执行状态则抢新的任务 */
         synchronized (token.intern()) {
             /** 首先判断有无正在执行的任务 */
@@ -210,7 +213,12 @@ public class TaskManager {
 
                 /** test 添加待发送任务至列表 */
                 /** 删除虚拟环境配置 */
-                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
+                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
+//                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get update"));
+//                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getChangeAptSourceCmd()));
+//                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get update"));
+
+
 //                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, updataCondaSrcCmds));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "source /home/aix/.bashrc && echo $PATH"));
                 /** test 检查shell */
@@ -221,9 +229,9 @@ public class TaskManager {
                 //如果不通过下载,一般将模型挂载进容器,在数据库写入路径
                 if (DebugConfig.IS_DOWNLOAD_MODULE) {
                     /** 告诉容器下载model */
-                    addSerialMessage(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
+                    addSerialMessage2Tail(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
                     /** 告诉容器下载dataset */
-                    addSerialMessage(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
+                    addSerialMessage2Tail(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
                 }
 
                 Message msg1 = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
@@ -233,15 +241,16 @@ public class TaskManager {
 //                配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等
                 String preCmds = task.getPreCmds();
 
-                addSerialMessage(token, msg1);
+                addSerialMessage2Tail(token, msg1);
                 if (preCmds != null && !"".equals(preCmds)) {
-                    addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
+                    addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
                 }
-                addSerialMessage(token, msg2);
+                addSerialMessage2Tail(token, msg2);
 
-
+                return getMessageByToken(token);
             } else {
                 /**  task ！= null，说明有任务正在配置环境 */
+
 
                 LogUtils.info("{}发现已有任务{}", token, task);
 
@@ -251,7 +260,7 @@ public class TaskManager {
                     return null;
                 }
 
-                /** 没有待执行任务，查看是否有待修复的运行错误 */
+                /** 没有待执行指令，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
                     /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
@@ -262,26 +271,36 @@ public class TaskManager {
                     Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task, token));
                     msg.addCustomData("codePath", codePath);
                     msg.addCustomData("modelArgs", modelArgs);
-                    addSerialMessage(token, msg);
+                    addSerialMessage2Tail(token, msg);
 
                 } else {
-                    /** 检测到可解决错误,一次加入待发送消息队列 */
-                    while (!errorQueue.isEmpty()) {
-                        EnvError error = errorQueue.poll();
-                        List<String> repairCmds = error.getRepairCmdList();
-                        for (String cmd : repairCmds) {
-                            /** 添加一条待发送任务至列表 */
-                            addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, cmd));
-                        }
-                    }
+                    /** 检测到可解决错误，全部添加到SerialMQ */
+                    addErrorQueueMsgs2SerialMQ(token, errorQueue);
                 }
+
+
+                return getExistingTaskCmds(token);
+
             }
         }
 
-        /** 待发送的指令消息 */
-        Message toSendMsg = getMessageByToken(token);
+//        /** 待发送的指令消息 */
+//        Message toSendMsg = getMessageByToken(token);
+//
+//        return toSendMsg;
+    }
 
-        return toSendMsg;
+
+    private void addErrorQueueMsgs2SerialMQ(String token, ConcurrentLinkedQueue<EnvError> errorQueue) {
+        /** 检测到可解决错误,一次加入待发送消息队列 */
+        while (!errorQueue.isEmpty()) {
+            EnvError error = errorQueue.poll();
+            List<String> repairCmds = error.getRepairCmdList();
+            for (int i = repairCmds.size() - 1; i >= 0; i--) {
+                /** 添加一条待发送任务至列表 */
+                addSerialMessage2Head(token, new ServerMessage(Intent.SHELL_TASK, repairCmds.get(i)));
+            }
+        }
     }
 
     /**
@@ -312,10 +331,10 @@ public class TaskManager {
         Message message = null;
 
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = serialTaskMessageMap.get(token);
+            ConcurrentLinkedDeque<Message> messageList = serialTaskMessageMap.get(token);
             if (messageList != null) {
-                message = messageList.poll();
                 LogUtils.debug("{}队列还剩{}个待发送消息", token, messageList.size());
+                message = messageList.poll();
                 if (messageList.size() == 0) {
                     serialTaskMessageMap.remove(token);
                 }
@@ -336,22 +355,37 @@ public class TaskManager {
     }
 
     /**
-     * 新增消息
+     * 新增消息到队尾
      */
-    private void addSerialMessage(String token, Message msg) {
+    private void addSerialMessage2Tail(String token, Message msg) {
         /** 锁粒度细化为token */
         synchronized (token.intern()) {
-            ConcurrentLinkedQueue<Message> messageList = serialTaskMessageMap.get(token);
+            ConcurrentLinkedDeque<Message> messageList = serialTaskMessageMap.get(token);
 
             if (messageList == null) {
-                //TODO 太久没用的token删除,相当于客户端离线
-                messageList = new ConcurrentLinkedQueue<>();
+                messageList = new ConcurrentLinkedDeque<>();
                 serialTaskMessageMap.put(token, messageList);
             }
             messageList.offer(msg);
-//            messageMap.put(token, messageList);
         }
         LogUtils.info("{}:\n添加待发送serial消息{}", msg.getTokenSuffix(), msg);
+    }
+
+    /**
+     * 新增消息到队首
+     */
+    private void addSerialMessage2Head(String token, Message msg) {
+        /** 锁粒度细化为token */
+        synchronized (token.intern()) {
+            ConcurrentLinkedDeque<Message> messageList = serialTaskMessageMap.get(token);
+
+            if (messageList == null) {
+                messageList = new ConcurrentLinkedDeque<>();
+                serialTaskMessageMap.put(token, messageList);
+            }
+            messageList.addFirst(msg);
+        }
+        LogUtils.info("{}:\n添加待发送serial消息{}至队首", msg.getTokenSuffix(), msg);
     }
 
     /**
@@ -359,7 +393,7 @@ public class TaskManager {
      */
     public Message getHeartbeatMessage(String token) {
         LogUtils.debug("getHeartbeatMessage() token={} ", token);
-        ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
+        ConcurrentLinkedDeque<Message> messageList = heartbeatMessageMap.get(token);
         if (messageList == null) {
             return null;
         } else {
@@ -380,10 +414,10 @@ public class TaskManager {
     protected void addHeartbeatMessage(String token, Message msg) {
         /** 锁粒度细化为token */
 //        synchronized (token.intern()) {
-        ConcurrentLinkedQueue<Message> messageList = heartbeatMessageMap.get(token);
+        ConcurrentLinkedDeque<Message> messageList = heartbeatMessageMap.get(token);
 
         if (messageList == null) {
-            messageList = new ConcurrentLinkedQueue<>();
+            messageList = new ConcurrentLinkedDeque<>();
             heartbeatMessageMap.put(token, messageList);
         }
         messageList.offer(msg);

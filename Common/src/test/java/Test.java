@@ -1,3 +1,4 @@
+import org.zju.vipa.aix.container.common.env.AptSource;
 import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.io.IOException;
@@ -13,6 +14,7 @@ public class Test {
 //        sin.haha();
 
 //        Singleton singleton=Singleton.getInstance();
+        changeAptTest();
     }
 
     private static void TimeUtilsTest(){
@@ -24,4 +26,11 @@ public class Test {
         System.out.println(TimeUtils.getInterval(4325234546435645L ));
     }
 
-}
+
+    private static void changeAptTest() {
+        for (int i = 0; i < 5; i++) {
+            System.out.println(AptSource.nextUrl()+'\n');
+        }
+    }
+
+    }

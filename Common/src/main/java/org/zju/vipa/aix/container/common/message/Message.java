@@ -98,7 +98,7 @@ public class Message implements Serializable {
     }
 
     public String getTokenSuffix() {
-        return token.substring(token.length() > 9 ? token.length() - 9 : token.length());
+        return token.substring(token.length() > 10 ? token.length() - 10 : token.length());
     }
 
     public void setToken(String token) {

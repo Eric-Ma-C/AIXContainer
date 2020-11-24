@@ -47,12 +47,13 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
                 break;
             case APT_RETRY:
-                repairCmds.add(AIXEnvConfig.CHANGE_APT_SOURCE_CMD);
+                repairCmds.add(AIXEnvConfig.getChangeAptSourceCmd());
                 repairCmds.add(runningCmds);
 
                 break;
             case GCC_NOT_FOUND:
                 repairCmds.add("sudo apt-get update && sudo apt-get install gcc -y");
+                repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:
                 /** 自动安装一些conda库 */

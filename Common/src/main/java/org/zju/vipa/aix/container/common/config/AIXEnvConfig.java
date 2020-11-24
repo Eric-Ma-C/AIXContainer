@@ -31,13 +31,19 @@ public class AIXEnvConfig {
     //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
     private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 
-    public static final String CHANGE_APT_SOURCE_CMD = "sudo echo \"" + AptSource.nextUrl() + "\" > /etc/apt/sources.list";
 
     /**
      * 换一个pip源
      */
     public static void changePipSource() {
         PIP_SOURCE = PipSource.nextUrl();
+    }
+
+    /**
+     * 换一个pip源
+     */
+    public static String getChangeAptSourceCmd() {
+        return "echo \"" + AptSource.nextUrl() + "\" > /etc/apt/sources.list";
     }
 
 //    /**
