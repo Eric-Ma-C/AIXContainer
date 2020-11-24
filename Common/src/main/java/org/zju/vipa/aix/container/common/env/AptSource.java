@@ -61,7 +61,19 @@ public enum AptSource {
         "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse\n" +
         "# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-backports main restricted universe multiverse\n" +
         "deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse\n" +
-        "# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse");
+        "# deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ xenial-security main restricted universe multiverse"),
+
+    /**
+     * huawei
+     */
+    HUAWEI("deb http://mirrors.huaweicloud.com/ubuntu/ xenial main restricted universe multiverse\n" +
+             "# deb-src http://mirrors.huaweicloud.com/ubuntu/ xenial main restricted universe multiverse\n" +
+             "deb http://mirrors.huaweicloud.com/ubuntu/ xenial-updates main restricted universe multiverse\n" +
+             "# deb-src http://mirrors.huaweicloud.com/ubuntu/ xenial-updates main restricted universe multiverse\n" +
+             "deb http://mirrors.huaweicloud.com/ubuntu/ xenial-backports main restricted universe multiverse\n" +
+             "# deb-src http://mirrors.huaweicloud.com/ubuntu/ xenial-backports main restricted universe multiverse\n" +
+             "deb http://mirrors.huaweicloud.com/ubuntu/ xenial-security main restricted universe multiverse\n" +
+             "# deb-src http://mirrors.huaweicloud.com/ubuntu/ xenial-security main restricted universe multiverse");
 
     private String url;
     private  static AptSource[] aptSources = AptSource.values();

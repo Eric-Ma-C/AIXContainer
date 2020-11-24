@@ -47,6 +47,7 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
                 break;
             case APT_RETRY:
+            case APT_RETRY_GPG_ERRER:
                 repairCmds.add(AIXEnvConfig.getChangeAptSourceCmd());
                 repairCmds.add(runningCmds);
 

@@ -18,10 +18,16 @@ public enum ErrorType {
      * 网络连接不稳定
      */
     HTTP_RETRY("HTTP errors are often intermittent, and a simple retry will get you on your way."),
+
     /**
      * 网络连接不稳定导致apt-get update失败
      */
     APT_RETRY("Some index files failed to download."),
+    /**
+     * 网络连接不稳定导致apt-get GPG error
+     */
+    APT_RETRY_GPG_ERRER("Release: The following signatures were invalid:"),
+
     /**
      * 没有gcc
      */
