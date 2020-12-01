@@ -14,6 +14,9 @@ public interface DeviceDAO {
     @Select("select * from device where token = #{token}")
     public Device getDeviceByToken(String token);
 
+    @Select("select * from device where id = #{id}")
+    public Device getDeviceById(int id);
+
     /**
      *  更新详情
      * @param id

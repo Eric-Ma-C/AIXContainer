@@ -1,8 +1,10 @@
 package org.zju.vipa.aix.container.center.dubbo;
 
 import org.zju.vipa.aix.container.api.AIXClientCenterService;
+import org.zju.vipa.aix.container.api.entity.AixDeviceVO;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.center.ManagementCenter;
+import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ServerLogReader;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
@@ -90,8 +92,19 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
+    public AixDeviceVO getDeviceInfoById(String id) {
+        AixDeviceVO aixDeviceVO=new AixDeviceVO(DbManager.getInstance().getClientById(id));
+        return aixDeviceVO;
+    }
+
+    @Override
     public List<RunningClient> getClientList() {
         return ManagementCenter.getInstance().getClientsList();
+    }
+
+    @Override
+    public List<String> getTaskLogsByToken(String token) {
+        return ManagementCenter.getInstance().getTaskLogsByToken(token);
     }
 
 

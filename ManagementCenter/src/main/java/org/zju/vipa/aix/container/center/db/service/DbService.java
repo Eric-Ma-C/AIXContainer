@@ -55,9 +55,17 @@ public interface DbService {
      * 根据token查询设备
      *
      * @param token
-     * @return: java.lang.String
+     * @return:
      */
     AixDevice getClientByToken(final String token);
+
+    /**
+     * 根据id查询设备
+     *
+     * @param id
+     * @return:
+     */
+    AixDevice getClientById(final String id);
 
     /**
      * 获取等待状态的任务列表，抢任务

@@ -141,11 +141,23 @@ public class DbManager implements Serializable {
      * 根据token查询数据库有无该设备
      *
      * @param token
-     * @return: java.lang.String
+     * @return:
      */
     public AixDevice getClientByToken(final String token) {
 
         return dbService.getClientByToken(token);
+
+    }
+
+    /**
+     * 根据id找device
+     *
+     * @param id
+     * @return:
+     */
+    public AixDevice getClientById(final String id) {
+
+        return dbService.getClientById(id);
 
     }
 

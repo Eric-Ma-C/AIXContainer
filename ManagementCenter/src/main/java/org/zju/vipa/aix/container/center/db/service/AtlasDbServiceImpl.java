@@ -146,6 +146,17 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         }
     }
 
+    @Override
+    public AixDevice getClientById(String id) {
+        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDevice device = deviceMapper.selectById(Integer.valueOf(id));
+        if (device == null) {
+            return null;
+        } else {
+            return device;
+        }
+    }
+
 
     @Override
     public List<Task> getWaittingTaskList() {

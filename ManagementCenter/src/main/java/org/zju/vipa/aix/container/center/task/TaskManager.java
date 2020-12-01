@@ -214,7 +214,7 @@ public class TaskManager {
                 /** test 添加待发送任务至列表 */
                 /** 删除虚拟环境配置 */
                 addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
-//                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get update"));
+//                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get clean && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean"));
 //                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getChangeAptSourceCmd()));
 //                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get update"));
 

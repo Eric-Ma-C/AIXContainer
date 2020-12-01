@@ -3,7 +3,6 @@ package org.zju.vipa.aix.container.center;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.db.DbManager;
-import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.center.dubbo.RpcServer;
 import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
@@ -12,6 +11,7 @@ import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
@@ -65,6 +65,17 @@ public class ManagementCenter {
         RunningClient client = clientMap.get(token);
         if (client != null) {
             return client.getRunningCmds();
+        }else {
+            return null;
+        }
+    }
+
+    /** 获取容器正在运行的任务日志
+     * @return*/
+    public List<String> getTaskLogsByToken(String token){
+        RunningClient client = clientMap.get(token);
+        if (client != null) {
+            return client.getTaskLogList();
         }else {
             return null;
         }
@@ -135,6 +146,7 @@ public class ManagementCenter {
             return;
         }
         client.setTaskBriefInfo(briefInfo);
+
     }
 
     /**

@@ -113,6 +113,17 @@ public class AixDbServiceImpl extends SqlSessionInitializer implements DbService
     }
 
     @Override
+    public AixDevice getClientById(String id) {
+        DeviceDAO deviceDAO = getSession().getMapper(DeviceDAO.class);
+        Device device = deviceDAO.getDeviceById(Integer.valueOf(id));
+        if (device == null) {
+            return null;
+        } else {
+            return new AixDevice(device);
+        }
+    }
+
+    @Override
     public List<Task> getWaittingTaskList() {
         // 获取映射类
         TaskDAO taskDAO = getSession().getMapper(TaskDAO.class);

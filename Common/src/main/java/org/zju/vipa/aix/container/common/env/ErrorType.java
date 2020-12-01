@@ -24,9 +24,9 @@ public enum ErrorType {
      */
     APT_RETRY("Some index files failed to download."),
     /**
-     * 网络连接不稳定导致apt-get GPG error
+     * apt-get GPG error 重新
      */
-    APT_RETRY_GPG_ERRER("Release: The following signatures were invalid:"),
+    APT_GPG_ERRER("Release: The following signatures were invalid:"),
 
     /**
      * 没有gcc

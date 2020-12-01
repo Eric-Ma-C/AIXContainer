@@ -40,7 +40,7 @@ public class AIXEnvConfig {
     }
 
     /**
-     * 换一个pip源
+     * 换一个ubuntu源
      */
     public static String getChangeAptSourceCmd() {
         return "echo \"" + AptSource.nextUrl() + "\" > /etc/apt/sources.list";

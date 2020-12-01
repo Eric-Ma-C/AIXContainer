@@ -43,6 +43,12 @@ public class RunningClient implements Serializable {
      */
     String latestErrors;
     /**
+     * 任务执行以来的命令和报错序列
+     * 每当抢到新任务清空一次
+     */
+    transient List<String> taskLogList;
+
+    /**
      * 最后一次报错时间，用于区分Error批次
      */
     transient long lastErrorTime;
@@ -57,8 +63,8 @@ public class RunningClient implements Serializable {
         this.since = since;
         this.taskBriefInfoList = new ArrayList<>();
         this.firstTaskName = "No Task";
-        this.runningCmds="";
-        this.latestErrors="";
+        this.runningCmds = "";
+        this.latestErrors = "";
 
     }
 
@@ -72,8 +78,8 @@ public class RunningClient implements Serializable {
         this.since = TimeUtils.getCurrentTimeStr();
         this.taskBriefInfoList = new ArrayList<>();
         this.firstTaskName = "No Task";
-        this.runningCmds="";
-        this.latestErrors="";
+        this.runningCmds = "";
+        this.latestErrors = "";
     }
 
     public String getId() {
@@ -146,6 +152,7 @@ public class RunningClient implements Serializable {
 
     public void setRunningCmds(String runningCmds) {
         this.runningCmds = runningCmds;
+        addTaskLog(TimeUtils.getCurrentTimeStr() + " " + runningCmds + "\n");
     }
 
     public long getLastHeartbeat() {
@@ -172,23 +179,33 @@ public class RunningClient implements Serializable {
         this.latestErrors = latestErrors;
     }
 
-    /** 新增一条错误信息，按时间自动切分
+    /**
+     * 新增一条错误信息，按时间自动切分
+     *
      * @param error
      * @return: void
      */
     public void addLatestErrors(String error) {
+
+
         long millis = System.currentTimeMillis();
         if (millis - lastErrorTime > 2000) {
             clearLatestErrors();
+            error = error + "\n";
         }
         error = error + "\n";
+        /** 将这条错误信息写到任务日志 */
+        addTaskLog(TimeUtils.getCurrentTimeStr() + " " + error);
+
+
         latestErrors = latestErrors + error;
 
         lastErrorTime = millis;
     }
 
     private void clearLatestErrors() {
-        this.latestErrors = TimeUtils.getCurrentTimeStr()+"\n";
+        /** 清空 */
+        this.latestErrors = TimeUtils.getCurrentTimeStr() + " ";
     }
 
     public void setTaskBriefInfo(TaskBriefInfo briefInfo) {
@@ -196,10 +213,25 @@ public class RunningClient implements Serializable {
         if (briefInfo != null) {
             this.taskBriefInfoList.add(briefInfo);
             firstTaskName = briefInfo.getName();
+            /** 新任务清空前一任务日志 */
+            clearTaskLogList();
         } else {
             firstTaskName = "No Task";
         }
     }
 
+    public List<String> getTaskLogList() {
+        return taskLogList;
+    }
 
+    private void clearTaskLogList() {
+        this.taskLogList = new ArrayList<>();
+    }
+
+    private void addTaskLog(String taskLog) {
+        if (this.taskLogList == null) {
+            this.taskLogList = new ArrayList<>();
+        }
+        this.taskLogList.add(taskLog);
+    }
 }

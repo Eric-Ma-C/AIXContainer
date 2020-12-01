@@ -1,5 +1,6 @@
 package org.zju.vipa.aix.container.api;
 
+import org.zju.vipa.aix.container.api.entity.AixDeviceVO;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
@@ -56,6 +57,12 @@ public interface AIXClientCenterService {
     List<RunningClient> getClientList();
 
     /**
+     * 容器任务日志，包括命令和错误信息
+     * 抢到新任务后清空
+     */
+    List<String> getTaskLogsByToken(String token);
+
+    /**
      * 获取某容器的待发送队列
      *
      * @param token 容器token
@@ -103,4 +110,11 @@ public interface AIXClientCenterService {
      */
     void clientTaskStop(String token);
 
+    /**
+     * 返回容器信息
+     *
+     * @param id 容器id
+     * @return: AixDeviceVO
+     */
+    AixDeviceVO getDeviceInfoById(String id);
 }

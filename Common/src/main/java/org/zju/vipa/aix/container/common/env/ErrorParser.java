@@ -15,14 +15,20 @@ import java.util.List;
  */
 public class ErrorParser {
     /**
-     *   处理容器报错信息
-     * @param token 容器token
+     * 最后一次报错时间，用于同一次Error区分
+     */
+    private static long lastErrorTime;
+
+    /**
+     * 处理容器报错信息
+     *
+     * @param token       容器token
      * @param runningCmds 容器正在运行的命令
-     * @param errorInfo 容器报错信息
-     * @param task 容器任务
+     * @param errorInfo   容器报错信息
+     * @param task        容器任务
      * @return: org.zju.vipa.aix.container.common.env.EnvError
      */
-    public static EnvError handle(String token,String runningCmds, String errorInfo, Task task) {
+    public static EnvError handle(String token, String runningCmds, String errorInfo, Task task) {
 
         if (errorInfo == null) {
             return null;
@@ -38,7 +44,7 @@ public class ErrorParser {
                 break;
             }
         }
-        String startCmds = AIXEnvConfig.getStartCmds(task,token);
+        String startCmds = AIXEnvConfig.getStartCmds(task, token);
         switch (errorType) {
             case UNKNOWN:
                 /** 可能是一些非关键描述信息，无法提取错误类别 */
@@ -47,13 +53,21 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
                 break;
             case APT_RETRY:
-            case APT_RETRY_GPG_ERRER:
                 repairCmds.add(AIXEnvConfig.getChangeAptSourceCmd());
+                repairCmds.add("sudo apt-get clean && sudo rm -rf /var/lib/apt/lists.old && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean");
                 repairCmds.add(runningCmds);
 
                 break;
+            case APT_GPG_ERRER:
+//                repairCmds.add("sudo apt-get clean && sudo rm -rf /var/lib/apt/lists.old && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean");
+                /** 添加gpg公钥 */
+                repairCmds.add("curl -sL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -");
+                repairCmds.add(runningCmds);
+                break;
             case GCC_NOT_FOUND:
-                repairCmds.add("sudo apt-get update && sudo apt-get install gcc -y");
+                /** 试一下 */
+                repairCmds.add(AIXEnvConfig.getPipInstallCmds("gcc"));
+//                repairCmds.add("sudo apt-get update && sudo apt-get install gcc -y");
                 repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:
@@ -80,7 +94,7 @@ public class ErrorParser {
                 break;
             case UNICODE_ENCODE_ERROR:
                 /**  编码问题  */
-                repairCmds.add(startCmds.replace("python", "PYTHONIOENCODING=utf-8 python")) ;
+                repairCmds.add(startCmds.replace("python", "PYTHONIOENCODING=utf-8 python"));
                 break;
             case NUMPY_LEVEL_TOO_HIGH:
                 /**  降级安装numpy  */
@@ -117,7 +131,17 @@ public class ErrorParser {
                 /**  其他错误,什么都不做  */
                 break;
         }
+
         Logger logger = LoggerFactory.getLogger(ErrorParser.class);
+
+        long millis = System.currentTimeMillis();
+        if (millis - lastErrorTime < 100) {
+            /** 100ms内认为是同一个error */
+            logger.warn("{}:忽略Error：{}，repairCmds={}", token, errorType.name(), repairCmds);
+            return null;
+        }
+        lastErrorTime = millis;
+
         logger.info("{}:\n'{}'添加至error列表中，repairCmds={}", token, errorType.name(), repairCmds);
 
         return new EnvError(errorType, errorInfo, repairCmds);
