@@ -10,21 +10,32 @@ import java.util.List;
  * @Description: 测试
  */
 public class TestDb {
-        public static void main(String[] args) {
-//               getUserList();
-//                getClientIdByToken("gfd");
-//                System.out.println("\n\n\n");
-//                getTaskList();
-//                updateDeviceDetail();
 
-                DbManager.getInstance().grabTask("2");
-                try {
-                        Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                        e.printStackTrace();
-                }
-                DbManager.getInstance().grabTask("3");
+        /** 改为WAITING */
+        public static void main(String[] args) {
+                DbManager.getInstance().setTaskWaitingById("222");
         }
+
+
+
+
+
+
+//        public static void main(String[] args) {
+////               getUserList();
+////                getClientIdByToken("gfd");
+////                System.out.println("\n\n\n");
+////                getTaskList();
+////                updateDeviceDetail();
+//
+//                DbManager.getInstance().grabTask("2");
+//                try {
+//                        Thread.sleep(1000);
+//                } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                }
+//                DbManager.getInstance().grabTask("3");
+//        }
 
         private static void getDataturksUserList(){
                 List<DataturksUser> dataturksUserList =DbManager.getInstance().getDataturksUserList();

@@ -65,9 +65,9 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
                 break;
             case GCC_NOT_FOUND:
-                /** 试一下 */
-                repairCmds.add(AIXEnvConfig.getPipInstallCmds("gcc"));
-//                repairCmds.add("sudo apt-get update && sudo apt-get install gcc -y");
+                /** 安装gcc g++ */
+//                repairCmds.add(AIXEnvConfig.getPipInstallCmds("gcc"));
+                repairCmds.add("sudo apt-get update && sudo apt-get -y install gcc");
                 repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:

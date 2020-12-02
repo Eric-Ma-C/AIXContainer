@@ -120,7 +120,7 @@ public class DbManager implements Serializable {
      */
     public Boolean setTaskFailed(final String taskId) {
 
-        return dbService.setTaskFailed(taskId);
+        return dbService.setTaskFailedById(taskId);
     }
 
     /**
@@ -176,6 +176,10 @@ public class DbManager implements Serializable {
      */
     public void updateDeviceLastLoginById(final String clientId) {
          dbService.updateDeviceLastLoginById(clientId);
+    }
+
+    public void setTaskWaitingById(String taskId){
+        dbService.setTaskWaitingById(taskId);
     }
 
 }

@@ -152,7 +152,7 @@ public class RunningClient implements Serializable {
 
     public void setRunningCmds(String runningCmds) {
         this.runningCmds = runningCmds;
-        addTaskLog(TimeUtils.getCurrentTimeStr() + " " + runningCmds + "\n");
+        addTaskLog("\n" + TimeUtils.getCurrentTimeMsStr() + "  [ CMD ]  " + runningCmds + "\n");
     }
 
     public long getLastHeartbeat() {
@@ -187,15 +187,16 @@ public class RunningClient implements Serializable {
      */
     public void addLatestErrors(String error) {
 
+        StringBuilder sb = new StringBuilder();
 
         long millis = System.currentTimeMillis();
-        if (millis - lastErrorTime > 2000) {
+        if (millis - lastErrorTime > 700) {
             clearLatestErrors();
-            error = error + "\n";
+            sb.append("\n");
         }
         error = error + "\n";
         /** 将这条错误信息写到任务日志 */
-        addTaskLog(TimeUtils.getCurrentTimeStr() + " " + error);
+        addTaskLog(sb.append(TimeUtils.getCurrentTimeMsStr()).append(" ").append(error).toString());
 
 
         latestErrors = latestErrors + error;

@@ -503,4 +503,12 @@ public class TimeUtils {
         //（24小时制）
         return sdf.format(date);
     }
+
+    /** 获取当前时间 */
+    public static String getCurrentTimeMsStr(){
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss,SSS");
+        //（24小时制）
+        return sdf.format(new Date());
+    }
 }

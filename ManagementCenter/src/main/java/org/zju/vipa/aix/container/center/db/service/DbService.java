@@ -94,5 +94,12 @@ public interface DbService {
      *
      * @return: java.util.List<Task>
      */
-    Boolean setTaskFailed(String taskId);
+    Boolean setTaskFailedById(String taskId);
+
+    /**
+     * 任务训练状态更新为失败
+     *
+     * @return: java.util.List<Task>
+     */
+    Boolean setTaskWaitingById(String taskId);
 }

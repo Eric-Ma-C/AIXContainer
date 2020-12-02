@@ -50,10 +50,18 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     }
 
     @Override
-    public Boolean setTaskFailed(String taskId) {
+    public Boolean setTaskFailedById(String taskId) {
         // 获取映射类
         TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
         atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "FAILED");
+        return true;
+    }
+
+    @Override
+    public Boolean setTaskWaitingById(String taskId) {
+        // 获取映射类
+        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "WAITING");
         return true;
     }
 
