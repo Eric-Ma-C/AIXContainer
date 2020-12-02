@@ -310,6 +310,8 @@ public class TaskManager {
         Task task = taskMap.get(token);
         shellResultMap.remove(token);
         taskMap.remove(token);
+        /** 删除task消息队列 */
+        serialTaskMessageMap.remove(token);
 
         ManagementCenter.getInstance().updateRunningCmds(token, "");
         ManagementCenter.getInstance().updateTaskBriefInfo(token, null);

@@ -355,7 +355,7 @@ public class TcpClient {
             if (!Intent.GRAB_TASK_FAILED.match(resMsg)) {
                 /** 失败次数归0 */
                 Client.grabTaskFailedCount=0;
-                ClientLogUtils.info("抢到任务:{}",resMsg.getIntent());
+                ClientLogUtils.info("抢到任务:{}",resMsg.getValue());
                 /** 停止抢任务线程,执行任务 */
                 GrabbingTaskThread.stop();
                 handleResponseMsg(resMsg);

@@ -13,7 +13,8 @@ public class TestDb {
 
         /** 改为WAITING */
         public static void main(String[] args) {
-                DbManager.getInstance().setTaskWaitingById("222");
+//                DbManager.getInstance().setTaskWaitingById("222");
+                DbManager.getInstance().setTaskWaitingById("208");
         }
 
 
