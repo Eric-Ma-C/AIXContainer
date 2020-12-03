@@ -194,8 +194,8 @@ public class Task implements Serializable {
     }
 
     public void addUnknownErrorTime() {
-        /** 连续出现500次未知错误则放弃任务 */
-        if (this.unknownErrorTime++ > 500) {
+        /** 连续出现2000次未知错误则放弃任务 */
+        if (this.unknownErrorTime++ > 2000) {
             isFailed = true;
         }
 

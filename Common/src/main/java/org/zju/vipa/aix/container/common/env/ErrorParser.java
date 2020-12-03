@@ -58,6 +58,10 @@ public class ErrorParser {
                 repairCmds.add(runningCmds);
 
                 break;
+            case CONDA_CREATE_RETRY:
+//                if (runningCmds.contains("conda-env create"))
+                repairCmds.add(runningCmds);
+                break;
             case APT_GPG_ERRER:
 //                repairCmds.add("sudo apt-get clean && sudo rm -rf /var/lib/apt/lists.old && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean");
                 /** 添加gpg公钥 */
@@ -135,8 +139,10 @@ public class ErrorParser {
         Logger logger = LoggerFactory.getLogger(ErrorParser.class);
 
         long millis = System.currentTimeMillis();
-        if (millis - lastErrorTime < 100) {
-            /** 100ms内认为是同一个error */
+        if (millis - lastErrorTime < 500) {
+            /** 2020-12-02 19:44:23,397  gcc
+             *  2020-12-02 19:44:23,575  gcc*/
+            /** 500ms内认为是同一个error */
             logger.warn("{}:忽略Error：{}，repairCmds={}", token, errorType.name(), repairCmds);
             return null;
         }

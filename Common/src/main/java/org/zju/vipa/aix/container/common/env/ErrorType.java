@@ -24,6 +24,10 @@ public enum ErrorType {
      */
     APT_RETRY("Some index files failed to download."),
     /**
+     * 网络连接不稳定导致conda-env create失败
+     */
+    CONDA_CREATE_RETRY("An unexpected error has occurred. Conda has prepared the above report."),
+    /**
      * apt-get GPG error 重新
      */
     APT_GPG_ERRER("Release: The following signatures were invalid:"),

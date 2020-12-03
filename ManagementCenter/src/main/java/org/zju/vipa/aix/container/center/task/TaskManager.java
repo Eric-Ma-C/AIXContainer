@@ -263,15 +263,15 @@ public class TaskManager {
                 /** 没有待执行指令，查看是否有待修复的运行错误 */
                 ConcurrentLinkedQueue<EnvError> errorQueue = task.getErrorQueue();
                 if (errorQueue.isEmpty()) {
-                    /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
-                    LogUtils.error("{}:\n Client训练遇到了未知问题，正在尝试重新启动模型训练...", token);
-
-                    String codePath = task.getCodePath();
-                    String modelArgs = task.getModelArgs();
-                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task, token));
-                    msg.addCustomData("codePath", codePath);
-                    msg.addCustomData("modelArgs", modelArgs);
-                    addSerialMessage2Tail(token, msg);
+//                    /** 没有检测到可解决错误，直接重启，报错可能会改变，再次尝试修复 */
+//                    LogUtils.error("{}:\n Client训练遇到了未知问题，正在尝试重新启动模型训练...", token);
+//
+//                    String codePath = task.getCodePath();
+//                    String modelArgs = task.getModelArgs();
+//                    Message msg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getStartCmds(task, token));
+//                    msg.addCustomData("codePath", codePath);
+//                    msg.addCustomData("modelArgs", modelArgs);
+//                    addSerialMessage2Tail(token, msg);
 
                 } else {
                     /** 检测到可解决错误，全部添加到SerialMQ */
