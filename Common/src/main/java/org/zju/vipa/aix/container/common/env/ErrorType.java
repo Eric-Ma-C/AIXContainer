@@ -19,10 +19,15 @@ public enum ErrorType {
      */
     HTTP_RETRY("HTTP errors are often intermittent, and a simple retry will get you on your way."),
 
+//    /**
+//     * 网络连接不稳定导致apt-get update失败
+//     */
+//    APT_RETRY("Some index files failed to download."),
     /**
-     * 网络连接不稳定导致apt-get update失败
+     * 网络连接不稳定导致https://github.com/NVIDIA/nvidia-docker/issues/658
      */
-    APT_RETRY("Some index files failed to download."),
+    APT_CUDA_ERROR("Failed to fetch https://developer.download.nvidia.com/compute/cuda/repos/ubuntu"),
+
     /**
      * 网络连接不稳定导致conda-env create失败
      */
@@ -31,7 +36,6 @@ public enum ErrorType {
      * apt-get GPG error 重新
      */
     APT_GPG_ERRER("Release: The following signatures were invalid:"),
-
     /**
      * 没有gcc
      */

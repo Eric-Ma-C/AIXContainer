@@ -52,12 +52,12 @@ public class ErrorParser {
             case HTTP_RETRY:
                 repairCmds.add(runningCmds);
                 break;
-            case APT_RETRY:
-                repairCmds.add(AIXEnvConfig.getChangeAptSourceCmd());
-                repairCmds.add("sudo apt-get clean && sudo rm -rf /var/lib/apt/lists.old && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean");
-                repairCmds.add(runningCmds);
-
-                break;
+//            case APT_RETRY:
+//                repairCmds.add(AIXEnvConfig.getChangeAptSourceCmd());
+//                repairCmds.add("sudo apt-get clean && sudo rm -rf /var/lib/apt/lists.old && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean");
+//                repairCmds.add(runningCmds);
+//
+//                break;
             case CONDA_CREATE_RETRY:
 //                if (runningCmds.contains("conda-env create"))
                 repairCmds.add(runningCmds);
@@ -68,10 +68,14 @@ public class ErrorParser {
                 repairCmds.add("curl -sL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -");
                 repairCmds.add(runningCmds);
                 break;
+            case APT_CUDA_ERROR:
+                repairCmds.add("sudo rm /etc/apt/sources.list.d/cuda.list && sudo rm /etc/apt/sources.list.d/nvidia-ml.list");
+                repairCmds.add(runningCmds);
+                break;
             case GCC_NOT_FOUND:
                 /** 安装gcc g++ */
 //                repairCmds.add(AIXEnvConfig.getPipInstallCmds("gcc"));
-                repairCmds.add("sudo apt-get update && sudo apt-get -y install gcc");
+                repairCmds.add("sudo aptitude install -y gcc");
                 repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:
@@ -118,10 +122,14 @@ public class ErrorParser {
             case PIP_SOURCE_NO_MATCHING_DISTRIBUTION:
                 /** pip换源 */
                 AIXEnvConfig.changePipSource();
+                if (runningCmds.startsWith("conda-env create")){
+                    repairCmds.add(AIXEnvConfig.CONDA_REMOVE_ALL_CMD);
+                }
                 repairCmds.add(runningCmds);
                 break;
             case IMPORTERROR_LIBSM_SO_6:
-                repairCmds.add("sudo apt-get update && sudo apt-get install -y libsm6 libxext6");
+//                repairCmds.add("sudo apt-get update && sudo apt-get install -y libsm6 libxext6");
+                repairCmds.add("aptitude install -y libsm6 libxext6");
                 repairCmds.add(startCmds);
 
                 break;

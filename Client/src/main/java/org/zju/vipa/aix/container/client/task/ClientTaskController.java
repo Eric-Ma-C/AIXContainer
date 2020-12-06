@@ -100,9 +100,10 @@ public class ClientTaskController {
      */
     public void stopCurrentTask() {
         if (currentTaskFuture != null) {
+            boolean canCancel=false;
            if (!currentTaskFuture.isCancelled()){
                /** stop the task */
-               boolean canCancel = currentTaskFuture.cancel(true);
+               canCancel = currentTaskFuture.cancel(true);
                ClientLogUtils.debug("currentTaskFuture.cancel(true) canCancel={}",canCancel);
 
                /** 删除本地待执行任务 */
@@ -110,17 +111,18 @@ public class ClientTaskController {
                taskQueue.clear();
            }
 
-//           if (currentTaskFuture.isDone()){
-//               //任务置为停止状态，一般是因为异常终止
-//               currentTask.setState(TaskState.STOPPED);
-//               ClientLogUtils.debug("currentTaskFuture.isDone()=true");
-//
-//           }else {
+           if (!canCancel){
+               //任务置为停止状态，一般是因为异常终止
+               currentTask.setState(TaskState.STOPPED);
+               ClientLogUtils.error("任务异常终止:{}", currentTask);
+
+               return;
+           }else {
                //任务置为正在停止状态，等待执行结果汇报服务器后置为STOPPED
                currentTask.setState(TaskState.STOPPING);
                ClientLogUtils.debug("currentTask.setState(TaskState.STOPPING)");
 
-//           }
+           }
 
         }
         /** 在新的线程中等待任务结束，避免心跳线程等待任务结束过久（没发心跳包）使平台误以为容器离线 */
