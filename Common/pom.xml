@@ -12,6 +12,16 @@
     <artifactId>Common</artifactId>
 
     <build>
+        <resources>
+            <resource>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.properties</include>
+                    <include>**/*.xml</include>
+                </includes>
+                <filtering>false</filtering>
+            </resource>
+        </resources>
         <plugins>
             <plugin>
                 <!-- 指定项目编译时的java版本和编码方式 -->
@@ -103,6 +113,12 @@
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>properties-maven-plugin</artifactId>
+            <version>1.0-alpha-2</version>
         </dependency>
 
 

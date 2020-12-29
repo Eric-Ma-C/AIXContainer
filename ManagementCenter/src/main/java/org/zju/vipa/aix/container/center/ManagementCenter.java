@@ -116,6 +116,10 @@ public class ManagementCenter {
         if (client == null) {
             return;
         }
+//        for (GpuInfo.Gpu gpu : info.getGpus()) {
+//            /** 更新算力 */
+//            gpu.setCalPower(GpuUtils.getGpuPower(gpu.getName()));
+//        }
         client.setGpuInfo(info);
         /** 更新心跳时间 */
         client.setLastHeartbeat(System.currentTimeMillis());
@@ -159,15 +163,15 @@ public class ManagementCenter {
         while (iterator.hasNext()) {
             entry = iterator.next();
             RunningClient client=entry.getValue();
-            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 5) {
+            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 3) {
 
                 LogUtils.debug("\n******* Remove Dead Client: System.currentTimeMillis()={} LastHeartbeat()={} *******\n", System.currentTimeMillis(), entry.getValue().getLastHeartbeat());
 
-                /** 超过心跳间隔时间5倍未收到,认为client已离线 */
+                /** 超过心跳间隔时间3倍未收到,认为client已离线 */
                 LogUtils.info("\n******* Remove Dead Client: {} *******\n", client.getToken());
 
                 /** 删除TaskManger中的容器信息  */
-                TaskManager.getInstance().removeDeadClient(client.getToken());
+                TaskManager.getInstance().removeDeadClientByToken(client.getToken());
                 /** 从在线容器列表中删除记录 */
                 iterator.remove();
             }

@@ -1,5 +1,7 @@
 package org.zju.vipa.aix.container.common.config;
 
+import org.zju.vipa.aix.container.common.utils.PropertyUtils;
+
 /**
  * @Date: 2020/2/8 22:18
  * @Author: EricMa
@@ -24,18 +26,7 @@ public class NetworkConfig {
      * vipa aliyun
      */
     public static final String VIPA_ALIYUN_SERVER_IP = "120.55.242.132";
-    /**
-     * vipa 内网205
-     */
-    public static final String VIPA_205_IP = "10.214.211.205";
-    /**
-     * vipa 内网206
-     */
-    public static final String VIPA_206_IP = "10.214.211.206";
-    /**
-     * vipa 内网207
-     */
-    public static final String VIPA_207_IP = "10.214.211.207";
+
     /**
      * 本地测试地址
      */
@@ -68,16 +59,13 @@ public class NetworkConfig {
 
 
 
+    public static String SERVER_IP = PropertyUtils.getProperty("common.properties","server.ip","127.0.0.1");
+    public static String DOWNLOAD_SERVER_IP = PropertyUtils.getProperty("common.properties","server.download.ip","127.0.0.1");
 
 
 
 
 
-
-    //    public static String SERVER_IP = MY_ALIYUN_SERVER_IP;
-    public static String SERVER_IP = VIPA_207_IP;
-    public static String DOWNLOAD_SERVER_IP = VIPA_207_IP;
-    //    public static String DOWNLOAD_SERVER_IP = MY_ALIYUN_SERVER_IP;
     public static int DOWNLOAD_SERVER_PORT = 8080;
 
     static {

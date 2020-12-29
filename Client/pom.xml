@@ -12,6 +12,8 @@
     <artifactId>Client</artifactId>
 
     <build>
+
+
         <extensions>
             <extension>
                 <groupId>org.apache.maven.wagon</groupId>
@@ -58,6 +60,26 @@
                 </executions>
             </plugin>
 
+            <!--读取配置文件-->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <executions>
+                    <execution>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>read-project-properties</goal>
+                        </goals>
+                        <configuration>
+                            <files>
+                                <file>${project.basedir}/../Common/src/main/resources/common.properties</file>
+                            </files>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!--自动部署jar至服务器-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -84,13 +106,10 @@
 
                             <serverId>vipa-207-key</serverId>
                             <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>
-                            <url>scpexe://10.214.211.207/nfs2/aix-container/client</url>
+                            <url>${wagon.upload.client.path}</url>
 
 
-                            <!--                            <serverId>vipa-207</serverId>-->
-                            <!--                            <fromFile>target/Client-1.0-SNAPSHOT-jar-with-dependencies.jar</fromFile>-->
-                            <!--                            <url>scp://10.214.211.207/nfs2/mc/docker/aix-center</url>-->
-                            <!--                            <url>scp://10.214.211.207/home/disk1/mc</url>-->
+
                             <!-- 配置服务器的地址以及文件上传的目录。 -->
                         </configuration>
                     </execution>

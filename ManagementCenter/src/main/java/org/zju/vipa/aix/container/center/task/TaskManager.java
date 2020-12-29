@@ -86,7 +86,7 @@ public class TaskManager {
     /**
      * 删除无心跳client的数据
      */
-    public void removeDeadClient(String token) {
+    public void removeDeadClientByToken(String token) {
         serialTaskMessageMap.remove(token);
         heartbeatMessageMap.remove(token);
         taskMap.remove(token);

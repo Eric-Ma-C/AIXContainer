@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.common.exception.ExceptionHandlerImpl;
 
+import java.util.List;
+
 /**
  * @Date: 2020/1/11 16:48
  * @Author: EricMa
@@ -49,5 +51,17 @@ public class JsonUtils {
             return (String) obj;
         }
         return "";
+    }
+
+//    public static List<Object> getList(String jsonStr){
+//        JSONArray jsonArray = JSON.pa(jsonStr);
+//        return jsonArray;
+//    }
+
+    public static <T> List<T> getList(String jsonStr, Class<T> tClass){
+
+        List<T> list = JSON.parseArray(jsonStr, tClass);
+
+        return list;
     }
 }

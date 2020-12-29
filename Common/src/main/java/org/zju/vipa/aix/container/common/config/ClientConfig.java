@@ -17,7 +17,7 @@ public class ClientConfig {
     public static final int MAX_GRAB_TASK_FAILED_TIME = 30;
 
     /**
-     * 容器心跳包间隔时间 15s  需不需要自动调整？
+     * 容器心跳包间隔时间 10s  需不需要自动调整？
      */
-    public static final int HEARTBEATS_INTERVAL_MS = 15 * 1000;
+    public static final int HEARTBEATS_INTERVAL_MS = 10 * 1000;
 }

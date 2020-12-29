@@ -75,7 +75,23 @@ public class ErrorParser {
             case GCC_NOT_FOUND:
                 /** 安装gcc g++ */
 //                repairCmds.add(AIXEnvConfig.getPipInstallCmds("gcc"));
-                repairCmds.add("sudo aptitude install -y gcc");
+//                repairCmds.add("sudo aptitude install -y gcc");
+//                repairCmds.add("expect -c ' " +
+//                    " spawn sudo aptitude install  gcc  \\\n" +
+//                    " expect \"Accept this solution?\"  \\\n" +
+//                    " send \"n\"  \\\n" +
+//                    " expect \"Downgrade\"  \\\n" +
+//                    " send \"Y\"  \\\n" +
+//                    " expect eof'");
+                repairCmds.add("expect -c 'set timeout 300 \n" +
+                    " spawn sudo aptitude install  gcc \n" +
+                    " expect \"Accept this solution?\"  \n" +
+                    " send \"n\\n\" \n" +
+                    " expect \"Downgrade the following packages\"  \n" +
+                    " send \"Y\\n\"  \n" +
+                    " expect \"Do you want to continue?\"  \n" +
+                    " send \"Y\\n\"\n" +
+                    " expect eof'");
                 repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:

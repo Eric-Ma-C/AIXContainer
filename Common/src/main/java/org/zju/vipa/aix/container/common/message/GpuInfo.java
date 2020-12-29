@@ -30,6 +30,7 @@ public class GpuInfo implements Serializable {
 
     public static class Gpu implements Serializable{
         String id,name, temperature, powerDraw, powerLimit,memUsed,memAll;
+        float calPower;//算力
         private List<Process> processes;
 
         public Gpu() {
@@ -113,6 +114,14 @@ public class GpuInfo implements Serializable {
 
         public void addProcess(Process process) {
             this.processes.add(process);
+        }
+
+        public float getCalPower() {
+            return calPower;
+        }
+
+        public void setCalPower(float calPower) {
+            this.calPower = calPower;
         }
     }
     public static class Process implements Serializable{

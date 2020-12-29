@@ -8,6 +8,7 @@ import org.zju.vipa.aix.container.api.AIXClientCenterService;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
+import org.zju.vipa.aix.container.common.utils.PropertyUtils;
 
 
 /**
@@ -41,7 +42,7 @@ public class RpcServer {
 
         // 当前应用配置
         ApplicationConfig application = new ApplicationConfig();
-        application.setName("AIXClientCenterService-Provider");
+        application.setName(PropertyUtils.getProperty("common.properties","dubbo.provider.application.name","default-dubbo-provider"));
 
         // 连接注册中心配置
         RegistryConfig registry = new RegistryConfig();
@@ -74,6 +75,9 @@ public class RpcServer {
         serviceConfig.setRef(service);
         serviceConfig.setVersion("1.0.0");
         serviceConfig.setTimeout(10000);
+
+        /** 用于区分不同的dubbo服务 */
+        serviceConfig.setGroup(PropertyUtils.getProperty("common.properties","dubbo.provider.group","default-group"));
 
         // 暴露及注册服务
         serviceConfig.export();

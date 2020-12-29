@@ -8,6 +8,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.zju.vipa.aix.container.common.utils.PropertyUtils;
 
 import java.util.Date;
 
@@ -25,7 +26,7 @@ public class JwtUtils {
 
 
     static{
-        secret = PropertyUtils.getProperty("custom.properties","jwt.secret","vipa-dev");
+        secret = PropertyUtils.getProperty("serverkey.properties","jwt.secret","vipa-dev");
         jwtVerifier = JWT.require(Algorithm.HMAC256(secret)).build();
     }
 

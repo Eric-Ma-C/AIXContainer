@@ -1,4 +1,5 @@
 import org.zju.vipa.aix.container.common.env.AptSource;
+import org.zju.vipa.aix.container.common.utils.PropertyUtils;
 import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.io.IOException;
@@ -14,7 +15,8 @@ public class Test {
 //        sin.haha();
 
 //        Singleton singleton=Singleton.getInstance();
-        changeAptTest();
+//        changeAptTest();
+        System.out.println(PropertyUtils.getProperty("common.properties","server.ip","127.0.0.1"));
     }
 
     private static void TimeUtilsTest(){
