@@ -182,4 +182,7 @@ public class DbManager implements Serializable {
         dbService.setTaskWaitingById(taskId);
     }
 
+    public void insertClient(AixDevice aixDevice){
+        dbService.insertClient(aixDevice);
+    }
 }

@@ -143,21 +143,23 @@ public class TaskManager {
         }
 
 
-        /** 若没有待发送消息，先判断上次client指令执行是否成功,若成功则说明当前任务完成,可以移除任务,再抢新的任务 */
+        /** 若没有待发送消息，先判断上次client指令执行是否成功*/
         Boolean shellResult = shellResultMap.get(token);
         LogUtils.debug("token={},shellResult={}", token, shellResult);
         if (shellResult != null && shellResult.booleanValue()) {
+            /** 若成功则说明当前任务成功完成,可以移除任务,再抢新的任务 */
             //任务执行成功,删除任务
             Task task = taskMap.remove(token);
             shellResultMap.remove(token);
             ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
             DbManager.getInstance().setTaskFinished(task.getId());
-            LogUtils.info("{}任务执行结束!", token);
-            return new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
+            LogUtils.info("{}任务执行成功!", token);
         } else {
-            return null;
+            /** 若失败则说明当前任务完成,返回值非零,也要移除任务,再抢新的任务 */
+            handleTaskFailed(token);
         }
+        return new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
     }
 
     /**
@@ -303,14 +305,16 @@ public class TaskManager {
         }
     }
 
+
+
     /**
      * 任务执行失败的处理
      */
     private void handleTaskFailed(String token) {
-        Task task = taskMap.get(token);
+
+        Task task = taskMap.remove(token);
         shellResultMap.remove(token);
-        taskMap.remove(token);
-        /** 删除task消息队列 */
+        /** 删除task消息队列(如果有的话) */
         serialTaskMessageMap.remove(token);
 
         ManagementCenter.getInstance().updateRunningCmds(token, "");

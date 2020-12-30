@@ -102,4 +102,9 @@ public interface DbService {
      * @return: java.util.List<Task>
      */
     Boolean setTaskWaitingById(String taskId);
+
+    /**
+     * 创建新客户端
+     * */
+    void insertClient(AixDevice aixDevice);
 }

@@ -13,11 +13,9 @@ public class TestDb {
 
         /** 改为WAITING */
         public static void main(String[] args) {
-                DbManager.getInstance().setTaskWaitingById("225");
+                DbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
         }
-
-
 
 //        public static void main(String[] args) {
 ////               getUserList();

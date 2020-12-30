@@ -69,6 +69,11 @@ public class AixDbServiceImpl extends SqlSessionInitializer implements DbService
     }
 
     @Override
+    public void insertClient(AixDevice aixDevice) {
+
+    }
+
+    @Override
     public Task grabTask(String clientId) {
         SqlSession sqlSession=getSession();
 

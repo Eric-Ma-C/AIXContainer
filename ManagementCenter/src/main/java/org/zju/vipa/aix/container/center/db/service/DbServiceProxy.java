@@ -35,6 +35,7 @@ public class DbServiceProxy implements InvocationHandler {
             sqlSession.commit();
             return ret;
         } catch (Throwable t) {
+//            t.printStackTrace();
             sqlSession.rollback();
             ExceptionUtils.handle(ExceptionUtil.unwrapThrowable(t));
 

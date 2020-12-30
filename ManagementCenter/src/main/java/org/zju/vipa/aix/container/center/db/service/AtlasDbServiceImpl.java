@@ -154,6 +154,14 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         }
     }
 
+
+    @Override
+    public void insertClient(AixDevice aixDevice) {
+        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        deviceMapper.insert_aix_device(aixDevice.getDevice_name(),aixDevice.getInfo(),aixDevice.getToken(),aixDevice.getUser_id());
+
+    }
+
     @Override
     public AixDevice getClientById(String id) {
         AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
@@ -207,4 +215,7 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
         AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
         aixDeviceMapper.updateLastLoginById(Integer.parseInt(clientId));
     }
+
+
+
 }

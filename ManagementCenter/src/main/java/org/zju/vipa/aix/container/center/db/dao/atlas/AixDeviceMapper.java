@@ -1,9 +1,6 @@
 package org.zju.vipa.aix.container.center.db.dao.atlas;
 
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
 import java.util.List;
@@ -26,9 +23,10 @@ public interface AixDeviceMapper {
 
 	/**
 	 * insert aix_device
-	 * @param aix_device
+	 * @param
 	 */
-	public void insert_aix_device(AixDevice aix_device);
+	@Insert("insert into aix_device(device_name,created_time,last_login,detail,info,token,user_id) values(#{device_name},NOW(),NOW(),'',#{info},#{token},#{user_id}) ")
+	public void insert_aix_device(@Param("device_name") String device_name,@Param("info") String info,@Param("token") String token,@Param("user_id") int user_id);
 
 	/**
 	 * update aix_device
