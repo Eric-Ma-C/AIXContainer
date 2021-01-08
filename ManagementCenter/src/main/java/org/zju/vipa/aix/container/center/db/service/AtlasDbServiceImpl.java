@@ -4,7 +4,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.CodesMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;

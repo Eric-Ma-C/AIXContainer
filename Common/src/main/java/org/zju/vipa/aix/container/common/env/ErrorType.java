@@ -102,8 +102,13 @@ public enum ErrorType {
      *   https://www.jianshu.com/p/2bca744fcd82
      *
      */
-    CONDA_SOURCE_304_ERROR("raise Response304ContentUnchanged()");
-
+    CONDA_SOURCE_304_ERROR("raise Response304ContentUnchanged()"),
+    /**
+     *   网络断开重连
+     *   WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by 'ConnectTimeoutError(<pip._vendor.urllib3.connection.HTTPSConnection object at 0x7f9ab8555650>, 'Connection to mirrors.tuna.tsinghua.edu.cn timed out. (connect timeout=15)')': /pypi/web/simple/mmcv-full/
+     *
+     */
+    CONNECT_TIMEOUT_ERROR("connection broken by 'ConnectTimeoutError");
 
 
 

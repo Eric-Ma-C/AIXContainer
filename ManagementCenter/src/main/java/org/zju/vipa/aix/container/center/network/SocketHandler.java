@@ -4,12 +4,13 @@ import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
+import org.zju.vipa.aix.container.center.log.Action;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
 import org.zju.vipa.aix.container.center.netty.NettyIoImpl;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.Sources;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
@@ -95,7 +96,7 @@ public class SocketHandler implements Runnable {
 
 
             case REGISTER:
-                registerContainer(msg.getValue());
+                registerContainer(msg);
                 break;
             case PING:
                 handleHeartbeatGpuInfo(msg);
@@ -148,7 +149,7 @@ public class SocketHandler implements Runnable {
      * 容器实时日志处理
      */
     private void handleRealtimeLog(Message msg) {
-        sendToKafka(msg);
+//        sendToKafka(msg);
         LogUtils.debug("Realtime log from {}:{}", msg.getTokenSuffix(), msg.getValue());
     }
 
@@ -190,37 +191,40 @@ public class SocketHandler implements Runnable {
 
     /**
      * 首次连接平台，验证容器的token
+     * <p>
+     * token 容器上传的jwt token，没有私钥不能伪造
      *
-     * @param token 容器上传的jwt token，没有私钥不能伪造
      * @return: void
      */
-    private void registerContainer(String token) {
+    private void registerContainer(Message msg) {
+        String token = msg.getToken();
+        String clientHostIp = msg.getCustomData(Message.HOST_IP_KEY);
         boolean ok = JwtUtils.verify(token);
-        Message msg;
+        Message resMsg;
 
 
         /** 尝试获取id号并缓存下来 */
-        String id = ok ? ManagementCenter.getInstance().getIdByToken(token) : null;
+        String id = ok ? ManagementCenter.getInstance().registerClient(token,clientHostIp) : null;
         if (id != null && id.length() > 0) {
 
             DbManager.getInstance().updateDeviceLastLoginById(id);
 
-            LogUtils.info("Container id={} registered successfully! token={}", id, token);
-            msg = new ServerMessage(Intent.REGISTER, "OK");
+            LogUtils.info(Action.CLIENT_REGISTER, "Container id={} registered successfully!  token={} host_ip={}", id, token, clientHostIp);
+            resMsg = new ServerMessage(Intent.REGISTER, "OK");
             //写返回报文
-            serverIO.response(msg);
+            serverIO.response(resMsg);
         } else {
-            msg = new ServerMessage(Intent.REGISTER, "DENIED");
+            resMsg = new ServerMessage(Intent.REGISTER, "DENIED");
             //写返回报文
-            serverIO.response(msg);
-            LogUtils.error("Container registered failed! token:{}", token);
+            serverIO.response(resMsg);
+            LogUtils.error(Action.CLIENT_REGISTER, "Container registered failed! token:{} host_ip={}", token, clientHostIp);
         }
 
     }
 
 
     /**
-     *   更新conda源
+     * 更新conda源
      *
      * @param:
      * @return:
@@ -249,7 +253,7 @@ public class SocketHandler implements Runnable {
         String id = ManagementCenter.getInstance().getIdByToken(token);
 
         if (id == null) {
-            LogUtils.error("Grabbing task no such a device:{}", msg.getToken());
+            LogUtils.error("Grabbing task no such a device:token={}", msg.getToken());
             return;
         }
 
@@ -372,7 +376,7 @@ public class SocketHandler implements Runnable {
         /** 保存检测到的错误信息，放入对应client的task中暂存 */
         TaskManager.getInstance().handleError(message);
         /** 用于显示 */
-        ManagementCenter.getInstance().updateLatestError(message.getToken(),message.getValue());
+        ManagementCenter.getInstance().updateLatestError(message.getToken(), message.getValue());
     }
 
     /**

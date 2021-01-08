@@ -58,6 +58,9 @@ public class ErrorParser {
 //                repairCmds.add(runningCmds);
 //
 //                break;
+            case CONNECT_TIMEOUT_ERROR:
+                repairCmds.add(runningCmds);
+                break;
             case CONDA_CREATE_RETRY:
 //                if (runningCmds.contains("conda-env create"))
                 repairCmds.add(runningCmds);
@@ -187,7 +190,6 @@ public class ErrorParser {
         if ("cv2".equals(moduleName)) {
             moduleName = "opencv-python";
         }
-
         return moduleName;
     }
 }

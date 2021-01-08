@@ -5,7 +5,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.util.CharsetUtil;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.message.Message;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;

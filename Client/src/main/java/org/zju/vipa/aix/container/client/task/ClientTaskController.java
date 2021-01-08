@@ -4,7 +4,6 @@ import org.zju.vipa.aix.container.client.network.TcpClient;
 import org.zju.vipa.aix.container.client.task.custom.ClientShellTask;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
-import org.zju.vipa.aix.container.client.utils.TokenUtils;
 import org.zju.vipa.aix.container.client.utils.UploadUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
@@ -70,8 +69,7 @@ public class ClientTaskController {
     public void start() {
 
         /** 上传验证容器token */
-        boolean isSuccessful = TcpClient.getInstance().registerContainer(
-            TokenUtils.getDeviceToken());
+        boolean isSuccessful = TcpClient.getInstance().registerContainer();
         /** 此处判断可以减少非法token的容器发送大量无效抢任务请求 */
         if (isSuccessful) {
             /** 验证成功，开始心跳,抢任务线程 */

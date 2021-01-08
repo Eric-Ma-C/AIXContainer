@@ -18,7 +18,12 @@ public class Message implements Serializable {
      * 结束字符串
      * 不用了，改为前两字节表示长度
      */
+    @Deprecated
     public static final String END_STRING = "EOF-AIX-MESSAGE";
+    /**
+     * 宿主机ip
+     */
+    public static final String HOST_IP_KEY = "HOST_IP_KEY";
     /**
      * shell执行结果KEY
      */

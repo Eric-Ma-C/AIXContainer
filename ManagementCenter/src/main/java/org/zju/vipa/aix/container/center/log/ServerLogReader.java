@@ -1,7 +1,6 @@
 package org.zju.vipa.aix.container.center.log;
 
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.util.LogUtils;
 import org.zju.vipa.aix.container.common.utils.PropertyUtils;
 
 import java.io.IOException;

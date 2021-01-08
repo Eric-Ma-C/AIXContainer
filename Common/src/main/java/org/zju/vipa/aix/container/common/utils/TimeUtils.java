@@ -504,6 +504,16 @@ public class TimeUtils {
         return sdf.format(date);
     }
 
+    /** 获取时间 */
+    public static String getTimeStr(long ms){
+        SimpleDateFormat sdf = new SimpleDateFormat();
+        sdf.applyPattern("yyyy-MM-dd HH:mm:ss");
+        Date date = new Date();
+        date.setTime(ms);
+        //（24小时制）
+        return sdf.format(date);
+    }
+
     /** 获取当前时间 */
     public static String getCurrentTimeMsStr(){
         SimpleDateFormat sdf = new SimpleDateFormat();
@@ -511,4 +521,6 @@ public class TimeUtils {
         //（24小时制）
         return sdf.format(new Date());
     }
+
+
 }

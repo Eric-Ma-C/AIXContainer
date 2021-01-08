@@ -8,7 +8,8 @@ import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.util.GpuUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
@@ -16,6 +17,7 @@ import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -81,18 +83,16 @@ public class ManagementCenter {
         }
     }
 
-
     /**
-     * 根据token获取容器id
-     *
+     * 注册容器
+     * 新容器接入平台
      * @param token
-     * @return: java.lang.String 返回""代表数据库无此设备
+     * @return: id null代表注册失败
      */
-    public String getIdByToken(String token) {
-        RunningClient client = clientMap.get(token);
-        String id = "";
+    public String registerClient(String token,String hostIp) {
+        String id = getIdByToken(token);
         AixDevice device;
-        if (client == null) {
+        if (id==null){
             /** 去数据库检查token   */
             device = DbManager.getInstance().getClientByToken(token);
 
@@ -101,13 +101,27 @@ public class ManagementCenter {
                 id= String.valueOf(device.getId());
                 /** 新设备接入 */
 //                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
-                clientMap.put(token, new RunningClient(device));
+                clientMap.put(token, new RunningClient(device,hostIp));
             }
-        }else {
+        }else{
+            LogUtils.worning("容器重复注册,token={}",token);
+        }
+        return id;
+    }
+
+    /**
+     * 根据token获取容器id
+     *
+     * @param token
+     * @return: java.lang.String 返回null代表无此设备
+     */
+    public String getIdByToken(String token) {
+        RunningClient client = clientMap.get(token);
+        String id = null;
+        if (client != null) {
             id=client.getId();
         }
-
-        LogUtils.debug("getIdByToken({})={}",token,id);
+//        LogUtils.debug("getIdByToken({})={}",token,id);
         return id;
     }
 
@@ -116,10 +130,10 @@ public class ManagementCenter {
         if (client == null) {
             return;
         }
-//        for (GpuInfo.Gpu gpu : info.getGpus()) {
-//            /** 更新算力 */
-//            gpu.setCalPower(GpuUtils.getGpuPower(gpu.getName()));
-//        }
+        for (GpuInfo.Gpu gpu : info.getGpus()) {
+            /** 更新算力 */
+            gpu.setCalPower(GpuUtils.getGpuPower(gpu.getName()));
+        }
         client.setGpuInfo(info);
         /** 更新心跳时间 */
         client.setLastHeartbeat(System.currentTimeMillis());
@@ -165,10 +179,10 @@ public class ManagementCenter {
             RunningClient client=entry.getValue();
             if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 3) {
 
-                LogUtils.debug("\n******* Remove Dead Client: System.currentTimeMillis()={} LastHeartbeat()={} *******\n", System.currentTimeMillis(), entry.getValue().getLastHeartbeat());
+                LogUtils.debug("******* Remove Dead Client: current={} LastHeartbeat()={} *******", TimeUtils.getCurrentTimeStr(), TimeUtils.getTimeStr(entry.getValue().getLastHeartbeat()));
 
                 /** 超过心跳间隔时间3倍未收到,认为client已离线 */
-                LogUtils.info("\n******* Remove Dead Client: {} *******\n", client.getToken());
+                LogUtils.info("******* Remove Dead Client: token={} id={} *******", client.getToken(),client.getId());
 
                 /** 删除TaskManger中的容器信息  */
                 TaskManager.getInstance().removeDeadClientByToken(client.getToken());

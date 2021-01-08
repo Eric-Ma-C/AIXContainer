@@ -1,6 +1,6 @@
 package org.zju.vipa.aix.container.center.network;
 
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;

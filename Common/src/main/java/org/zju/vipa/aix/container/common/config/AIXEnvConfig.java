@@ -94,7 +94,9 @@ public class AIXEnvConfig {
     public static String getStartCmds(String codePath, String modelArgs, String deviceToken) {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
         /** UniversalModel */
-        return CONDA_ACTIVATE_CMD + " && cd " + codePath + " && python main.py " + modelArgs + " --device_token=" + deviceToken;
+        return CONDA_ACTIVATE_CMD + " && cd " + codePath +
+            " && python main.py " + modelArgs +
+            " --device_token=" + deviceToken;
 
     }
 
@@ -103,12 +105,7 @@ public class AIXEnvConfig {
          */
     public static String getStartCmds(Task task, String deviceToken) {
 //        python main.py annotation=下载的annotations文件路径 + 空格 + 数据库中的自定义参数
-
-
-        /** UniversalModel */
-        return CONDA_ACTIVATE_CMD + " && cd " + task.getCodePath() +
-            " && python main.py " + task.getModelArgs() + " --device_token=" + deviceToken;
-
+        return getStartCmds(task.getCodePath(),task.getModelArgs(),deviceToken);
 
         /** yolo */
 //        return CONDA_ACTIVATE_CMD + " && python " + codePath + "/main.py --annotation="+Config.DATASET_SAVE_PATH+" "+modelArgs;

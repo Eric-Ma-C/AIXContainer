@@ -24,6 +24,8 @@ public class RunningClient implements Serializable {
     String since;
     String userId;
     String info;
+    /** 宿主机ip */
+    String hostIp;
     /**
      * 最后一次向平台显示心跳的时间
      */
@@ -68,8 +70,9 @@ public class RunningClient implements Serializable {
 
     }
 
-    public RunningClient(AixDevice device) {
+    public RunningClient(AixDevice device,String hostIp) {
 
+        this.hostIp=hostIp;
         this.name = device.getDevice_name();
         this.info = device.getInfo();
         this.userId = String.valueOf(device.getUser_id());
@@ -104,6 +107,14 @@ public class RunningClient implements Serializable {
 
     public void setSince(String since) {
         this.since = since;
+    }
+
+    public String getHostIp() {
+        return hostIp;
+    }
+
+    public void setHostIp(String hostIp) {
+        this.hostIp = hostIp;
     }
 
     public GpuInfo getGpuInfo() {

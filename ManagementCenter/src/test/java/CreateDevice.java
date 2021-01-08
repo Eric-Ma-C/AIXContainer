@@ -12,7 +12,7 @@ import java.io.IOException;
  */
 public class CreateDevice {
     public static void main(String[] args) {
-        generateShell();
+//        generateShell();
     }
 
     private static void generateShell() {
@@ -27,7 +27,7 @@ public class CreateDevice {
             String token = JwtUtils.createJWT(name, -1);
             AixDevice aixDevice =new AixDevice();
             aixDevice.setDevice_name(name);
-            aixDevice.setInfo("device on 206");
+            aixDevice.setInfo("aix test device");
             aixDevice.setToken(token);
             aixDevice.setUser_id(1);
             /** 插入数据库 */

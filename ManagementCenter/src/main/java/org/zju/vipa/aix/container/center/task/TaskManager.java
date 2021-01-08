@@ -4,7 +4,7 @@ import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.ManagementCenter;
 import org.zju.vipa.aix.container.center.db.DbManager;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
@@ -187,13 +187,17 @@ public class TaskManager {
             if (task == null) {
                 /** 没有正在执行的任务，尝试抢新的任务 */
                 String id = ManagementCenter.getInstance().getIdByToken(token);
+                if (id==null){
+                    LogUtils.error("askForCmds() 容器token:{}不存在",token);
+                    return new ServerMessage(Intent.GRAB_TASK_FAILED);
+                }
                 task = DbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
-                    LogUtils.info("{}:\n暂未抢到任务，请耐心等待...", token);
+                    LogUtils.info("{}:暂未抢到任务，请耐心等待...", token);
                     return new ServerMessage(Intent.GRAB_TASK_FAILED);
                 }
-                LogUtils.info("{}:\n抢到任务{}", token, task);
+                LogUtils.info("{}:抢到任务{}", token, task);
 
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
@@ -216,6 +220,8 @@ public class TaskManager {
                 /** test 添加待发送任务至列表 */
                 /** 删除虚拟环境配置 */
                 addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
+
+
 //                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get clean && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean"));
 //                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.getChangeAptSourceCmd()));
 //                addSerialMessage(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get update"));
@@ -236,18 +242,19 @@ public class TaskManager {
                     addSerialMessage2Tail(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
                 }
 
-                Message msg1 = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
-                Message msg2 = new ServerMessage(Intent.SHELL_TASK, startCmds);
-                msg2.addCustomData("codePath", codePath);
-                msg2.addCustomData("modelArgs", modelArgs);
-//                配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等
-                String preCmds = task.getPreCmds();
+                Message condaMsg = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
+                addSerialMessage2Tail(token, condaMsg);
 
-                addSerialMessage2Tail(token, msg1);
+                /** 配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等 */
+                String preCmds = task.getPreCmds();
                 if (preCmds != null && !"".equals(preCmds)) {
                     addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
                 }
-                addSerialMessage2Tail(token, msg2);
+
+                Message startMsg = new ServerMessage(Intent.SHELL_TASK, startCmds);
+                startMsg.addCustomData("codePath", codePath);
+                startMsg.addCustomData("modelArgs", modelArgs);
+                addSerialMessage2Tail(token, startMsg);
 
                 return getMessageByToken(token);
             } else {

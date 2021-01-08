@@ -234,9 +234,10 @@ public class TcpClient {
      * @return:
      */
 
-    public boolean registerContainer(String containerToken) {
-        ClientMessage message = new ClientMessage(Intent.REGISTER, containerToken);
+    public boolean registerContainer() {
 
+        ClientMessage message = new ClientMessage(Intent.REGISTER);
+        message.addCustomData(Message.HOST_IP_KEY,System.getenv("HOST_IP"));
 
         Message response = clientIO.sendMsgAndGetResponse(message, 15 * 1000);
 

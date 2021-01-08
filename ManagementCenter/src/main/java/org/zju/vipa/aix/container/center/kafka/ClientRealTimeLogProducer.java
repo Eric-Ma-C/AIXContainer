@@ -1,11 +1,13 @@
 package org.zju.vipa.aix.container.center.kafka;
 
-import org.apache.kafka.clients.producer.*;
+import org.apache.kafka.clients.producer.Callback;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.util.LogUtils;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -20,26 +22,26 @@ public class ClientRealTimeLogProducer {
     public static volatile  boolean isActive=false;
     public static volatile  String client_token=null;
     static  {
-        // 1. 生产者配置
-        Properties properties = new Properties();
-        // 指定kafka地址
-        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, NetworkConfig.KAFKA_SERVER_URL);
-        // 指定ack等级
-        properties.put(ProducerConfig.ACKS_CONFIG, "all");
-        // 指定重试次数，即生产者发送数据后没有收到ack应答时的重试次数
-        properties.put(ProducerConfig.RETRIES_CONFIG, 1);
-        // 指定批次大小 16k = 16 * 1024
-        properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
-        // 指定等待时间，单位毫秒
-        properties.put(ProducerConfig.LINGER_MS_CONFIG, 1);
-        // 指定RecordAccumulator缓冲区大小 32m = 32 * 1024 * 1024
-        properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
-        // 指定k-v序列化规则
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-
-        // 2. 创建生产者
-        producer = new KafkaProducer<>(properties);
+//        // 1. 生产者配置
+//        Properties properties = new Properties();
+//        // 指定kafka地址
+//        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, NetworkConfig.KAFKA_SERVER_URL);
+//        // 指定ack等级
+//        properties.put(ProducerConfig.ACKS_CONFIG, "all");
+//        // 指定重试次数，即生产者发送数据后没有收到ack应答时的重试次数
+//        properties.put(ProducerConfig.RETRIES_CONFIG, 1);
+//        // 指定批次大小 16k = 16 * 1024
+//        properties.put(ProducerConfig.BATCH_SIZE_CONFIG, 16384);
+//        // 指定等待时间，单位毫秒
+//        properties.put(ProducerConfig.LINGER_MS_CONFIG, 1);
+//        // 指定RecordAccumulator缓冲区大小 32m = 32 * 1024 * 1024
+//        properties.put(ProducerConfig.BUFFER_MEMORY_CONFIG, 33554432);
+//        // 指定k-v序列化规则
+//        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+//        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+//
+//        // 2. 创建生产者
+//        producer = new KafkaProducer<>(properties);
 
     }
 
