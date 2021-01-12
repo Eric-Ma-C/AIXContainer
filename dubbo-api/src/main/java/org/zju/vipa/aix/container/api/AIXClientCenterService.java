@@ -117,4 +117,21 @@ public interface AIXClientCenterService {
      * @return: AixDeviceVO
      */
     AixDeviceVO getDeviceInfoById(String id);
+
+
+    /**
+     *   注册容器数量
+     * @param
+     * @return: int
+     */
+    int getClientCount();
+
+
+    /**
+     *  分页查询
+     * @param page 查询第几页
+     * @param countPerPage 每页的条数(一般固定值)
+     * @return: java.util.List<org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice>
+     */
+    List<AixDeviceVO> getClientListByPage(int page, int countPerPage);
 }

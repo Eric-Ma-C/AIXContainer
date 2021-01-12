@@ -32,6 +32,17 @@ public interface DbService {
      * @return
      */
     Boolean updateDeviceGpuDetailById(final String clientId, final String detail);
+
+    /**
+     * 更新容器token
+     * @return
+     */
+    Boolean updateDeviceTokenById(final String clientId, final String token);
+    /**
+     * 更新容器name
+     * @return
+     */
+    Boolean updateDeviceNameById(final String clientId, final String name);
     /**
      * 任务训练状态更新为完成
      *
@@ -66,6 +77,22 @@ public interface DbService {
      * @return:
      */
     AixDevice getClientById(final String id);
+
+    /**
+     *  分页查询
+     * @param page 查询第几页
+     * @param countPerPage 每页的条数(一般固定值)
+     * @return: java.util.List<org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice>
+     */
+    List<AixDevice> getClientListByPage(int page,int countPerPage);
+
+    /**
+     *   注册容器数量
+     * @param
+     * @return: int
+     */
+    int getClientCount();
+
 
     /**
      * 获取等待状态的任务列表，抢任务

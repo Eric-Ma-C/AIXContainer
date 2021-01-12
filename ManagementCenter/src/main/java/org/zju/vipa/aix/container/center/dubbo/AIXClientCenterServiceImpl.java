@@ -10,6 +10,7 @@ import org.zju.vipa.aix.container.center.log.ServerLogReader;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -95,6 +96,22 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     public AixDeviceVO getDeviceInfoById(String id) {
         AixDeviceVO aixDeviceVO=new AixDeviceVO(DbManager.getInstance().getClientById(id));
         return aixDeviceVO;
+    }
+
+    @Override
+    public int getClientCount() {
+        return DbManager.getInstance().getClientCount();
+    }
+
+    @Override
+    public List<AixDeviceVO> getClientListByPage(int page, int countPerPage) {
+        List<AixDevice> list = DbManager.getInstance().getClientListByPage(page, countPerPage);
+        List<AixDeviceVO> aixDeviceVOList=new ArrayList<>();
+        for (AixDevice device : list) {
+            aixDeviceVOList.add(new AixDeviceVO(device));
+        }
+
+        return aixDeviceVOList;
     }
 
     @Override

@@ -162,6 +162,21 @@ public class DbManager implements Serializable {
     }
 
     /**
+     * 分页查询device
+     *
+     * @return:
+     */
+    public List<AixDevice> getClientListByPage(final int page,final int countPerPage) {
+
+        return dbService.getClientListByPage(page,countPerPage);
+
+    }
+
+    public int getClientCount(){
+        return dbService.getClientCount();
+    }
+
+    /**
      * 更新容器detail
      *
      * @return
@@ -169,6 +184,26 @@ public class DbManager implements Serializable {
     public Boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
 
         return dbService.updateDeviceGpuDetailById(clientId, detail);
+    }
+
+    /**
+     * 更新容器token
+     *
+     * @return
+     */
+    public Boolean updateDeviceTokenById(final String clientId, final String token) {
+
+        return dbService.updateDeviceTokenById(clientId, token);
+    }
+
+    /**
+     * 更新容器name
+     *
+     * @return
+     */
+    public Boolean updateDeviceNameById(final String clientId, final String name) {
+
+        return dbService.updateDeviceNameById(clientId, name);
     }
     /**
      * 更新容器last_login
