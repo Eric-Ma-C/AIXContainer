@@ -41,6 +41,16 @@ public interface AixDeviceMapper {
     @Update("update aix_device set device_name=#{name} where id=#{id}")
     int updateNameById(@Param("id") int id, @Param("name") String name);
 
+    /**
+     * 更新info
+     *
+     * @param id
+     * @param info
+     * @return: int
+     */
+    @Update("update aix_device set info=#{info} where id=#{id}")
+    int updateInfoById(@Param("id") int id, @Param("info") String info);
+
 
     /**
      * insert aix_device

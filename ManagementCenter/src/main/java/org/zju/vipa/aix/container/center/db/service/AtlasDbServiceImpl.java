@@ -68,6 +68,16 @@ public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbServi
     }
 
     @Override
+    public Boolean updateDeviceInfoById(String clientId, String info) {
+        // 获取映射类
+        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        int rec = aixDeviceMapper.updateInfoById(Integer.parseInt(clientId), info);
+
+        /** rec == 0没有该id的记录 */
+        return rec > 0;
+    }
+
+    @Override
     public Boolean setTaskFinished(String taskId) {
         // 获取映射类
         TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);

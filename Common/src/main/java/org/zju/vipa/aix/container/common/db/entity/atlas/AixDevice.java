@@ -25,7 +25,7 @@ public class AixDevice implements Serializable {
         device_name = device.getName();
         created_time = device.getCreatedTime();
         last_login = device.getUpdatedTime();
-        detail = device.getId();
+        detail = device.getDetail();
         info = device.getInfo();
         token = device.getToken();
         user_id = Integer.parseInt(device.getCreatedBy());

@@ -44,6 +44,11 @@ public interface DbService {
      */
     Boolean updateDeviceNameById(final String clientId, final String name);
     /**
+     * 更新容器info
+     * @return
+     */
+    Boolean updateDeviceInfoById(final String clientId, final String info);
+    /**
      * 任务训练状态更新为完成
      *
      */

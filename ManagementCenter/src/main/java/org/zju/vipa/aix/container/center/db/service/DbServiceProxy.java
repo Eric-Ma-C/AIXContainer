@@ -39,6 +39,8 @@ public class DbServiceProxy implements InvocationHandler {
             sqlSession.rollback();
             ExceptionUtils.handle(ExceptionUtil.unwrapThrowable(t));
 
+//            Class<?> returnType = method.getReturnType();
+//            return returnType.newInstance();
             return null;
         } finally {
             dbService.closeSession();

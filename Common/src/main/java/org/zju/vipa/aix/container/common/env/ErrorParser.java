@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.utils.JsonUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,12 @@ public class ErrorParser {
      * 最后一次报错时间，用于同一次Error区分
      */
     private static long lastErrorTime;
+    /** volatile保证可见性 */
+    private volatile static List<KnownErrorRuntime> knownErrorRuntimeList;
+
+    public static void refreshRuntimeErrorList(List<KnownErrorRuntime> errorList){
+        knownErrorRuntimeList=errorList;
+    }
 
     /**
      * 处理容器报错信息
@@ -34,21 +41,41 @@ public class ErrorParser {
             return null;
         }
         List<String> repairCmds = new ArrayList<>();
-        ErrorType errorType = ErrorType.UNKNOWN;
+        StaticErrorType staticErrorType = StaticErrorType.UNKNOWN;
+        String errorName=StaticErrorType.UNKNOWN.name();
 
-        ErrorType[] types = ErrorType.values();
-        for (ErrorType type : types) {
+        StaticErrorType[] types = StaticErrorType.values();
+        for (StaticErrorType type : types) {
             //逐一对比，可能会比较慢
             if (errorInfo.contains(type.getKeyWords())) {
-                errorType = type;
+                staticErrorType = type;
+                errorName=type.name();
                 break;
             }
         }
         String startCmds = AIXEnvConfig.getStartCmds(task, token);
-        switch (errorType) {
+        switch (staticErrorType) {
             case UNKNOWN:
-                /** 可能是一些非关键描述信息，无法提取错误类别 */
-                return null;
+                boolean solved=false;
+                /** 在KnownErrorRuntime中查询错误 */
+                for (KnownErrorRuntime errorRuntime : knownErrorRuntimeList) {
+                    //逐一对比，可能会比较慢
+                    if (errorInfo.contains(errorRuntime.getKey_words())) {
+                        solved=true;
+                        errorName=errorRuntime.getName();
+                        List<String> cmds = JsonUtils.getList(errorRuntime.getRepair_cmds(), String.class);
+                        for (String cmd : cmds) {
+                            repairCmds.add(cmd);
+                        }
+                        break;
+                    }
+                }
+                if (solved){
+                    break;
+                }else {
+                    /** 可能是一些非关键描述信息，无法提取错误类别 */
+                    return null;
+                }
             case HTTP_RETRY:
                 repairCmds.add(runningCmds);
                 break;
@@ -170,14 +197,14 @@ public class ErrorParser {
             /** 2020-12-02 19:44:23,397  gcc
              *  2020-12-02 19:44:23,575  gcc*/
             /** 500ms内认为是同一个error */
-            logger.warn("{}:忽略Error：{}，repairCmds={}", token, errorType.name(), repairCmds);
+            logger.warn("{}:忽略Error：{}，repairCmds={}", token, errorName, repairCmds);
             return null;
         }
         lastErrorTime = millis;
 
-        logger.info("{}:\n'{}'添加至error列表中，repairCmds={}", token, errorType.name(), repairCmds);
+        logger.info("{}:\n'{}'添加至error列表中，repairCmds={}", token, errorName, repairCmds);
 
-        return new EnvError(errorType, errorInfo, repairCmds);
+        return new EnvError(errorName, errorInfo, repairCmds);
     }
 
 

@@ -1,4 +1,4 @@
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
@@ -62,7 +62,7 @@ public class CreateDevice {
         int MAX_ID=105;
         for (int id = 1; id <= MAX_ID; id++) {
             String token = JwtUtils.createJWT(id+"", -1);
-            DbManager.getInstance().updateDeviceTokenById(id+"",token);
+            AtlasDbManager.getInstance().updateDeviceTokenById(id+"",token);
         }
     }
 
@@ -70,7 +70,7 @@ public class CreateDevice {
         int MAX_ID=105;
         for (int id = 1; id <= MAX_ID; id++) {
             String name = "c"+id;
-            DbManager.getInstance().updateDeviceNameById(id+"",name);
+            AtlasDbManager.getInstance().updateDeviceNameById(id+"",name);
         }
     }
 }

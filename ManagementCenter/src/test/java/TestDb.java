@@ -1,4 +1,4 @@
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 
@@ -13,7 +13,9 @@ public class TestDb {
 
         /** 改为WAITING */
         public static void main(String[] args) {
-                DbManager.getInstance().setTaskWaitingById("227");
+                boolean b = AtlasDbManager.getInstance().updateDeviceNameById("1", "c11");
+                System.out.println(b);
+//                DbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
         }
 
@@ -34,26 +36,26 @@ public class TestDb {
 //        }
 
         private static void getDataturksUserList(){
-                List<DataturksUser> dataturksUserList =DbManager.getInstance().getDataturksUserList();
+                List<DataturksUser> dataturksUserList = AtlasDbManager.getInstance().getDataturksUserList();
                 for (DataturksUser dataturksUser : dataturksUserList) {
                         System.out.println(dataturksUser.toString());
                 }
         }
 
         private static void getTaskList(){
-                List<Task> taskList=DbManager.getInstance().getTaskList();
+                List<Task> taskList= AtlasDbManager.getInstance().getTaskList();
                 for (Task task : taskList) {
                         System.out.println(task.toString());
                 }
         }
 
         private static void getClientIdByToken(String token){
-                String id = DbManager.getInstance().getClientIdByToken(token);
+                String id = AtlasDbManager.getInstance().getClientIdByToken(token);
 
         }
 
         private static void getWaittingTaskList(){
-                List<Task> taskList=DbManager.getInstance().getWaittingTaskList();
+                List<Task> taskList= AtlasDbManager.getInstance().getWaittingTaskList();
                 for (Task task : taskList) {
                         System.out.println(task.toString());
                 }
@@ -66,7 +68,7 @@ public class TestDb {
 
 //        @Test
         public static void updateDeviceDetail(){
-                DbManager.getInstance().updateDeviceGpuDetailById("2","{\n" +
+                AtlasDbManager.getInstance().updateDeviceGpuDetailById("2","{\n" +
                     "                \"driverVersion\": \"440.31\",\n" +
                     "                \"cudaVersion\": \"10.2\",\n" +
                     "                \"gpuNum\": 2,\n" +

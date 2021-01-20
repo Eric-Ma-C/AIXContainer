@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.task;
 
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
@@ -153,7 +153,7 @@ public class TaskManager {
             shellResultMap.remove(token);
             ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
-            DbManager.getInstance().setTaskFinished(task.getId());
+            AtlasDbManager.getInstance().setTaskFinished(task.getId());
             LogUtils.info("{}任务执行成功!", token);
         } else {
             /** 若失败则说明当前任务完成,返回值非零,也要移除任务,再抢新的任务 */
@@ -191,7 +191,7 @@ public class TaskManager {
                     LogUtils.error("askForCmds() 容器token:{}不存在",token);
                     return new ServerMessage(Intent.GRAB_TASK_FAILED);
                 }
-                task = DbManager.getInstance().grabTask(id);
+                task = AtlasDbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
                     LogUtils.info("{}:暂未抢到任务，请耐心等待...", token);
@@ -328,7 +328,7 @@ public class TaskManager {
         ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
         //修改数据库
-        DbManager.getInstance().setTaskFailed(task.getId());
+        AtlasDbManager.getInstance().setTaskFailed(task.getId());
 
         LogUtils.error("{}任务执行失败，重新开始抢任务!", token);
 

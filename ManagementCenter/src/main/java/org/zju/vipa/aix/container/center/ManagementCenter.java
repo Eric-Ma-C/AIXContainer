@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center;
 
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.dubbo.RpcServer;
 import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
@@ -94,7 +94,7 @@ public class ManagementCenter {
         AixDevice device;
         if (id==null){
             /** 去数据库检查token   */
-            device = DbManager.getInstance().getClientByToken(token);
+            device = AtlasDbManager.getInstance().getClientByToken(token);
 
 //            id = JwtUtils.decodeClinetIdByToken(token);
             if (device != null) {
@@ -137,7 +137,7 @@ public class ManagementCenter {
         client.setGpuInfo(info);
         /** 更新心跳时间 */
         client.setLastHeartbeat(System.currentTimeMillis());
-        DbManager.getInstance().updateDeviceGpuDetailById(client.getId(), JsonUtils.toJSONString(info));
+        AtlasDbManager.getInstance().updateDeviceGpuDetailById(client.getId(), JsonUtils.toJSONString(info));
     }
 
     public void updateRunningCmds(String token, String cmds) {

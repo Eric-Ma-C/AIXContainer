@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.Action;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
@@ -207,7 +207,7 @@ public class SocketHandler implements Runnable {
         String id = ok ? ManagementCenter.getInstance().registerClient(token,clientHostIp) : null;
         if (id != null && id.length() > 0) {
 
-            DbManager.getInstance().updateDeviceLastLoginById(id);
+            AtlasDbManager.getInstance().updateDeviceLastLoginById(id);
 
             LogUtils.info(Action.CLIENT_REGISTER, "Container id={} registered successfully!  token={} host_ip={}", id, token, clientHostIp);
             resMsg = new ServerMessage(Intent.REGISTER, "OK");

@@ -18,17 +18,17 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 数据库管理器, 单例
  */
-public class DbManager implements Serializable {
+public class AtlasDbManager implements Serializable {
 
     //    private SqlSessionFactory sqlSessionFactory;
     private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
     private DbService dbService;
 
     private static class DbManagerHolder {
-        private static final DbManager INSTANCE = new DbManager();
+        private static final AtlasDbManager INSTANCE = new AtlasDbManager();
     }
 
-    private DbManager() {
+    private AtlasDbManager() {
         if (DbManagerHolder.INSTANCE != null) {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
@@ -36,7 +36,7 @@ public class DbManager implements Serializable {
         init();
     }
 
-    public static DbManager getInstance() {
+    public static AtlasDbManager getInstance() {
         return DbManagerHolder.INSTANCE;
     }
 
@@ -109,16 +109,17 @@ public class DbManager implements Serializable {
      *
      * @return: java.util.List<Task>
      */
-    public Boolean setTaskFinished(final String taskId) {
+    public boolean setTaskFinished(final String taskId) {
 
         return dbService.setTaskFinished(taskId);
     }
+
     /**
      * 任务训练状态更新为失败
      *
      * @return: java.util.List<Task>
      */
-    public Boolean setTaskFailed(final String taskId) {
+    public boolean setTaskFailed(final String taskId) {
 
         return dbService.setTaskFailedById(taskId);
     }
@@ -166,13 +167,13 @@ public class DbManager implements Serializable {
      *
      * @return:
      */
-    public List<AixDevice> getClientListByPage(final int page,final int countPerPage) {
+    public List<AixDevice> getClientListByPage(final int page, final int countPerPage) {
 
-        return dbService.getClientListByPage(page,countPerPage);
+        return dbService.getClientListByPage(page, countPerPage);
 
     }
 
-    public int getClientCount(){
+    public int getClientCount() {
         return dbService.getClientCount();
     }
 
@@ -181,7 +182,7 @@ public class DbManager implements Serializable {
      *
      * @return
      */
-    public Boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
+    public boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
 
         return dbService.updateDeviceGpuDetailById(clientId, detail);
     }
@@ -191,7 +192,7 @@ public class DbManager implements Serializable {
      *
      * @return
      */
-    public Boolean updateDeviceTokenById(final String clientId, final String token) {
+    public boolean updateDeviceTokenById(final String clientId, final String token) {
 
         return dbService.updateDeviceTokenById(clientId, token);
     }
@@ -201,23 +202,35 @@ public class DbManager implements Serializable {
      *
      * @return
      */
-    public Boolean updateDeviceNameById(final String clientId, final String name) {
-
-        return dbService.updateDeviceNameById(clientId, name);
+    public boolean updateDeviceNameById(final String clientId, final String name) {
+        Boolean ok = dbService.updateDeviceNameById(clientId, name);
+        return ok == null ? false : ok;
     }
+
+    /**
+     * 更新容器info
+     *
+     * @return
+     */
+    public boolean updateDeviceInfoById(final String clientId, final String info) {
+
+        return dbService.updateDeviceInfoById(clientId, info);
+    }
+
     /**
      * 更新容器last_login
+     *
      * @return
      */
     public void updateDeviceLastLoginById(final String clientId) {
-         dbService.updateDeviceLastLoginById(clientId);
+        dbService.updateDeviceLastLoginById(clientId);
     }
 
-    public void setTaskWaitingById(String taskId){
+    public void setTaskWaitingById(String taskId) {
         dbService.setTaskWaitingById(taskId);
     }
 
-    public void insertClient(AixDevice aixDevice){
+    public void insertClient(AixDevice aixDevice) {
         dbService.insertClient(aixDevice);
     }
 }

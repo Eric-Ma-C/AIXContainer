@@ -3,6 +3,7 @@ package org.zju.vipa.aix.container.api;
 import org.zju.vipa.aix.container.api.entity.AixDeviceVO;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Message;
 
@@ -134,4 +135,19 @@ public interface AIXClientCenterService {
      * @return: java.util.List<org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice>
      */
     List<AixDeviceVO> getClientListByPage(int page, int countPerPage);
+
+    /**
+     *  更新容器
+     * @param
+     * @return: int
+     */
+    boolean updateDeviceNameById(String id,String newName);
+    /**
+     *  更新容器
+     * @param
+     * @return: int
+     */
+    boolean updateDeviceInfoById(String id,String newInfo);
+
+    void refreshRuntimeErrorList(List<KnownErrorRuntime> knownErrorRuntimeList);
 }
