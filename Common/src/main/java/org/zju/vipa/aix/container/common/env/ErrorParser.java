@@ -65,7 +65,11 @@ public class ErrorParser {
                         errorName=errorRuntime.getName();
                         List<String> cmds = JsonUtils.getList(errorRuntime.getRepair_cmds(), String.class);
                         for (String cmd : cmds) {
-                            repairCmds.add(cmd);
+                            if ("$RUNNING_CMDS".equals(cmd)){
+                                repairCmds.add(runningCmds);
+                            }else {
+                                repairCmds.add(cmd);
+                            }
                         }
                         break;
                     }
