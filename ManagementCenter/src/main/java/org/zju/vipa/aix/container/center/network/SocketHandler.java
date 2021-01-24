@@ -250,7 +250,7 @@ public class SocketHandler implements Runnable {
         String token = msg.getToken();
 
         /** 根据token获取id */
-        String id = ManagementCenter.getInstance().getIdByToken(token);
+        String id = ManagementCenter.getInstance().getClientIdByToken(token);
 
         if (id == null) {
             LogUtils.error("Grabbing task no such a device:token={}", msg.getToken());

@@ -56,7 +56,7 @@ public class SqlSessionManager {
         Reader reader = null;
         try {
             // 加载配置文件
-            reader = Resources.getResourceAsReader("mybatis/mybatis-conf.xml");
+            reader = Resources.getResourceAsReader("mybatis/mybatis-atlas-conf.xml");
             // 构建SqlSession工厂，并从工厂里打开一个SqlSession
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
             sqlSessionFactory.getConfiguration().addMapper(DataturksUserDAO.class);

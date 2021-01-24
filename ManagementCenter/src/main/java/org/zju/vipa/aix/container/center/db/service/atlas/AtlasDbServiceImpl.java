@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.db.service;
+package org.zju.vipa.aix.container.center.db.service.atlas;
 
 import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.session.SqlSession;
@@ -22,7 +22,7 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 三合一项目  atlas数据库访问
  */
-public class AtlasDbServiceImpl extends SqlSessionInitializer implements DbService {
+public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements AtlasDbService {
     @Override
     public SqlSession getSession() {
         return super.getSession();

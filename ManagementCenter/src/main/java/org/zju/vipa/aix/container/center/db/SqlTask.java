@@ -5,7 +5,7 @@ import org.apache.ibatis.session.SqlSession;
 /**
  * @Date: 2020/3/24 17:43
  * @Author: EricMa
- * @Description: sql执行体
+ * @Description: sql执行接口
  */
 public interface SqlTask<T> {
 

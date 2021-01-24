@@ -128,12 +128,16 @@ public class Task implements Serializable {
      * 任务环境配置失败的标志（数据库置为FAILED），askForCmds会检查该字段，失败则告诉客户端放弃此任务，重新抢任务
      */
     private transient boolean isFailed = false;
+    /**
+     * 任务开始时间
+     */
+    private transient Date startTime;
 
     public Task() {
     }
 
     public Task(TaskTask tt) {
-        if (tt==null) {
+        if (tt == null) {
             return;
         }
         TaskInfo serializedInfo = JsonUtils.parseObject(tt.getTask(), TaskInfo.class);
@@ -186,11 +190,20 @@ public class Task implements Serializable {
             ", trainBy='" + trainBy + '\'' +
             ", trainDetail='" + trainDetail + '\'' +
             ", codePath='" + codePath + '\'' +
-            ", preCoed='" + preCmds + '\'' +
+            ", preCmds='" + preCmds + '\'' +
             ", errorQueue=" + errorQueue +
             ", unknownErrorTime=" + unknownErrorTime +
             ", isFailed=" + isFailed +
+            ", startTime=" + startTime +
             '}';
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     public void addUnknownErrorTime() {
@@ -215,10 +228,10 @@ public class Task implements Serializable {
     }
 
     public String getPreCmds() {
-        preCmds=preCmds.trim();
+        preCmds = preCmds.trim();
         if (preCmds != null) {
             return preCmds;
-        }else {
+        } else {
             return "";
         }
     }

@@ -90,7 +90,7 @@ public class ManagementCenter {
      * @return: id null代表注册失败
      */
     public String registerClient(String token,String hostIp) {
-        String id = getIdByToken(token);
+        String id = getClientIdByToken(token);
         AixDevice device;
         if (id==null){
             /** 去数据库检查token   */
@@ -115,7 +115,7 @@ public class ManagementCenter {
      * @param token
      * @return: java.lang.String 返回null代表无此设备
      */
-    public String getIdByToken(String token) {
+    public String getClientIdByToken(String token) {
         RunningClient client = clientMap.get(token);
         String id = null;
         if (client != null) {

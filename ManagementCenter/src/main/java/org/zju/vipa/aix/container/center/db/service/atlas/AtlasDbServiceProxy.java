@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.db.service;
+package org.zju.vipa.aix.container.center.db.service.atlas;
 
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -12,26 +12,26 @@ import java.lang.reflect.Method;
  * @Author: EricMa
  * @Description: 代理实现自动事务管理，回滚等
  */
-public class DbServiceProxy implements InvocationHandler {
+public class AtlasDbServiceProxy implements InvocationHandler {
 
-    private DbService dbService;
+    private AtlasDbService atlasDbService;
 
-    public DbServiceProxy(DbService dbService) {
-        this.dbService = dbService;
+    public AtlasDbServiceProxy(AtlasDbService atlasDbService) {
+        this.atlasDbService = atlasDbService;
     }
 
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
         if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
-            return method.invoke(dbService, args);
+            return method.invoke(atlasDbService, args);
         }
 //        final DbService service = (DbService) proxy;
 //        proxy instanceof DbService == true
 
         /** sqlSession和method的session应该是同一个 */
-        SqlSession sqlSession = dbService.getSession();
+        SqlSession sqlSession = atlasDbService.getSession();
         try {
-            Object ret = method.invoke(dbService, args);
+            Object ret = method.invoke(atlasDbService, args);
             sqlSession.commit();
             return ret;
         } catch (Throwable t) {
@@ -43,7 +43,7 @@ public class DbServiceProxy implements InvocationHandler {
 //            return returnType.newInstance();
             return null;
         } finally {
-            dbService.closeSession();
+            atlasDbService.closeSession();
         }
 
 
