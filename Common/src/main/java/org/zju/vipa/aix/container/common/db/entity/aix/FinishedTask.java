@@ -1,5 +1,7 @@
 package org.zju.vipa.aix.container.common.db.entity.aix;
 
+import org.zju.vipa.aix.container.common.utils.TimeUtils;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
@@ -41,7 +43,7 @@ public class FinishedTask implements Serializable{
     this.status = status;
     this.begin = begin;
     this.end = end;
-    this.duration_min = duration_min;
+    this.duration_min = TimeUtils.dateMinusMin(end,begin);
     StringBuilder sb=new StringBuilder();
     for (String log : logs) {
       sb.append(log);

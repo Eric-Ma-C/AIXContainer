@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.common.db.entity.aix;
 
-
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.env.EnvError;
@@ -228,8 +227,8 @@ public class Task implements Serializable {
     }
 
     public String getPreCmds() {
-        preCmds = preCmds.trim();
         if (preCmds != null) {
+            preCmds=preCmds.trim();
             return preCmds;
         } else {
             return "";
@@ -237,7 +236,11 @@ public class Task implements Serializable {
     }
 
     public void setPreCmds(String preCmds) {
-        this.preCmds = preCmds;
+        if (preCmds != null) {
+            this.preCmds = preCmds.trim();
+        }else {
+            this.preCmds="";
+        }
     }
 
     public ConcurrentLinkedQueue<EnvError> getErrorQueue() {

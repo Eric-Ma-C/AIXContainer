@@ -64,7 +64,8 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public Task getTaskByToken(String token) {
-        return TaskManagerService.getTaskByToken(token);
+        Task task = TaskManagerService.getTaskByToken(token);
+        return task;
     }
 
     @Override

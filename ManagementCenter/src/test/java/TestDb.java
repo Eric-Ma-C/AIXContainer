@@ -13,9 +13,9 @@ public class TestDb {
 
         /** 改为WAITING */
         public static void main(String[] args) {
-                boolean b = AtlasDbManager.getInstance().updateDeviceNameById("1", "c11");
-                System.out.println(b);
-//                DbManager.getInstance().setTaskWaitingById("227");
+//                boolean b = AtlasDbManager.getInstance().updateDeviceNameById("1", "c11");
+//                System.out.println(b);
+                AtlasDbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
         }
 

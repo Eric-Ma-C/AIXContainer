@@ -42,6 +42,11 @@ public class TimeUtils {
     public static final long MILLISECONDS_PER_HOUR = 3600000L;
 
     /**
+     * 每分钟毫秒数.
+     */
+    public static final long MILLISECONDS_PER_MINUTE = 60000L;
+
+    /**
      * 每分钟秒数.
      */
     public static final long SECONDS_PER_MINUTE = 60L;
@@ -339,7 +344,7 @@ public class TimeUtils {
      * @return String 相差的小时数，保留一位小数
      * @since 1.0
      */
-    public static String dateMinus(Date date1, Date date2) {
+    public static String dateMinusHour(Date date1, Date date2) {
         if (date1 == null || date2 == null) {
             return "0";
         }
@@ -347,6 +352,22 @@ public class TimeUtils {
         DecimalFormat df = new DecimalFormat("#.0");
         double result = r * 1.0 / MILLISECONDS_PER_HOUR;
         return df.format(result);
+    }
+
+    /**
+     * 计算两个日期之前间隔的分钟数.
+     *
+     * @param date1 结束时间
+     * @param date2 开始时间
+     * @return String 相差的分钟数
+     */
+    public static int dateMinusMin(Date date1, Date date2) {
+        if (date1 == null || date2 == null) {
+            return 0;
+        }
+        Long r = date1.getTime() - date2.getTime();
+        int result = (int) (r / MILLISECONDS_PER_MINUTE);
+        return result;
     }
 
     /**
