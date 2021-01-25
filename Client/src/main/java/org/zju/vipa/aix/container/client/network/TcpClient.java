@@ -61,18 +61,8 @@ public class TcpClient {
     }
 
     /** 向平台通知任务执行完成 */
-    public Message reportTaskFinished(int resultCode,String command) {
-        ClientMessage msg = new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode + " ,cmds=" + command);
-        if (resultCode==0) {
-            msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_SUCCESS);
-        }else {
-            if (Thread.interrupted()) {
-                ClientLogUtils.worning("用户中断任务");
-                msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_USER_STOPPED);
-            }else {
-                msg.addCustomData(Message.SHELL_RESULT_KEY,Message.SHELL_RESULT_FAILED);
-            }
-        }
+    public Message reportTaskFinished(ClientMessage msg) {
+
         //发送数据
         Message resMsg = clientIO.sendMsgAndGetResponse(msg);
 

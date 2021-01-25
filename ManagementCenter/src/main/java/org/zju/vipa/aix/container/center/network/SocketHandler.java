@@ -337,15 +337,17 @@ public class SocketHandler implements Runnable {
         boolean isSuccess = false;
         if (Message.SHELL_RESULT_SUCCESS.equals(result)) {
             isSuccess = true;
-        }
-        TaskManager.getInstance().setLastShellResult(message.getToken(), isSuccess);
-
-        if (Message.SHELL_RESULT_USER_STOPPED.equals(result)) {
-            //TODO 通知前端关闭等待对话框
+        }else if (Message.SHELL_RESULT_USER_STOPPED.equals(result)) {
             //删除平台上记录的容器任务
             TaskManagerService.userStopTask(message.getToken());
-
+        }else if (Message.SHELL_RESULT_FAILED.equals(result)) {
+//todo 暂时未考虑
+//            TaskManagerService.
         }
+
+
+
+        TaskManager.getInstance().setLastShellResult(message.getToken(), isSuccess);
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
 
 

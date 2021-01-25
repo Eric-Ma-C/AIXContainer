@@ -11,7 +11,8 @@ import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.utils.TimeUtils;
 
 import java.util.Queue;
-import java.util.concurrent.*;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Future;
 
 
 /**
@@ -97,11 +98,12 @@ public class ClientTaskController {
      */
     public void stopCurrentTask() {
         if (currentTaskFuture != null) {
-            boolean canCancel = false;
+//            boolean canCancel = false;
             if (!currentTaskFuture.isCancelled()) {
                 /** stop the task */
-                canCancel = currentTaskFuture.cancel(true);
-                ClientLogUtils.debug("currentTaskFuture.cancel(true) canCancel={}", canCancel);
+                currentTask.stop();
+//                canCancel = currentTaskFuture.cancel(true);
+//                ClientLogUtils.debug("currentTaskFuture.cancel(true) canCancel={}", canCancel);
 
                 /** 删除本地待执行任务 */
                 currentTask.setRepairCmds(null);
@@ -109,6 +111,8 @@ public class ClientTaskController {
 
                 //任务置为正在停止状态，等待执行结果汇报服务器后置为STOPPED
                 currentTask.setState(TaskState.STOPPING);
+                currentTask.shellProcess.setUserStopped(true);
+
                 ClientLogUtils.debug("currentTask.setState(TaskState.STOPPING)");
 
                 /** 在新的线程中等待任务结束，避免心跳线程等待任务结束过久（没发心跳包）使平台误以为容器离线 */
@@ -120,7 +124,7 @@ public class ClientTaskController {
                         //等待停止任务异步操作完成
                         while (currentTask.getState() != TaskState.STOPPED) {
                             try {
-                                Thread.sleep(3000);
+                                Thread.sleep(2000);
                                 ClientLogUtils.info("Waiting for task to finished...");
                             } catch (InterruptedException e) {
                                 Thread.currentThread().interrupt();
@@ -174,12 +178,16 @@ public class ClientTaskController {
         boolean noTaskRunning = (currentTask == null ||
             TaskState.STOPPED.match(currentTask.getState()));
 
+        ClientLogUtils.debug("currentTask={}", currentTask);
         if (!noTaskRunning) {
             ClientLogUtils.info("Current task has not finished.Wait for execution.");
             return;
 
         } else if (noTaskRunning && taskQueue.isEmpty()) {
 
+            if (currentTask != null) {
+                ClientLogUtils.debug("currentTask.getState()={}", currentTask.getState());
+            }
             /** 向平台请求任务 */
             ClientLogUtils.info("Client Task Queue is empty.Ask for new work.");
             TcpClient.getInstance().askForCmds();
@@ -198,7 +206,6 @@ public class ClientTaskController {
                     @Override
                     public void onBegin() {
                         ClientLogUtils.info("\n\n\n----- Task begin -----:\n{}", currentTask);
-
                     }
 
                     @Override

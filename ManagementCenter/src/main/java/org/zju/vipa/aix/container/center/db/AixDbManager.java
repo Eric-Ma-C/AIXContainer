@@ -47,7 +47,7 @@ public class AixDbManager implements Serializable {
         //2.传入委托对象，创建调用处理器对象(InvocationHandler)
         AixDbServiceProxy aixDbServiceProxy = new AixDbServiceProxy(aixDbService);
         //3.传入委托对象接口和调用处理器，动态生成代理对象
-        this.aixDbService = (AixDbServiceImpl) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), aixDbServiceProxy);
+        this.aixDbService = (AixDbService) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), aixDbServiceProxy);
         //4.通过代理对象调用方法
         //dbService.getClientIdByToken();
     }

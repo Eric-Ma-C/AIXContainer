@@ -333,14 +333,18 @@ public class TaskManager {
         /** 删除task消息队列(如果有的话) */
         serialTaskMessageMap.remove(token);
 
-        /** 记录任务执行情况至数据库 */
-        AixDbManager.getInstance().insertFinishedTask(
-            new FinishedTask(ManagementCenter.getInstance().getClientIdByToken(token),
-                task.getId(),taskStatus,task.getStartTime(),new Date(),
-                ManagementCenter.getInstance().getTaskLogsByToken(token)));
         /** 更新容器显示状态 */
         ManagementCenter.getInstance().updateRunningCmds(token, "");
         ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
+
+        /** 记录任务执行情况至数据库 */
+        FinishedTask finishedTask = new FinishedTask(ManagementCenter.getInstance().getClientIdByToken(token),
+            task.getId(), taskStatus, task.getStartTime(), new Date(),
+            ManagementCenter.getInstance().getTaskLogsByToken(token));
+        LogUtils.info("insert FinishedTask:{}",finishedTask);
+
+        AixDbManager.getInstance().insertFinishedTask(finishedTask);
+
 
         //修改数据库
         AtlasDbManager.getInstance().setTaskFailed(task.getId());
@@ -502,9 +506,7 @@ public class TaskManager {
      * @return:
      */
     protected void userStopTask(String token) {
-        /** 处理逻辑暂时和任务失败一样 */
+        LogUtils.worning("User Stop Task");
         handleTaskFailed(token,"CANCEL");
-
     }
-
 }

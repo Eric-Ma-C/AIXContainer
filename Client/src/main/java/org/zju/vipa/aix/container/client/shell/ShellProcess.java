@@ -16,12 +16,15 @@ import java.io.IOException;
  * @Description: 非阻塞 execute shell command
  */
 public class ShellProcess implements RealtimeProcessListener {
-
+    /**
+     * 真正创建进程执行的数据结构
+     */
     private RealtimeProcess mRealtimeProcess = null;
     private HandleShellErrorListener handleShellErrorListener;
     private ServerResponseListener serverResponseListener;
     private String command;
-//    private String cmdDir;
+    //    private String cmdDir;
+    private boolean isUserStopped = false;
 
     public ShellProcess(String cmd, String cmdDir) {
         mRealtimeProcess = new RealtimeProcess(this);
@@ -45,9 +48,9 @@ public class ShellProcess implements RealtimeProcessListener {
         mRealtimeProcess.setCommand(cmdList.substring(0, cmdList.length() - 4));
     }
 
-    public void exec(HandleShellErrorListener errorListener,ServerResponseListener responseListener) {
+    public void exec(HandleShellErrorListener errorListener, ServerResponseListener responseListener) {
         this.handleShellErrorListener = errorListener;
-        this.serverResponseListener=responseListener;
+        this.serverResponseListener = responseListener;
         exec();
 
         //System.out.println(mRealtimeProcess.getAllResult());
@@ -64,6 +67,12 @@ public class ShellProcess implements RealtimeProcessListener {
 
         //System.out.println(mRealtimeProcess.getAllResult());
 
+    }
+
+    public void stop() {
+        if (mRealtimeProcess != null) {
+            mRealtimeProcess.stop();
+        }
     }
 
     @Override
@@ -121,7 +130,20 @@ public class ShellProcess implements RealtimeProcessListener {
         /** 指令执行结果一直都需要上传,用于判断任务执行完毕 */
         ClientLogUtils.info(false, "resultCode={},cmds={}", resultCode, command);
 
-        Message resMsg = TcpClient.getInstance().reportTaskFinished(resultCode, command);
+        ClientMessage msg = new ClientMessage(Intent.SHELL_RESULT, "resultCode=" + resultCode + " ,cmds=" + command);
+        if (resultCode == 0) {
+            msg.addCustomData(Message.SHELL_RESULT_KEY, Message.SHELL_RESULT_SUCCESS);
+        } else {
+//            if (Thread.interrupted()) {
+            if (isUserStopped) {
+
+                ClientLogUtils.worning("用户中断任务");
+                msg.addCustomData(Message.SHELL_RESULT_KEY, Message.SHELL_RESULT_USER_STOPPED);
+            } else {
+                msg.addCustomData(Message.SHELL_RESULT_KEY, Message.SHELL_RESULT_FAILED);
+            }
+        }
+        Message resMsg = TcpClient.getInstance().reportTaskFinished(msg);
         if (serverResponseListener != null) {
             /** 返回服务器的意见 */
             serverResponseListener.onResponse(resMsg);
@@ -139,4 +161,7 @@ public class ShellProcess implements RealtimeProcessListener {
         void onHandle(String moduleName);
     }
 
+    public void setUserStopped(boolean userStopped) {
+        isUserStopped = userStopped;
+    }
 }

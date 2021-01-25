@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.center.db;
 
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 
 /**
  * @Date: 2021/1/22 15:44
@@ -29,7 +30,7 @@ public class SqlSessionInitializer {
             session = sqlSessionFactory.openSession();
             localSqlSession.set(session);
         }
-
+        LogUtils.debug("getSession().Configuration={}",session.getConfiguration());
         return session;
     }
 
@@ -38,9 +39,10 @@ public class SqlSessionInitializer {
      */
     protected void closeSession() {
         //从当前线程变量获取
-        SqlSession sqlSession = localSqlSession.get();
-        if (sqlSession != null) {
-            sqlSession.close();
+        SqlSession session = localSqlSession.get();
+        if (session != null) {
+            LogUtils.debug("closeSession().Configuration={}",session.getConfiguration());
+            session.close();
             localSqlSession.remove();
         }
     }

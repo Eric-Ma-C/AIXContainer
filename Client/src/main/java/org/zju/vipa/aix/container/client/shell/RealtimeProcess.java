@@ -2,11 +2,13 @@ package org.zju.vipa.aix.container.client.shell;
 
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
+import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
@@ -33,6 +35,7 @@ public class RealtimeProcess {
      * 处理线程构造器
      */
     private ProcessBuilder mProcessBuilder = null;
+    private Process mProcess;
     private BufferedReader readStdout = null;
     private BufferedReader readStderr = null;
     /**
@@ -87,7 +90,8 @@ public class RealtimeProcess {
         mProcessBuilder.redirectErrorStream(false);
 
         /** 启动process */
-        handleProcessOutput(mProcessBuilder.start());
+        mProcess=mProcessBuilder.start();
+        handleProcessOutput(mProcess);
 
         //test env
 //        ClientLogUtils.info(mProcessBuilder.environment().toString(), true);
@@ -187,7 +191,14 @@ public class RealtimeProcess {
                 }
 //                resultCode = process.exitValue();
                 try {
+
+                    ClientLogUtils.debug("process.waitFor()调用");
                     resultCode = process.waitFor();
+                    ClientLogUtils.debug("process.waitFor()返回resultCode={}",resultCode);
+
+
+
+
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     ClientExceptionUtils.handle(e);
@@ -225,6 +236,40 @@ public class RealtimeProcess {
 
     public boolean isRunning() {
         return this.isRunning;
+    }
+
+    public void stop(){
+        if (mProcess != null) {
+//            ClientLogUtils.debug("mProcess.destroy()调用");
+//            mProcess.destroy();
+            long pid = getPidOfProcess(mProcess);
+            ClientLogUtils.debug("kill mProcess pid={}",pid);
+            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "kill -9 "+pid);
+
+            try {
+                Process p = pb.start();
+            } catch (IOException e) {
+                ClientExceptionUtils.handle(e);
+            }
+
+        }
+    }
+
+
+    private synchronized long getPidOfProcess(Process p) {
+        long pid = -1;
+
+        try {
+            if (p.getClass().getName().equals("java.lang.UNIXProcess")) {
+                Field f = p.getClass().getDeclaredField("pid");
+                f.setAccessible(true);
+                pid = f.getLong(p);
+                f.setAccessible(false);
+            }
+        } catch (Exception e) {
+            pid = -1;
+        }
+        return pid;
     }
 
 }

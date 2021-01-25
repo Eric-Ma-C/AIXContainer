@@ -17,6 +17,8 @@ public class TestDb {
 //                System.out.println(b);
                 AtlasDbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
+
+//                AixDbManager.getInstance().insertFinishedTask(new FinishedTask());
         }
 
 //        public static void main(String[] args) {

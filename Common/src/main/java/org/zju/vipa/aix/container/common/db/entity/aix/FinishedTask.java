@@ -122,4 +122,17 @@ public class FinishedTask implements Serializable{
     this.logs = logs;
   }
 
+  @Override
+  public String toString() {
+    return "FinishedTask{" +
+        "id=" + id +
+        ", device_id=" + device_id +
+        ", task_id='" + task_id + '\'' +
+        ", status='" + status + '\'' +
+        ", begin=" + begin +
+        ", end=" + end +
+        ", duration_min=" + duration_min +
+        ", logs='" + logs + '\'' +
+        '}';
+  }
 }
