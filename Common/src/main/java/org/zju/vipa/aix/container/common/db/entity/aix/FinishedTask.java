@@ -8,131 +8,145 @@ import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class FinishedTask implements Serializable{
-  @Id
-  @GeneratedValue(generator = "JDBC")
-  private int id;
+public class FinishedTask implements Serializable {
+    @Id
+    @GeneratedValue(generator = "JDBC")
+    private int id;
 
-  /**执行该任务的设备id**/
-  private int device_id;
+    /**
+     * 执行该任务的设备id
+     **/
+    private int deviceId;
 
-  /**执行任务的id,一个任务可能被多次执行**/
-  private String task_id;
+    /**
+     * 执行任务的id,一个任务可能被多次执行
+     **/
+    private int taskId;
 
-  /**任务状态(SUCCESS,FAILED,ENV_FAILED,CANCEL)**/
-  private String status;
+    /**
+     * 任务状态(SUCCESS,FAILED,CANCEL)
+     **/
+    private String status;
 
-  /**开始时间**/
-  private java.util.Date begin;
+    /**
+     * 开始时间
+     **/
+    private java.util.Date begin;
 
-  /**结束时间**/
-  private java.util.Date end;
+    /**
+     * 结束时间
+     **/
+    private java.util.Date end;
 
-  /**持续时长,单位分钟**/
-  private int duration_min;
+    /**
+     * 持续时长,单位分钟
+     **/
+    private int durationMin;
 
-  /**任务日志,json数组**/
-  private String logs;
+    /**
+     * 任务日志,json数组
+     **/
+    private String logs;
 
-  public FinishedTask() {
-  }
-
-  public FinishedTask(String device_id, String task_id, String status, Date begin, Date end, List<String> logs) {
-    this.device_id = Integer.parseInt(device_id);
-    this.task_id = task_id;
-    this.status = status;
-    this.begin = begin;
-    this.end = end;
-    this.duration_min = TimeUtils.dateMinusMin(end,begin);
-    StringBuilder sb=new StringBuilder();
-    for (String log : logs) {
-      sb.append(log);
+    public FinishedTask() {
     }
-    this.logs=sb.toString();
-  }
 
-  public int getId() {
-    return id;
-  }
+    public FinishedTask(String deviceId, String taskId, String status, Date begin, Date end, List<String> logs) {
+        this.deviceId = Integer.parseInt(deviceId);
+        this.taskId = Integer.parseInt(taskId);
+        this.status = status;
+        this.begin = begin;
+        this.end = end;
+        this.durationMin = TimeUtils.dateMinusMin(end, begin);
+        StringBuilder sb = new StringBuilder();
+        for (String log : logs) {
+            sb.append(log);
+        }
+        this.logs = sb.toString();
+    }
 
-  public void setId(int id) {
-    this.id = id;
-  }
+    public int getId() {
+        return id;
+    }
 
-
-  public int getDevice_id() {
-    return device_id;
-  }
-
-  public void setDevice_id(int device_id) {
-    this.device_id = device_id;
-  }
-
-
-  public String getTask_id() {
-    return task_id;
-  }
-
-  public void setTask_id(String task_id) {
-    this.task_id = task_id;
-  }
+    public void setId(int id) {
+        this.id = id;
+    }
 
 
-  public String getStatus() {
-    return status;
-  }
+    public int getDeviceId() {
+        return deviceId;
+    }
 
-  public void setStatus(String status) {
-    this.status = status;
-  }
-
-
-  public java.util.Date getBegin() {
-    return begin;
-  }
-
-  public void setBegin(java.util.Date begin) {
-    this.begin = begin;
-  }
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
 
 
-  public java.util.Date getEnd() {
-    return end;
-  }
+    public int getTaskId() {
+        return taskId;
+    }
 
-  public void setEnd(java.util.Date end) {
-    this.end = end;
-  }
-
-
-  public int getDuration_min() {
-    return duration_min;
-  }
-
-  public void setDuration_min(int duration_min) {
-    this.duration_min = duration_min;
-  }
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
 
 
-  public String getLogs() {
-    return logs;
-  }
+    public String getStatus() {
+        return status;
+    }
 
-  public void setLogs(String logs) {
-    this.logs = logs;
-  }
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
-  @Override
-  public String toString() {
-    return "FinishedTask{" +
-        "id=" + id +
-        ", device_id=" + device_id +
-        ", task_id='" + task_id + '\'' +
-        ", status='" + status + '\'' +
-        ", begin=" + begin +
-        ", end=" + end +
-        ", duration_min=" + duration_min +
-        ", logs='" + logs + '\'' +
-        '}';
-  }
+
+    public java.util.Date getBegin() {
+        return begin;
+    }
+
+    public void setBegin(java.util.Date begin) {
+        this.begin = begin;
+    }
+
+
+    public java.util.Date getEnd() {
+        return end;
+    }
+
+    public void setEnd(java.util.Date end) {
+        this.end = end;
+    }
+
+
+    public int getDurationMin() {
+        return durationMin;
+    }
+
+    public void setDurationMin(int durationMin) {
+        this.durationMin = durationMin;
+    }
+
+
+    public String getLogs() {
+        return logs;
+    }
+
+    public void setLogs(String logs) {
+        this.logs = logs;
+    }
+
+    @Override
+    public String toString() {
+        return "FinishedTask{" +
+            "id=" + id +
+            ", deviceId=" + deviceId +
+            ", taskId=" + taskId +
+            ", status='" + status + '\'' +
+            ", begin=" + begin +
+            ", end=" + end +
+            ", durationMin=" + durationMin +
+            ", logs='" + logs + '\'' +
+            '}';
+    }
 }

@@ -4,14 +4,14 @@ import java.io.Serializable;
 public class Models implements Serializable{
 
   private int id;
-  private String model_name;
-  private String dataset_name;
+  private String modelName;
+  private String datasetName;
   private String md5;
   private String task;
   private String file;
-  private int is_public;
-  private java.util.Date created_time;
-  private int user_id;
+  private int isPublic;
+  private java.util.Date createdTime;
+  private int userId;
   private String info;
   private String args;
   private String metrics;
@@ -26,21 +26,21 @@ public class Models implements Serializable{
   }
 
 
-  public String getModel_name() {
-    return model_name;
+  public String getModelName() {
+    return modelName;
   }
 
-  public void setModel_name(String model_name) {
-    this.model_name = model_name;
+  public void setModelName(String modelName) {
+    this.modelName = modelName;
   }
 
 
-  public String getDataset_name() {
-    return dataset_name;
+  public String getDatasetName() {
+    return datasetName;
   }
 
-  public void setDataset_name(String dataset_name) {
-    this.dataset_name = dataset_name;
+  public void setDatasetName(String datasetName) {
+    this.datasetName = datasetName;
   }
 
 
@@ -71,30 +71,30 @@ public class Models implements Serializable{
   }
 
 
-  public int getIs_public() {
-    return is_public;
+  public int getIsPublic() {
+    return isPublic;
   }
 
-  public void setIs_public(int is_public) {
-    this.is_public = is_public;
-  }
-
-
-  public java.util.Date getCreated_time() {
-    return created_time;
-  }
-
-  public void setCreated_time(java.util.Date created_time) {
-    this.created_time = created_time;
+  public void setIsPublic(int isPublic) {
+    this.isPublic = isPublic;
   }
 
 
-  public int getUser_id() {
-    return user_id;
+  public java.util.Date getCreatedTime() {
+    return createdTime;
   }
 
-  public void setUser_id(int user_id) {
-    this.user_id = user_id;
+  public void setCreatedTime(java.util.Date createdTime) {
+    this.createdTime = createdTime;
+  }
+
+
+  public int getUserId() {
+    return userId;
+  }
+
+  public void setUserId(int userId) {
+    this.userId = userId;
   }
 
 

@@ -18,6 +18,11 @@ public class TestDb {
                 AtlasDbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
 
+
+//                AixDevice client = AtlasDbManager.getInstance().getClientById(String.valueOf(2));
+//                System.out.println(client);
+
+
 //                AixDbManager.getInstance().insertFinishedTask(new FinishedTask());
         }
 

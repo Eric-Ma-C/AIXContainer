@@ -10,11 +10,11 @@ import org.zju.vipa.aix.container.center.log.LogUtils;
  * @Description:
  */
 public class SqlSessionInitializer {
-    protected static SqlSessionFactory sqlSessionFactory;
+    protected SqlSessionFactory sqlSessionFactory;
     /**
      * 保证每个线程一个session
      */
-    private static ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
+    private ThreadLocal<SqlSession> localSqlSession = new ThreadLocal<>();
 
 
     /**
@@ -30,7 +30,7 @@ public class SqlSessionInitializer {
             session = sqlSessionFactory.openSession();
             localSqlSession.set(session);
         }
-        LogUtils.debug("getSession().Configuration={}",session.getConfiguration());
+        LogUtils.info("getSession().Configuration.getEnvironmentId={}",session);
         return session;
     }
 
@@ -41,7 +41,7 @@ public class SqlSessionInitializer {
         //从当前线程变量获取
         SqlSession session = localSqlSession.get();
         if (session != null) {
-            LogUtils.debug("closeSession().Configuration={}",session.getConfiguration());
+            LogUtils.info("closeSession().Configuration.getEnvironment={}",session);
             session.close();
             localSqlSession.remove();
         }

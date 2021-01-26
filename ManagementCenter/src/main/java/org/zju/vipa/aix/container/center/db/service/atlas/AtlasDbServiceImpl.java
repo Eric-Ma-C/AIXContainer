@@ -154,7 +154,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
             }
             String codePath = atlasCodes.getFile();
             task.setCodePath(codePath);
-            String preCmd = atlasCodes.getPre_cmd();
+            String preCmd = atlasCodes.getPreCmd();
             task.setPreCmds(preCmd);
         }
 
@@ -194,7 +194,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public void insertClient(AixDevice aixDevice) {
         AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
-        deviceMapper.insert_aix_device(aixDevice.getDevice_name(), aixDevice.getInfo(), aixDevice.getToken(), aixDevice.getUser_id());
+        deviceMapper.insert_aix_device(aixDevice.getDeviceName(), aixDevice.getInfo(), aixDevice.getToken(), aixDevice.getUserId());
 
     }
 

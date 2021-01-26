@@ -16,14 +16,14 @@ import java.util.regex.Pattern;
  */
 public class AixDeviceVO implements Serializable {
     private int id;
-    private String device_name;
-    private String created_time;
-    private String last_login;
+    private String deviceName;
+    private String createdTime;
+    private String lastLogin;
 
 
     private String info;
     private String token;
-    private int user_id;
+    private int userId;
 
     private String  driverVersion, cudaVersion;
     private List<GpuInfo.Gpu> gpus;
@@ -41,12 +41,12 @@ public class AixDeviceVO implements Serializable {
             return;
         }
         id=device.getId();
-        device_name=device.getDevice_name();
-        created_time=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(device.getCreated_time());
-        last_login=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(device.getLast_login());
+        deviceName =device.getDeviceName();
+        createdTime =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(device.getCreatedTime());
+        lastLogin =new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(device.getLastLogin());
         info=device.getInfo();
         token=device.getToken();
-        user_id=device.getUser_id();
+        userId =device.getUserId();
 
         GpuInfo gpuInfo= JsonUtils.parseObject(device.getDetail(),GpuInfo.class);
         if (gpuInfo != null) {
@@ -73,28 +73,28 @@ public class AixDeviceVO implements Serializable {
         this.id = id;
     }
 
-    public String getDevice_name() {
-        return device_name;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setDevice_name(String device_name) {
-        this.device_name = device_name;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
-    public String getCreated_time() {
-        return created_time;
+    public String getCreatedTime() {
+        return createdTime;
     }
 
-    public void setCreated_time(String created_time) {
-        this.created_time = created_time;
+    public void setCreatedTime(String createdTime) {
+        this.createdTime = createdTime;
     }
 
-    public String getLast_login() {
-        return last_login;
+    public String getLastLogin() {
+        return lastLogin;
     }
 
-    public void setLast_login(String last_login) {
-        this.last_login = last_login;
+    public void setLastLogin(String lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
     public String getDriverVersion() {
@@ -161,11 +161,11 @@ public class AixDeviceVO implements Serializable {
         this.token = token;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

@@ -19,7 +19,7 @@ import java.io.Reader;
  */
 public class AtlasSqlSessionInitializer extends SqlSessionInitializer {
 
-    static {
+    public AtlasSqlSessionInitializer() {
         Reader reader = null;
         try {
             // 加载配置文件

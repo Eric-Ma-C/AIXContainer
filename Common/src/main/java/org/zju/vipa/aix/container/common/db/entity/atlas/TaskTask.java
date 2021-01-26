@@ -4,26 +4,26 @@ import java.io.Serializable;
 public class TaskTask implements Serializable{
 
   private int id;
-  private String task_uid;
+  private String taskUid;
   private int distributed;
   private String task;
   private String result;
-  private java.util.Date created_time;
-  private java.util.Date started_time;
-  private java.util.Date completed_time;
+  private java.util.Date createdTime;
+  private java.util.Date startedTime;
+  private java.util.Date completedTime;
   private String note;
-  private int server_id;
-  private int user_id;
+  private int serverId;
+  private int userId;
   private String info;
   private String name;
   private String processor;
   private String status;
-  private int train_by_id;
-  private int flowchart_id;
-  private String node_uid;
-  private int is_public;
-  private String stage_type;
-  private int multiple_task_id;
+  private int trainById;
+  private int flowchartId;
+  private String nodeUid;
+  private int isPublic;
+  private String stageType;
+  private int multipleTaskId;
 
 
   public int getId() {
@@ -35,12 +35,12 @@ public class TaskTask implements Serializable{
   }
 
 
-  public String getTask_uid() {
-    return task_uid;
+  public String getTaskUid() {
+    return taskUid;
   }
 
-  public void setTask_uid(String task_uid) {
-    this.task_uid = task_uid;
+  public void setTaskUid(String taskUid) {
+    this.taskUid = taskUid;
   }
 
 
@@ -71,30 +71,30 @@ public class TaskTask implements Serializable{
   }
 
 
-  public java.util.Date getCreated_time() {
-    return created_time;
+  public java.util.Date getCreatedTime() {
+    return createdTime;
   }
 
-  public void setCreated_time(java.util.Date created_time) {
-    this.created_time = created_time;
-  }
-
-
-  public java.util.Date getStarted_time() {
-    return started_time;
-  }
-
-  public void setStarted_time(java.util.Date started_time) {
-    this.started_time = started_time;
+  public void setCreatedTime(java.util.Date createdTime) {
+    this.createdTime = createdTime;
   }
 
 
-  public java.util.Date getCompleted_time() {
-    return completed_time;
+  public java.util.Date getStartedTime() {
+    return startedTime;
   }
 
-  public void setCompleted_time(java.util.Date completed_time) {
-    this.completed_time = completed_time;
+  public void setStartedTime(java.util.Date startedTime) {
+    this.startedTime = startedTime;
+  }
+
+
+  public java.util.Date getCompletedTime() {
+    return completedTime;
+  }
+
+  public void setCompletedTime(java.util.Date completedTime) {
+    this.completedTime = completedTime;
   }
 
 
@@ -107,21 +107,21 @@ public class TaskTask implements Serializable{
   }
 
 
-  public int getServer_id() {
-    return server_id;
+  public int getServerId() {
+    return serverId;
   }
 
-  public void setServer_id(int server_id) {
-    this.server_id = server_id;
+  public void setServerId(int serverId) {
+    this.serverId = serverId;
   }
 
 
-  public int getUser_id() {
-    return user_id;
+  public int getUserId() {
+    return userId;
   }
 
-  public void setUser_id(int user_id) {
-    this.user_id = user_id;
+  public void setUserId(int userId) {
+    this.userId = userId;
   }
 
 
@@ -161,57 +161,57 @@ public class TaskTask implements Serializable{
   }
 
 
-  public int getTrain_by_id() {
-    return train_by_id;
+  public int getTrainById() {
+    return trainById;
   }
 
-  public void setTrain_by_id(int train_by_id) {
-    this.train_by_id = train_by_id;
-  }
-
-
-  public int getFlowchart_id() {
-    return flowchart_id;
-  }
-
-  public void setFlowchart_id(int flowchart_id) {
-    this.flowchart_id = flowchart_id;
+  public void setTrainById(int trainById) {
+    this.trainById = trainById;
   }
 
 
-  public String getNode_uid() {
-    return node_uid;
+  public int getFlowchartId() {
+    return flowchartId;
   }
 
-  public void setNode_uid(String node_uid) {
-    this.node_uid = node_uid;
-  }
-
-
-  public int getIs_public() {
-    return is_public;
-  }
-
-  public void setIs_public(int is_public) {
-    this.is_public = is_public;
+  public void setFlowchartId(int flowchartId) {
+    this.flowchartId = flowchartId;
   }
 
 
-  public String getStage_type() {
-    return stage_type;
+  public String getNodeUid() {
+    return nodeUid;
   }
 
-  public void setStage_type(String stage_type) {
-    this.stage_type = stage_type;
+  public void setNodeUid(String nodeUid) {
+    this.nodeUid = nodeUid;
   }
 
 
-  public int getMultiple_task_id() {
-    return multiple_task_id;
+  public int getIsPublic() {
+    return isPublic;
   }
 
-  public void setMultiple_task_id(int multiple_task_id) {
-    this.multiple_task_id = multiple_task_id;
+  public void setIsPublic(int isPublic) {
+    this.isPublic = isPublic;
+  }
+
+
+  public String getStageType() {
+    return stageType;
+  }
+
+  public void setStageType(String stageType) {
+    this.stageType = stageType;
+  }
+
+
+  public int getMultipleTaskId() {
+    return multipleTaskId;
+  }
+
+  public void setMultipleTaskId(int multipleTaskId) {
+    this.multipleTaskId = multipleTaskId;
   }
 
 }

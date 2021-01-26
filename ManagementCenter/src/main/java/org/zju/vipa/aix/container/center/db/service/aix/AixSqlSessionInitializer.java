@@ -19,7 +19,7 @@ import java.io.Reader;
 public class AixSqlSessionInitializer extends SqlSessionInitializer {
 
 
-    static {
+    public  AixSqlSessionInitializer(){
         Reader reader = null;
         try {
             // 加载配置文件
@@ -37,12 +37,12 @@ public class AixSqlSessionInitializer extends SqlSessionInitializer {
         initMapper();
     }
 
-    private static void initMapper() {
+    private void initMapper() {
         MapperHelper mapperHelper = new MapperHelper();
         //特殊配置
         Config config = new Config();
-        //具体支持的参数看后面的文档
-//        config.set(XXX);
+        //字段与变量名相同,默认驼峰转下划线
+//        config.setStyle(Style.normal);
         //设置配置
         mapperHelper.setConfig(config);
         // 注册自己项目中使用的通用Mapper接口，这里没有默认值，必须手动注册

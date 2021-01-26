@@ -4,28 +4,23 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.io.Serializable;
 
-/**
- * @Date: 2021/1/22 15:15
- * @Author: EricMa
- * @Description:
- */
-public class KnownError  implements Serializable {
-
+public class KnownError implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
-    private Long id;
-
+    private int id;
     private String name;
-    private String key_words;
-    private String repair_cmds;
+    private String keyWords;
+    private String repairCmds;
 
-    public Long getId() {
+
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
+
 
     public String getName() {
         return name;
@@ -35,19 +30,22 @@ public class KnownError  implements Serializable {
         this.name = name;
     }
 
-    public String getKey_words() {
-        return key_words;
+
+    public String getKeyWords() {
+        return keyWords;
     }
 
-    public void setKey_words(String key_words) {
-        this.key_words = key_words;
+    public void setKeyWords(String keyWords) {
+        this.keyWords = keyWords;
     }
 
-    public String getRepair_cmds() {
-        return repair_cmds;
+
+    public String getRepairCmds() {
+        return repairCmds;
     }
 
-    public void setRepair_cmds(String repair_cmds) {
-        this.repair_cmds = repair_cmds;
+    public void setRepairCmds(String repairCmds) {
+        this.repairCmds = repairCmds;
     }
+
 }

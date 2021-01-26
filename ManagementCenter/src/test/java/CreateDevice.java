@@ -30,10 +30,10 @@ public class CreateDevice {
             tokenList[i]=JwtUtils.createJWT(i+"", -1);
 
             AixDevice aixDevice =new AixDevice();
-            aixDevice.setDevice_name(nameList[i]);
+            aixDevice.setDeviceName(nameList[i]);
             aixDevice.setInfo("aix test device");
             aixDevice.setToken(tokenList[i]);
-            aixDevice.setUser_id(1);
+            aixDevice.setUserId(1);
             /** 插入数据库 */
 //            DbManager.getInstance().insertClient(aixDevice);
 

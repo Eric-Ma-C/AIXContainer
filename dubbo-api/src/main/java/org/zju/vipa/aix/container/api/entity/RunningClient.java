@@ -73,9 +73,9 @@ public class RunningClient implements Serializable {
     public RunningClient(AixDevice device,String hostIp) {
 
         this.hostIp=hostIp;
-        this.name = device.getDevice_name();
+        this.name = device.getDeviceName();
         this.info = device.getInfo();
-        this.userId = String.valueOf(device.getUser_id());
+        this.userId = String.valueOf(device.getUserId());
         this.id = String.valueOf(device.getId());
         this.token = device.getToken();
         this.since = TimeUtils.getCurrentTimeStr();

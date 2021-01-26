@@ -148,11 +148,11 @@ public class Task implements Serializable {
         accessType = "";
         datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());// null   ;
         info = tt.getInfo();
-        updatedTime = tt.getStarted_time();
-        createdTime = tt.getCreated_time();
+        updatedTime = tt.getStartedTime();
+        createdTime = tt.getCreatedTime();
         status = tt.getStatus();
         modelId = serializedInfo.getTask_args().getTeacher_models().get(0).getId() + "";
-        modelProvider = tt.getUser_id() + "";
+        modelProvider = tt.getUserId() + "";
         modelArgs = "";
         List<Fields> fieldsList = serializedInfo.getTask_args().getAlgorithms().getFields();
         for (Fields field : fieldsList) {
@@ -162,9 +162,9 @@ public class Task implements Serializable {
             }
         }
         modelArgs += " --id=" + tt.getId();
-        modelArgs += " --stage_type=" + tt.getStage_type();
+        modelArgs += " --stage_type=" + tt.getStageType();
 
-        trainBy = tt.getTrain_by_id() + "";
+        trainBy = tt.getTrainById() + "";
         trainDetail = tt.getNote();
         codePath = Config.MODEL_UNZIP_PATH;
     }
