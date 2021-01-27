@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.center.db.service.atlas;
 
-import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
@@ -14,58 +13,70 @@ import java.util.List;
  */
 public interface AtlasDbService {
 
-    /**
-     * localSqlSession获取与直接sqlSessionFactory.openSession();相比，好在sqlSession关闭前，
-     * 如果不小心在其他线程调用sqlSession的方法不会产生并发冲突
-     *
-     * @param
-     * @return: org.apache.ibatis.session.SqlSession
-     */
-     SqlSession getSession() ;
+//    /**
+//     * localSqlSession获取与直接sqlSessionFactory.openSession();相比，好在sqlSession关闭前，
+//     * 如果不小心在其他线程调用sqlSession的方法不会产生并发冲突
+//     *
+//     * @param
+//     * @return: org.apache.ibatis.session.SqlSession
+//     */
+//    SqlSession getSession();
+//
+//    /**
+//     * 关闭Session
+//     */
+//    void closeSession();
+
+    //    public abstract <T> T getMapper(Class<? extends Mapper> clazz);
+//    abstract <T> T getMapper(Class<?> clazz);
 
     /**
-     * 关闭Session
-     */
-    void closeSession() ;
-    /**
      * 更新容器detail
+     *
      * @return
      */
     Boolean updateDeviceGpuDetailById(final String clientId, final String detail);
 
     /**
      * 更新容器token
+     *
      * @return
      */
     Boolean updateDeviceTokenById(final String clientId, final String token);
+
     /**
      * 更新容器name
+     *
      * @return
      */
     Boolean updateDeviceNameById(final String clientId, final String name);
+
     /**
      * 更新容器info
+     *
      * @return
      */
     Boolean updateDeviceInfoById(final String clientId, final String info);
+
     /**
      * 任务训练状态更新为完成
-     *
      */
     Boolean setTaskFinished(final String taskId);
+
     /**
      * 为某个容器id抢到一个任务
      *
      * @return: java.util.List<Task>
      */
     Task grabTask(final String clientId);
+
     /**
      * 根据token查询数据库有无该设备
      *
      * @param token
      * @return: java.lang.String
      */
-     String getClientIdByToken(final String token);
+    String getClientIdByToken(final String token);
 
     /**
      * 根据token查询设备
@@ -84,15 +95,17 @@ public interface AtlasDbService {
     AixDevice getClientById(final String id);
 
     /**
-     *  分页查询
-     * @param page 查询第几页
+     * 分页查询
+     *
+     * @param page         查询第几页
      * @param countPerPage 每页的条数(一般固定值)
      * @return: java.util.List<org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice>
      */
-    List<AixDevice> getClientListByPage(int page,int countPerPage);
+    List<AixDevice> getClientListByPage(int page, int countPerPage);
 
     /**
-     *   注册容器数量
+     * 注册容器数量
+     *
      * @param
      * @return: int
      */
@@ -104,7 +117,8 @@ public interface AtlasDbService {
      *
      * @return: java.util.List<Task>
      */
-     List<Task> getWaittingTaskList();
+    List<Task> getWaittingTaskList();
+
     /**
      * 获取所有任务
      *
@@ -121,6 +135,7 @@ public interface AtlasDbService {
      * @return
      */
     void updateDeviceLastLoginById(String clientId);
+
     /**
      * 任务训练状态更新为失败
      *
@@ -137,6 +152,6 @@ public interface AtlasDbService {
 
     /**
      * 创建新客户端
-     * */
+     */
     void insertClient(AixDevice aixDevice);
 }

@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.center.db;
 
-import org.zju.vipa.aix.container.center.db.service.atlas.AtlasDbServiceImpl;
 import org.zju.vipa.aix.container.center.db.service.atlas.AtlasDbService;
 import org.zju.vipa.aix.container.center.db.service.atlas.AtlasDbServiceProxy;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
@@ -56,11 +55,11 @@ public class AtlasDbManager implements Serializable {
 
         /** Atlas数据库接口 */
         //1.创建委托对象(DbService)
-        AtlasDbServiceImpl atlasDbService = new AtlasDbServiceImpl();
-        //2.传入委托对象，创建调用处理器对象(InvocationHandler)
-        AtlasDbServiceProxy atlasDbServiceProxy = new AtlasDbServiceProxy(atlasDbService);
+//        AtlasDbServiceImpl atlasDbServiceImpl = new AtlasDbServiceImpl();
+        //2.创建调用处理器对象(InvocationHandler)
+        AtlasDbServiceProxy atlasDbServiceProxy = new AtlasDbServiceProxy();
         //3.传入委托对象接口和调用处理器，动态生成代理对象
-        this.atlasDbService = (AtlasDbService) Proxy.newProxyInstance(AtlasDbServiceImpl.class.getClassLoader(), AtlasDbServiceImpl.class.getInterfaces(), atlasDbServiceProxy);
+        this.atlasDbService = (AtlasDbService) Proxy.newProxyInstance(AtlasDbService.class.getClassLoader(), new Class[]{AtlasDbService.class}, atlasDbServiceProxy);
         //4.通过代理对象调用方法
         //dbService.getClientIdByToken();
     }

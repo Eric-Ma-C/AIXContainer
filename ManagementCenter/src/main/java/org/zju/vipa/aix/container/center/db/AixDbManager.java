@@ -1,7 +1,6 @@
 package org.zju.vipa.aix.container.center.db;
 
 import org.zju.vipa.aix.container.center.db.service.aix.AixDbService;
-import org.zju.vipa.aix.container.center.db.service.aix.AixDbServiceImpl;
 import org.zju.vipa.aix.container.center.db.service.aix.AixDbServiceProxy;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
@@ -42,12 +41,12 @@ public class AixDbManager implements Serializable {
      */
     private void init() {
         /** AIX数据库接口 */
-        //1.创建委托对象(DbService)
-        AixDbServiceImpl aixDbService = new AixDbServiceImpl();
+        //1.创建委托对象(AixDbServiceImpl)
+//        AixDbServiceImpl aixDbService = new AixDbServiceImpl();
         //2.传入委托对象，创建调用处理器对象(InvocationHandler)
-        AixDbServiceProxy aixDbServiceProxy = new AixDbServiceProxy(aixDbService);
+        AixDbServiceProxy aixDbServiceProxy = new AixDbServiceProxy();
         //3.传入委托对象接口和调用处理器，动态生成代理对象
-        this.aixDbService = (AixDbService) Proxy.newProxyInstance(AixDbServiceImpl.class.getClassLoader(), AixDbServiceImpl.class.getInterfaces(), aixDbServiceProxy);
+        this.aixDbService = (AixDbService) Proxy.newProxyInstance(AixDbService.class.getClassLoader(), new Class[]{AixDbService.class}, aixDbServiceProxy);
         //4.通过代理对象调用方法
         //dbService.getClientIdByToken();
     }

@@ -5,7 +5,8 @@ import org.apache.ibatis.session.RowBounds;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
 import java.util.List;
-
+//todo extends Mapper为什么不行  参考aix数据库实现
+//public interface AixDeviceMapper extends Mapper<AixDevice> {
 public interface AixDeviceMapper {
 
     @Select("select * from aix_device where token = #{token}")

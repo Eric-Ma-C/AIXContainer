@@ -1,7 +1,6 @@
 package org.zju.vipa.aix.container.center.db.service.atlas;
 
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.atlas.AixDeviceMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.CodesMapper;
 import org.zju.vipa.aix.container.center.db.dao.atlas.TaskTaskMapper;
@@ -22,16 +21,16 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 三合一项目  atlas数据库访问
  */
-public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements AtlasDbService {
-    @Override
-    public SqlSession getSession() {
-        return super.getSession();
-    }
-
-    @Override
-    public void closeSession() {
-        super.closeSession();
-    }
+public class AtlasDbServiceImpl extends AtlasSqlSessionManager implements AtlasDbService {
+//    @Override
+//    public SqlSession getSession() {
+//        return super.getSession();
+//    }
+//
+//    @Override
+//    public void closeSession() {
+//        super.closeSession();
+//    }
 
     @Override
     public Boolean updateDeviceGpuDetailById(String clientId, String detail) {
@@ -45,7 +44,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean updateDeviceTokenById(String clientId, String token) {
         // 获取映射类
-        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper aixDeviceMapper = getMapper(AixDeviceMapper.class);
         int rec = aixDeviceMapper.updateTokenById(Integer.parseInt(clientId), token);
 
 //        System.out.println("id="+clientId+" rec="+rec);
@@ -58,7 +57,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean updateDeviceNameById(String clientId, String name) {
         // 获取映射类
-        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper aixDeviceMapper = getMapper(AixDeviceMapper.class);
         int rec = aixDeviceMapper.updateNameById(Integer.parseInt(clientId), name);
 
 //        System.out.println("id="+clientId+" rec="+rec);
@@ -70,7 +69,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean updateDeviceInfoById(String clientId, String info) {
         // 获取映射类
-        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper aixDeviceMapper = getMapper(AixDeviceMapper.class);
         int rec = aixDeviceMapper.updateInfoById(Integer.parseInt(clientId), info);
 
         /** rec == 0没有该id的记录 */
@@ -80,7 +79,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean setTaskFinished(String taskId) {
         // 获取映射类
-        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        TaskTaskMapper atlasTaskMapper = getMapper(TaskTaskMapper.class);
         int rec = atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "FINISHED");
         return rec > 0;
     }
@@ -88,7 +87,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean setTaskFailedById(String taskId) {
         // 获取映射类
-        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        TaskTaskMapper atlasTaskMapper = getMapper(TaskTaskMapper.class);
         int rec = atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "FAILED");
         return rec > 0;
     }
@@ -96,18 +95,18 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public Boolean setTaskWaitingById(String taskId) {
         // 获取映射类
-        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        TaskTaskMapper atlasTaskMapper = getMapper(TaskTaskMapper.class);
         int rec = atlasTaskMapper.setTaskStatus(Integer.parseInt(taskId), "WAITING");
         return rec > 0;
     }
 
     @Override
     public Task grabTask(String clientId) {
-        SqlSession sqlSession = getSession();
+//        SqlSession sqlSession = getSession();
 
-        LogUtils.debug("grabTask sqlSession={}", sqlSession);
+//        LogUtils.debug("grabTask sqlSession={}", sqlSession);
         // 获取映射类
-        TaskTaskMapper taskMapper = sqlSession.getMapper(TaskTaskMapper.class);
+        TaskTaskMapper taskMapper = getMapper(TaskTaskMapper.class);
         List<TaskTask> taskList = taskMapper.findWaittingList();
         int len = taskList.size();
         if (taskList == null || len == 0) {
@@ -147,7 +146,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 //            Models atlasModel = modelsMapper.findModelById(Integer.parseInt(task.getModelId()));
 //            String codePath = atlasModel.getFile();
 //            task.setCodePath(codePath);
-            CodesMapper codesMapper = sqlSession.getMapper(CodesMapper.class);
+            CodesMapper codesMapper = getMapper(CodesMapper.class);
             Codes atlasCodes = codesMapper.findCodesById(Integer.parseInt(task.getModelId()));
             if (atlasCodes == null) {
                 LogUtils.error("Codes表中没有任务记录");
@@ -170,7 +169,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 
     @Override
     public String getClientIdByToken(String token) {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         AixDevice device = deviceMapper.getDeviceByToken(token);
         if (device == null) {
             return null;
@@ -181,7 +180,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 
     @Override
     public AixDevice getClientByToken(String token) {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         AixDevice device = deviceMapper.getDeviceByToken(token);
         if (device == null) {
             return null;
@@ -193,14 +192,14 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 
     @Override
     public void insertClient(AixDevice aixDevice) {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         deviceMapper.insert_aix_device(aixDevice.getDeviceName(), aixDevice.getInfo(), aixDevice.getToken(), aixDevice.getUserId());
 
     }
 
     @Override
     public AixDevice getClientById(String id) {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         AixDevice device = deviceMapper.selectById(Integer.valueOf(id));
         if (device == null) {
             return null;
@@ -211,7 +210,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 
     @Override
     public List<AixDevice> getClientListByPage(int page,int countPerPage) {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         RowBounds rowBounds=new RowBounds((page-1)*countPerPage,countPerPage);
         List<AixDevice> deviceList = deviceMapper.selectByPage(rowBounds);
 
@@ -220,7 +219,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
 
     @Override
     public int getClientCount() {
-        AixDeviceMapper deviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper deviceMapper = getMapper(AixDeviceMapper.class);
         int rows = deviceMapper.selectCount();
 
         return rows;
@@ -230,7 +229,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public List<Task> getWaittingTaskList() {
         // 获取映射类
-        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        TaskTaskMapper atlasTaskMapper = getMapper(TaskTaskMapper.class);
         // 直接调用接口的方法，传入参数id=1，返回Student对象
         List<TaskTask> atlasTaskList = atlasTaskMapper.findWaittingList();
 
@@ -245,7 +244,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public List<Task> getTaskList() {
         // 获取映射类
-        TaskTaskMapper atlasTaskMapper = getSession().getMapper(TaskTaskMapper.class);
+        TaskTaskMapper atlasTaskMapper = getMapper(TaskTaskMapper.class);
         // 直接调用接口的方法，传入参数id=1，返回Student对象
         List<TaskTask> atlasTaskList = atlasTaskMapper.findAllList();
 
@@ -265,7 +264,7 @@ public class AtlasDbServiceImpl extends AtlasSqlSessionInitializer implements At
     @Override
     public void updateDeviceLastLoginById(String clientId) {
         // 获取映射类
-        AixDeviceMapper aixDeviceMapper = getSession().getMapper(AixDeviceMapper.class);
+        AixDeviceMapper aixDeviceMapper = getMapper(AixDeviceMapper.class);
         aixDeviceMapper.updateLastLoginById(Integer.parseInt(clientId));
     }
 

@@ -2,7 +2,6 @@ package org.zju.vipa.aix.container.center.db.service.aix;
 
 
 import org.apache.ibatis.session.RowBounds;
-import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.center.db.dao.aix.FinishedTaskMapper;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 
@@ -14,17 +13,17 @@ import java.util.List;
  * @Author: EricMa
  * @Description: aix  db操作具体实现
  */
-public class AixDbServiceImpl extends AixSqlSessionInitializer implements AixDbService{
+public class AixDbServiceImpl extends AixSqlSessionManager implements AixDbService{
 
-    @Override
-    public SqlSession getSession() {
-        return super.getSession();
-    }
-
-    @Override
-    public void closeSession() {
-         super.closeSession();
-    }
+//    @Override
+//    public SqlSession getSession() {
+//        return super.getSession();
+//    }
+//
+//    @Override
+//    public void closeSession() {
+//         super.closeSession();
+//    }
 
     @Override
     public List<FinishedTask> getFinishedTaskListByPage(int page, int countPerPage) {
@@ -37,8 +36,8 @@ public class AixDbServiceImpl extends AixSqlSessionInitializer implements AixDbS
 
     @Override
     public boolean insertFinishedTask(FinishedTask finishedTask) {
-        FinishedTaskMapper deviceMapper = getSession().getMapper(FinishedTaskMapper.class);
-        return deviceMapper.insertSelective(finishedTask)>0;
+        FinishedTaskMapper deviceMapper = getMapper(FinishedTaskMapper.class);
+        return deviceMapper.insert(finishedTask)>0;
 
     }
 

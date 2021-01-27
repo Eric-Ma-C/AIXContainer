@@ -11,49 +11,37 @@ import java.util.List;
 public class FinishedTask implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
-    private int id;
+    private Integer id;
 
-    /**
-     * 执行该任务的设备id
-     **/
-    private int deviceId;
+    /**执行该任务的设备id**/
+    private Integer deviceId;
 
-    /**
-     * 执行任务的id,一个任务可能被多次执行
-     **/
-    private int taskId;
+    /**执行任务的id,一个任务可能被多次执行**/
+    private String taskId;
 
-    /**
-     * 任务状态(SUCCESS,FAILED,CANCEL)
-     **/
+    /**任务状态(SUCCESS,FAILED,ENV_FAILED,CANCEL)**/
     private String status;
 
-    /**
-     * 开始时间
-     **/
+    /**开始时间**/
     private java.util.Date begin;
 
-    /**
-     * 结束时间
-     **/
+    /**结束时间**/
     private java.util.Date end;
 
-    /**
-     * 持续时长,单位分钟
-     **/
-    private int durationMin;
+    /**持续时长,单位分钟**/
+    private Integer durationMin;
 
-    /**
-     * 任务日志,json数组
-     **/
+    /**任务日志**/
     private String logs;
+
 
     public FinishedTask() {
     }
 
+
     public FinishedTask(String deviceId, String taskId, String status, Date begin, Date end, List<String> logs) {
         this.deviceId = Integer.parseInt(deviceId);
-        this.taskId = Integer.parseInt(taskId);
+        this.taskId = taskId;
         this.status = status;
         this.begin = begin;
         this.end = end;
@@ -65,29 +53,30 @@ public class FinishedTask implements Serializable {
         this.logs = sb.toString();
     }
 
-    public int getId() {
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
 
-    public int getDeviceId() {
+    public Integer getDeviceId() {
         return deviceId;
     }
 
-    public void setDeviceId(int deviceId) {
+    public void setDeviceId(Integer deviceId) {
         this.deviceId = deviceId;
     }
 
 
-    public int getTaskId() {
+    public String getTaskId() {
         return taskId;
     }
 
-    public void setTaskId(int taskId) {
+    public void setTaskId(String taskId) {
         this.taskId = taskId;
     }
 
@@ -119,11 +108,11 @@ public class FinishedTask implements Serializable {
     }
 
 
-    public int getDurationMin() {
+    public Integer getDurationMin() {
         return durationMin;
     }
 
-    public void setDurationMin(int durationMin) {
+    public void setDurationMin(Integer durationMin) {
         this.durationMin = durationMin;
     }
 
@@ -135,6 +124,8 @@ public class FinishedTask implements Serializable {
     public void setLogs(String logs) {
         this.logs = logs;
     }
+
+
 
     @Override
     public String toString() {

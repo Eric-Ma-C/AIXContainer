@@ -22,8 +22,13 @@ public class TestDb {
 //                AixDevice client = AtlasDbManager.getInstance().getClientById(String.valueOf(2));
 //                System.out.println(client);
 
+//                FinishedTask finishedTask = new FinishedTask("123", "312", "status",new Date(),new Date(),new ArrayList<String>());
+//                FinishedTask finishedTask = new FinishedTask(ManagementCenter.getInstance().getClientIdByToken(token),
+//                    task.getId(), taskStatus, task.getStartTime(), new Date(),
+//                    ManagementCenter.getInstance().getTaskLogsByToken(token));
+//                AixDbManager.getInstance().insertFinishedTask(finishedTask);
 
-//                AixDbManager.getInstance().insertFinishedTask(new FinishedTask());
+//                AtlasDbManager.getInstance().updateDeviceGpuDetailById("1","success");
         }
 
 //        public static void main(String[] args) {

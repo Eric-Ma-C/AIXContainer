@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.center.db.service.aix;
 
-import org.apache.ibatis.session.SqlSession;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 
 import java.util.List;
@@ -11,19 +10,19 @@ import java.util.List;
  * @Description:
  */
 public interface AixDbService {
-    /**
-     * localSqlSession获取与直接sqlSessionFactory.openSession();相比，好在sqlSession关闭前，
-     * 如果不小心在其他线程调用sqlSession的方法不会产生并发冲突
-     *
-     * @param
-     * @return: org.apache.ibatis.session.SqlSession
-     */
-    SqlSession getSession() ;
-
-    /**
-     * 关闭Session
-     */
-    void closeSession() ;
+//    /**
+//     * localSqlSession获取与直接sqlSessionFactory.openSession();相比，好在sqlSession关闭前，
+//     * 如果不小心在其他线程调用sqlSession的方法不会产生并发冲突
+//     *
+//     * @param
+//     * @return: org.apache.ibatis.session.SqlSession
+//     */
+//    SqlSession getSession() ;
+//
+//    /**
+//     * 关闭Session
+//     */
+//    void closeSession() ;
 
     /**
      *  分页查询执行的任务

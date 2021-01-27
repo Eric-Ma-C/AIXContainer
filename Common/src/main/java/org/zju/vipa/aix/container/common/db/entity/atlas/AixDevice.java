@@ -2,10 +2,13 @@ package org.zju.vipa.aix.container.common.db.entity.atlas;
 
 import org.zju.vipa.aix.container.common.db.entity.aix.Device;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 
 public class AixDevice implements Serializable{
-
+    @Id
+    @GeneratedValue(generator = "JDBC")
     private int id;
     private String deviceName;
     private java.util.Date createdTime;

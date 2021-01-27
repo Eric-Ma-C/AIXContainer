@@ -14,24 +14,28 @@ import java.lang.reflect.Method;
  */
 public class AixDbServiceProxy implements InvocationHandler {
 
-    private AixDbService aixDbService;
+    private AixDbServiceImpl aixDbServiceImpl;
 
-    public AixDbServiceProxy(AixDbService aixDbService) {
-        this.aixDbService = aixDbService;
+//    public AixDbServiceProxy(AixDbServiceImpl aixDbService) {
+//        this.aixDbService = aixDbService;
+//    }
+
+    public AixDbServiceProxy() {
+        aixDbServiceImpl =new AixDbServiceImpl();
     }
 
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-        if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
-            return method.invoke(aixDbService, args);
-        }
+//        if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
+//            return method.invoke(aixDbServiceImpl, args);
+//        }
 //        final DbService service = (DbService) proxy;
 //        proxy instanceof DbService == true
 
         /** sqlSession和method的session应该是同一个 */
-        SqlSession sqlSession = aixDbService.getSession();
+        SqlSession sqlSession = aixDbServiceImpl.getSession();
         try {
-            Object ret = method.invoke(aixDbService, args);
+            Object ret = method.invoke(aixDbServiceImpl, args);
             sqlSession.commit();
             return ret;
         } catch (Throwable t) {
@@ -43,7 +47,7 @@ public class AixDbServiceProxy implements InvocationHandler {
 //            return returnType.newInstance();
             return null;
         } finally {
-            aixDbService.closeSession();
+            aixDbServiceImpl.closeSession();
         }
 
 

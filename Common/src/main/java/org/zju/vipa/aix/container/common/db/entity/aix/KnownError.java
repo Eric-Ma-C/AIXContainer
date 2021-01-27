@@ -12,6 +12,8 @@ public class KnownError implements Serializable {
     private String keyWords;
     private String repairCmds;
 
+    public KnownError() {
+    }
 
     public int getId() {
         return id;
