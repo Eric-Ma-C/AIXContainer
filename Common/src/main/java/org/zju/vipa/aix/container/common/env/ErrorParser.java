@@ -95,6 +95,9 @@ public class ErrorParser {
                     " expect \"Do you want to continue?\"  \n" +
                     " send \"Y\\n\"\n" +
                     " expect eof'");
+                if (runningCmds.contains("conda-env create")) {
+                    repairCmds.add(AIXEnvConfig.CONDA_REMOVE_ALL_CMD);
+                }
                 repairCmds.add(runningCmds);
                 break;
             case MODULE_NOT_FOUND:
