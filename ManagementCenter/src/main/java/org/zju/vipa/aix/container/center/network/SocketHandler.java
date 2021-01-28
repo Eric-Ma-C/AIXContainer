@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.center.network;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.Action;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
@@ -207,7 +207,7 @@ public class SocketHandler implements Runnable {
         String id = ok ? ManagementCenter.getInstance().registerClient(token,clientHostIp) : null;
         if (id != null && id.length() > 0) {
 
-            DbManager.getInstance().updateDeviceLastLoginById(id);
+            AtlasDbManager.getInstance().updateDeviceLastLoginById(id);
 
             LogUtils.info(Action.CLIENT_REGISTER, "Container id={} registered successfully!  token={} host_ip={}", id, token, clientHostIp);
             resMsg = new ServerMessage(Intent.REGISTER, "OK");
@@ -250,7 +250,7 @@ public class SocketHandler implements Runnable {
         String token = msg.getToken();
 
         /** 根据token获取id */
-        String id = ManagementCenter.getInstance().getIdByToken(token);
+        String id = ManagementCenter.getInstance().getClientIdByToken(token);
 
         if (id == null) {
             LogUtils.error("Grabbing task no such a device:token={}", msg.getToken());
@@ -337,15 +337,17 @@ public class SocketHandler implements Runnable {
         boolean isSuccess = false;
         if (Message.SHELL_RESULT_SUCCESS.equals(result)) {
             isSuccess = true;
-        }
-        TaskManager.getInstance().setLastShellResult(message.getToken(), isSuccess);
-
-        if (Message.SHELL_RESULT_USER_STOPPED.equals(result)) {
-            //TODO 通知前端关闭等待对话框
+        }else if (Message.SHELL_RESULT_USER_STOPPED.equals(result)) {
             //删除平台上记录的容器任务
             TaskManagerService.userStopTask(message.getToken());
-
+        }else if (Message.SHELL_RESULT_FAILED.equals(result)) {
+//todo 暂时未考虑
+//            TaskManagerService.
         }
+
+
+
+        TaskManager.getInstance().setLastShellResult(message.getToken(), isSuccess);
         LogUtils.debug("{} shellResult: {}", message.getTokenSuffix(), message.getValue());
 
 

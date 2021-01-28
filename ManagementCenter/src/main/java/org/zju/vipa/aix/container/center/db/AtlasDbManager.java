@@ -1,8 +1,7 @@
 package org.zju.vipa.aix.container.center.db;
 
-import org.zju.vipa.aix.container.center.db.service.AtlasDbServiceImpl;
-import org.zju.vipa.aix.container.center.db.service.DbService;
-import org.zju.vipa.aix.container.center.db.service.DbServiceProxy;
+import org.zju.vipa.aix.container.center.db.service.atlas.AtlasDbService;
+import org.zju.vipa.aix.container.center.db.service.atlas.AtlasDbServiceProxy;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
@@ -18,26 +17,24 @@ import java.util.List;
  * @Author: EricMa
  * @Description: 数据库管理器, 单例
  */
-public class DbManager implements Serializable {
+public class AtlasDbManager implements Serializable {
 
-    //    private SqlSessionFactory sqlSessionFactory;
-    private org.apache.ibatis.session.SqlSessionManager sqlSessionManager;
-    private DbService dbService;
+    private AtlasDbService atlasDbService;
 
-    private static class DbManagerHolder {
-        private static final DbManager INSTANCE = new DbManager();
+    private static class AtlasDbManagerHolder {
+        private static final AtlasDbManager INSTANCE = new AtlasDbManager();
     }
 
-    private DbManager() {
-        if (DbManagerHolder.INSTANCE != null) {
+    private AtlasDbManager() {
+        if (AtlasDbManagerHolder.INSTANCE != null) {
             throw new AIXBaseException(ExceptionCodeEnum.SINGLETON_MULTI_INSTANCE);
         }
 
         init();
     }
 
-    public static DbManager getInstance() {
-        return DbManagerHolder.INSTANCE;
+    public static AtlasDbManager getInstance() {
+        return AtlasDbManagerHolder.INSTANCE;
     }
 
 
@@ -58,11 +55,11 @@ public class DbManager implements Serializable {
 
         /** Atlas数据库接口 */
         //1.创建委托对象(DbService)
-        AtlasDbServiceImpl atlasDbService = new AtlasDbServiceImpl();
-        //2.传入委托对象，创建调用处理器对象(InvocationHandler)
-        DbServiceProxy dbServiceProxy = new DbServiceProxy(atlasDbService);
+//        AtlasDbServiceImpl atlasDbServiceImpl = new AtlasDbServiceImpl();
+        //2.创建调用处理器对象(InvocationHandler)
+        AtlasDbServiceProxy atlasDbServiceProxy = new AtlasDbServiceProxy();
         //3.传入委托对象接口和调用处理器，动态生成代理对象
-        dbService = (DbService) Proxy.newProxyInstance(AtlasDbServiceImpl.class.getClassLoader(), AtlasDbServiceImpl.class.getInterfaces(), dbServiceProxy);
+        this.atlasDbService = (AtlasDbService) Proxy.newProxyInstance(AtlasDbService.class.getClassLoader(), new Class[]{AtlasDbService.class}, atlasDbServiceProxy);
         //4.通过代理对象调用方法
         //dbService.getClientIdByToken();
     }
@@ -71,7 +68,7 @@ public class DbManager implements Serializable {
     public List<DataturksUser> getDataturksUserList() {
 
 
-        return dbService.getDataturksUserList();
+        return atlasDbService.getDataturksUserList();
     }
 
     /**
@@ -81,7 +78,7 @@ public class DbManager implements Serializable {
      * @return: java.util.List<Task>列表
      */
     public List<Task> getTaskList() {
-        return dbService.getTaskList();
+        return atlasDbService.getTaskList();
     }
 
     /**
@@ -90,7 +87,7 @@ public class DbManager implements Serializable {
      * @return: java.util.List<Task>
      */
     public List<Task> getWaittingTaskList() {
-        return dbService.getWaittingTaskList();
+        return atlasDbService.getWaittingTaskList();
 
     }
 
@@ -101,7 +98,7 @@ public class DbManager implements Serializable {
      */
     public Task grabTask(final String clientId) {
 
-        return dbService.grabTask(clientId);
+        return atlasDbService.grabTask(clientId);
     }
 
     /**
@@ -109,18 +106,19 @@ public class DbManager implements Serializable {
      *
      * @return: java.util.List<Task>
      */
-    public Boolean setTaskFinished(final String taskId) {
+    public boolean setTaskFinished(final String taskId) {
 
-        return dbService.setTaskFinished(taskId);
+        return atlasDbService.setTaskFinished(taskId);
     }
+
     /**
      * 任务训练状态更新为失败
      *
      * @return: java.util.List<Task>
      */
-    public Boolean setTaskFailed(final String taskId) {
+    public boolean setTaskFailed(final String taskId) {
 
-        return dbService.setTaskFailedById(taskId);
+        return atlasDbService.setTaskFailedById(taskId);
     }
 
     /**
@@ -132,7 +130,7 @@ public class DbManager implements Serializable {
     public String getClientIdByToken(final String token) {
 
 
-        return dbService.getClientIdByToken(token);
+        return atlasDbService.getClientIdByToken(token);
 
 
     }
@@ -145,7 +143,7 @@ public class DbManager implements Serializable {
      */
     public AixDevice getClientByToken(final String token) {
 
-        return dbService.getClientByToken(token);
+        return atlasDbService.getClientByToken(token);
 
     }
 
@@ -157,8 +155,23 @@ public class DbManager implements Serializable {
      */
     public AixDevice getClientById(final String id) {
 
-        return dbService.getClientById(id);
+        return atlasDbService.getClientById(id);
 
+    }
+
+    /**
+     * 分页查询device
+     *
+     * @return:
+     */
+    public List<AixDevice> getClientListByPage(final int page, final int countPerPage) {
+
+        return atlasDbService.getClientListByPage(page, countPerPage);
+
+    }
+
+    public int getClientCount() {
+        return atlasDbService.getClientCount();
     }
 
     /**
@@ -166,23 +179,55 @@ public class DbManager implements Serializable {
      *
      * @return
      */
-    public Boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
+    public boolean updateDeviceGpuDetailById(final String clientId, final String detail) {
 
-        return dbService.updateDeviceGpuDetailById(clientId, detail);
+        return atlasDbService.updateDeviceGpuDetailById(clientId, detail);
     }
+
+    /**
+     * 更新容器token
+     *
+     * @return
+     */
+    public boolean updateDeviceTokenById(final String clientId, final String token) {
+
+        return atlasDbService.updateDeviceTokenById(clientId, token);
+    }
+
+    /**
+     * 更新容器name
+     *
+     * @return
+     */
+    public boolean updateDeviceNameById(final String clientId, final String name) {
+        Boolean ok = atlasDbService.updateDeviceNameById(clientId, name);
+        return ok == null ? false : ok;
+    }
+
+    /**
+     * 更新容器info
+     *
+     * @return
+     */
+    public boolean updateDeviceInfoById(final String clientId, final String info) {
+
+        return atlasDbService.updateDeviceInfoById(clientId, info);
+    }
+
     /**
      * 更新容器last_login
+     *
      * @return
      */
     public void updateDeviceLastLoginById(final String clientId) {
-         dbService.updateDeviceLastLoginById(clientId);
+        atlasDbService.updateDeviceLastLoginById(clientId);
     }
 
-    public void setTaskWaitingById(String taskId){
-        dbService.setTaskWaitingById(taskId);
+    public void setTaskWaitingById(String taskId) {
+        atlasDbService.setTaskWaitingById(taskId);
     }
 
-    public void insertClient(AixDevice aixDevice){
-        dbService.insertClient(aixDevice);
+    public void insertClient(AixDevice aixDevice) {
+        atlasDbService.insertClient(aixDevice);
     }
 }

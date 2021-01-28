@@ -17,7 +17,7 @@ public enum TaskState {
 
     @Override
     public String toString() {
-        return this.toString();
+        return this.name();
     }
 
     /**

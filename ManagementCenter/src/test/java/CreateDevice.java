@@ -1,3 +1,4 @@
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.util.JwtUtils;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
 
@@ -13,32 +14,35 @@ import java.io.IOException;
 public class CreateDevice {
     public static void main(String[] args) {
 //        generateShell();
+
+//        correctToken();
+        correctName();
     }
 
     private static void generateShell() {
 
         final int COUNT = 10;
-        String[] nameList = new String[COUNT];
-        for (int i = 0; i < COUNT; i++) {
-            nameList[i] = "c" + i;
-        }
+        String[] nameList = new String[COUNT+1];
+        String[] tokenList = new String[COUNT+1];
         StringBuilder shellStr=new StringBuilder("#!/bin/bash\n");
-        for (String name : nameList) {
-            String token = JwtUtils.createJWT(name, -1);
+        for (int i = 1; i <= COUNT; i++) {
+            nameList[i] = "c" + i;
+            tokenList[i]=JwtUtils.createJWT(i+"", -1);
+
             AixDevice aixDevice =new AixDevice();
-            aixDevice.setDevice_name(name);
+            aixDevice.setDeviceName(nameList[i]);
             aixDevice.setInfo("aix test device");
-            aixDevice.setToken(token);
-            aixDevice.setUser_id(1);
+            aixDevice.setToken(tokenList[i]);
+            aixDevice.setUserId(1);
             /** 插入数据库 */
 //            DbManager.getInstance().insertClient(aixDevice);
 
             /** eg. stax c1 eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiIxIn0.RwXicwD8L7Whd5PUgIDsDOY_4XFMF5D4D9WLlqizPEg /nfs2/aix/models/training '"device=0"' */
             shellStr.append("stax ");
-            shellStr.append(name);
+            shellStr.append(nameList[i]);
             shellStr.append(" ");
-            shellStr.append(token);
-            shellStr.append(" /nfs2/aix/models/training '\"device=0\"' &&\n");
+            shellStr.append(tokenList[i]);
+            shellStr.append(" /nfs2/aix/models/training &&\n");
         }
 
         try {
@@ -50,6 +54,23 @@ public class CreateDevice {
             System.out.println("文件创建成功！");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+
+    private static void correctToken(){
+        int MAX_ID=105;
+        for (int id = 1; id <= MAX_ID; id++) {
+            String token = JwtUtils.createJWT(id+"", -1);
+            AtlasDbManager.getInstance().updateDeviceTokenById(id+"",token);
+        }
+    }
+
+    private static void correctName(){
+        int MAX_ID=105;
+        for (int id = 1; id <= MAX_ID; id++) {
+            String name = "c"+id;
+            AtlasDbManager.getInstance().updateDeviceNameById(id+"",name);
         }
     }
 }

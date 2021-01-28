@@ -2,7 +2,7 @@ package org.zju.vipa.aix.container.common.db.entity.aix;
 
 
 import java.io.Serializable;
-
+@Deprecated
 public class DataturksUser implements Serializable {
 
   private String id;

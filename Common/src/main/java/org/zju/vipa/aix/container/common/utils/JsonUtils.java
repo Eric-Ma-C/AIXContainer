@@ -50,6 +50,18 @@ public class JsonUtils {
         if (obj instanceof String) {
             return (String) obj;
         }
+        if (obj instanceof Integer) {
+            return ((Integer) obj).toString();
+        }
+        if (obj instanceof Float) {
+            return ((Float) obj).toString();
+        }
+        if (obj instanceof Double) {
+            return ((Double) obj).toString();
+        }
+        if (obj instanceof Boolean) {
+            return ((Boolean) obj).toString();
+        }
         return "";
     }
 

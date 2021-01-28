@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.common.db.entity.aix;
 
-
 import org.zju.vipa.aix.container.common.config.Config;
 import org.zju.vipa.aix.container.common.db.entity.atlas.TaskTask;
 import org.zju.vipa.aix.container.common.env.EnvError;
@@ -128,12 +127,16 @@ public class Task implements Serializable {
      * 任务环境配置失败的标志（数据库置为FAILED），askForCmds会检查该字段，失败则告诉客户端放弃此任务，重新抢任务
      */
     private transient boolean isFailed = false;
+    /**
+     * 任务开始时间
+     */
+    private transient Date startTime;
 
     public Task() {
     }
 
     public Task(TaskTask tt) {
-        if (tt==null) {
+        if (tt == null) {
             return;
         }
         TaskInfo serializedInfo = JsonUtils.parseObject(tt.getTask(), TaskInfo.class);
@@ -145,11 +148,11 @@ public class Task implements Serializable {
         accessType = "";
         datasetId = String.valueOf(serializedInfo.getTask_args().getDatasets().get(0).getId());// null   ;
         info = tt.getInfo();
-        updatedTime = tt.getStarted_time();
-        createdTime = tt.getCreated_time();
+        updatedTime = tt.getStartedTime();
+        createdTime = tt.getCreatedTime();
         status = tt.getStatus();
         modelId = serializedInfo.getTask_args().getTeacher_models().get(0).getId() + "";
-        modelProvider = tt.getUser_id() + "";
+        modelProvider = tt.getUserId() + "";
         modelArgs = "";
         List<Fields> fieldsList = serializedInfo.getTask_args().getAlgorithms().getFields();
         for (Fields field : fieldsList) {
@@ -159,9 +162,9 @@ public class Task implements Serializable {
             }
         }
         modelArgs += " --id=" + tt.getId();
-        modelArgs += " --stage_type=" + tt.getStage_type();
+        modelArgs += " --stage_type=" + tt.getStageType();
 
-        trainBy = tt.getTrain_by_id() + "";
+        trainBy = tt.getTrainById() + "";
         trainDetail = tt.getNote();
         codePath = Config.MODEL_UNZIP_PATH;
     }
@@ -186,11 +189,20 @@ public class Task implements Serializable {
             ", trainBy='" + trainBy + '\'' +
             ", trainDetail='" + trainDetail + '\'' +
             ", codePath='" + codePath + '\'' +
-            ", preCoed='" + preCmds + '\'' +
+            ", preCmds='" + preCmds + '\'' +
             ", errorQueue=" + errorQueue +
             ", unknownErrorTime=" + unknownErrorTime +
             ", isFailed=" + isFailed +
+            ", startTime=" + startTime +
             '}';
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
     }
 
     public void addUnknownErrorTime() {
@@ -215,16 +227,20 @@ public class Task implements Serializable {
     }
 
     public String getPreCmds() {
-        preCmds=preCmds.trim();
         if (preCmds != null) {
+            preCmds=preCmds.trim();
             return preCmds;
-        }else {
+        } else {
             return "";
         }
     }
 
     public void setPreCmds(String preCmds) {
-        this.preCmds = preCmds;
+        if (preCmds != null) {
+            this.preCmds = preCmds.trim();
+        }else {
+            this.preCmds="";
+        }
     }
 
     public ConcurrentLinkedQueue<EnvError> getErrorQueue() {

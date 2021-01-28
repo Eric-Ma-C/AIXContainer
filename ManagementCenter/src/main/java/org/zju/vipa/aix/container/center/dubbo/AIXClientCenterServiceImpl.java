@@ -4,12 +4,15 @@ import org.zju.vipa.aix.container.api.AIXClientCenterService;
 import org.zju.vipa.aix.container.api.entity.AixDeviceVO;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.db.DbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.kafka.ClientRealTimeLogProducer;
 import org.zju.vipa.aix.container.center.log.ServerLogReader;
 import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
+import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.common.env.ErrorParser;
+import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -61,7 +64,8 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public Task getTaskByToken(String token) {
-        return TaskManagerService.getTaskByToken(token);
+        Task task = TaskManagerService.getTaskByToken(token);
+        return task;
     }
 
     @Override
@@ -93,8 +97,40 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
 
     @Override
     public AixDeviceVO getDeviceInfoById(String id) {
-        AixDeviceVO aixDeviceVO=new AixDeviceVO(DbManager.getInstance().getClientById(id));
+        AixDeviceVO aixDeviceVO=new AixDeviceVO(AtlasDbManager.getInstance().getClientById(id));
         return aixDeviceVO;
+    }
+
+    @Override
+    public int getClientCount() {
+        return AtlasDbManager.getInstance().getClientCount();
+    }
+
+    @Override
+    public List<AixDeviceVO> getClientListByPage(int page, int countPerPage) {
+        List<AixDevice> list = AtlasDbManager.getInstance().getClientListByPage(page, countPerPage);
+        List<AixDeviceVO> aixDeviceVOList=new ArrayList<>();
+        for (AixDevice device : list) {
+            aixDeviceVOList.add(new AixDeviceVO(device));
+        }
+
+        return aixDeviceVOList;
+    }
+
+    @Override
+    public boolean updateDeviceNameById(String id,String newName) {
+        return AtlasDbManager.getInstance().updateDeviceNameById(id, newName);
+
+    }
+
+    @Override
+    public boolean updateDeviceInfoById(String id,String newInfo) {
+        return AtlasDbManager.getInstance().updateDeviceInfoById(id,newInfo);
+    }
+
+    @Override
+    public void refreshRuntimeErrorList(List<KnownErrorRuntime> knownErrorRuntimeList) {
+        ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
     }
 
     @Override

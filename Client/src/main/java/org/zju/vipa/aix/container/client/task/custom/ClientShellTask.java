@@ -23,6 +23,8 @@ public class ClientShellTask extends BaseTask {
     protected void run(ServerResponseListener responseListener) {
 //        ClientLogUtils.debug("ClientShellTask.procedure() begin");
         /** 没有及时退出 */
-        new ShellProcess(getCommands()).exec(shellErrorListener,responseListener);
+        shellProcess=new ShellProcess(getCommands());
+        shellProcess.exec(shellErrorListener,responseListener);
     }
+
 }

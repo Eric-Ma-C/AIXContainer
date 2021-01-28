@@ -2,11 +2,13 @@ package org.zju.vipa.aix.container.center.task;
 
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
 import org.zju.vipa.aix.container.center.ManagementCenter;
-import org.zju.vipa.aix.container.center.db.DbManager;
-import org.zju.vipa.aix.container.center.network.ServerMessage;
+import org.zju.vipa.aix.container.center.db.AixDbManager;
+import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.log.LogUtils;
+import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.common.config.AIXEnvConfig;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
+import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.env.EnvError;
 import org.zju.vipa.aix.container.common.env.ErrorParser;
@@ -15,6 +17,7 @@ import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
@@ -153,11 +156,16 @@ public class TaskManager {
             shellResultMap.remove(token);
             ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
-            DbManager.getInstance().setTaskFinished(task.getId());
+            AtlasDbManager.getInstance().setTaskFinished(task.getId());
+            AixDbManager.getInstance().insertFinishedTask(
+                new FinishedTask(ManagementCenter.getInstance().getClientIdByToken(token),
+                    task.getId(),"SUCCESS",task.getStartTime(),new Date(),
+                    ManagementCenter.getInstance().getTaskLogsByToken(token)));
+
             LogUtils.info("{}任务执行成功!", token);
         } else {
             /** 若失败则说明当前任务完成,返回值非零,也要移除任务,再抢新的任务 */
-            handleTaskFailed(token);
+            handleTaskFailed(token,"FAILED");
         }
         return new ServerMessage(Intent.YOU_CAN_GRAB_TASK);
     }
@@ -186,12 +194,12 @@ public class TaskManager {
             Task task = taskMap.get(token);
             if (task == null) {
                 /** 没有正在执行的任务，尝试抢新的任务 */
-                String id = ManagementCenter.getInstance().getIdByToken(token);
+                String id = ManagementCenter.getInstance().getClientIdByToken(token);
                 if (id==null){
                     LogUtils.error("askForCmds() 容器token:{}不存在",token);
                     return new ServerMessage(Intent.GRAB_TASK_FAILED);
                 }
-                task = DbManager.getInstance().grabTask(id);
+                task = AtlasDbManager.getInstance().grabTask(id);
                 if (task == null) {
                     /** 没有抢到任务 */
                     LogUtils.info("{}:暂未抢到任务，请耐心等待...", token);
@@ -199,6 +207,7 @@ public class TaskManager {
                 }
                 LogUtils.info("{}:抢到任务{}", token, task);
 
+                task.setStartTime(new Date());
                 /** 抢到的任务放到map中 */
                 taskMap.put(token, task);
                 ManagementCenter.getInstance().updateTaskBriefInfo(token, new TaskBriefInfo(task));
@@ -265,7 +274,7 @@ public class TaskManager {
 
                 if (task.isFailed()) {
                     /** 未知原因启动失败次数过多，导致任务执行失败 */
-                    handleTaskFailed(token);
+                    handleTaskFailed(token,"ENV_FAILED");
                     return null;
                 }
 
@@ -317,18 +326,28 @@ public class TaskManager {
     /**
      * 任务执行失败的处理
      */
-    private void handleTaskFailed(String token) {
+    private void handleTaskFailed(String token,String taskStatus) {
 
         Task task = taskMap.remove(token);
         shellResultMap.remove(token);
         /** 删除task消息队列(如果有的话) */
         serialTaskMessageMap.remove(token);
 
+        /** 更新容器显示状态 */
         ManagementCenter.getInstance().updateRunningCmds(token, "");
         ManagementCenter.getInstance().updateTaskBriefInfo(token, null);
 
+        /** 记录任务执行情况至数据库 */
+        FinishedTask finishedTask = new FinishedTask(ManagementCenter.getInstance().getClientIdByToken(token),
+            task.getId(), taskStatus, task.getStartTime(), new Date(),
+            ManagementCenter.getInstance().getTaskLogsByToken(token));
+        LogUtils.info("insert FinishedTask:{}",finishedTask);
+
+        AixDbManager.getInstance().insertFinishedTask(finishedTask);
+
+
         //修改数据库
-        DbManager.getInstance().setTaskFailed(task.getId());
+        AtlasDbManager.getInstance().setTaskFailed(task.getId());
 
         LogUtils.error("{}任务执行失败，重新开始抢任务!", token);
 
@@ -487,8 +506,7 @@ public class TaskManager {
      * @return:
      */
     protected void userStopTask(String token) {
-        /** 处理逻辑暂时和任务失败一样 */
-        handleTaskFailed(token);
+        LogUtils.worning("User Stop Task");
+        handleTaskFailed(token,"CANCEL");
     }
-
 }

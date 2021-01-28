@@ -1,4 +1,4 @@
-package org.zju.vipa.aix.container.center.db.service;
+package org.zju.vipa.aix.container.center.db.service.aix;
 
 import org.apache.ibatis.reflection.ExceptionUtil;
 import org.apache.ibatis.session.SqlSession;
@@ -8,30 +8,34 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
 /**
- * @Date: 2020/7/31 10:32
+ * @Date: 2021/1/24 12:32
  * @Author: EricMa
- * @Description: 代理实现自动事务管理，回滚等
+ * @Description:
  */
-public class DbServiceProxy implements InvocationHandler {
+public class AixDbServiceProxy implements InvocationHandler {
 
-    private DbService dbService;
+    private AixDbServiceImpl aixDbServiceImpl;
 
-    public DbServiceProxy(DbService dbService) {
-        this.dbService = dbService;
+//    public AixDbServiceProxy(AixDbServiceImpl aixDbService) {
+//        this.aixDbService = aixDbService;
+//    }
+
+    public AixDbServiceProxy() {
+        aixDbServiceImpl =new AixDbServiceImpl();
     }
 
     @Override
     public Object invoke(Object proxy, final Method method, final Object[] args) throws Throwable {
-        if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
-            return method.invoke(dbService, args);
-        }
+//        if ("getSession".equals(method.getName()) || "closeSession".equals(method.getName())) {
+//            return method.invoke(aixDbServiceImpl, args);
+//        }
 //        final DbService service = (DbService) proxy;
 //        proxy instanceof DbService == true
 
         /** sqlSession和method的session应该是同一个 */
-        SqlSession sqlSession = dbService.getSession();
+        SqlSession sqlSession = aixDbServiceImpl.getSession();
         try {
-            Object ret = method.invoke(dbService, args);
+            Object ret = method.invoke(aixDbServiceImpl, args);
             sqlSession.commit();
             return ret;
         } catch (Throwable t) {
@@ -39,9 +43,11 @@ public class DbServiceProxy implements InvocationHandler {
             sqlSession.rollback();
             ExceptionUtils.handle(ExceptionUtil.unwrapThrowable(t));
 
+//            Class<?> returnType = method.getReturnType();
+//            return returnType.newInstance();
             return null;
         } finally {
-            dbService.closeSession();
+            aixDbServiceImpl.closeSession();
         }
 
 

@@ -7,7 +7,7 @@ public class Codes implements Serializable{
   private String name;
   private String task;
   private String file;
-  private String pre_cmd;
+  private String preCmd;
   private String args;
   private String metrics;
 
@@ -48,12 +48,12 @@ public class Codes implements Serializable{
   }
 
 
-  public String getPre_cmd() {
-    return pre_cmd;
+  public String getPreCmd() {
+    return preCmd;
   }
 
-  public void setPre_cmd(String pre_cmd) {
-    this.pre_cmd = pre_cmd;
+  public void setPreCmd(String preCmd) {
+    this.preCmd = preCmd;
   }
 
 

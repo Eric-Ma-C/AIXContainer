@@ -20,6 +20,8 @@ public abstract class BaseTask {
      * 执行代码
      */
     private Runnable runnable;
+    /** 进程 */
+    protected ShellProcess shellProcess;
 
     private TaskStateListener listener;
     /**
@@ -144,6 +146,7 @@ public abstract class BaseTask {
                     public void onResponse(Message message) {
 //                      目前  message.getIntent()== Intent.ACK
                         /** 指令执行完毕拿到服务器响应才视为执行完毕 */
+                        ClientLogUtils.debug("state = TaskState.STOPPED");
                         state = TaskState.STOPPED;
                         endTime = System.currentTimeMillis();
                         listener.onFinished();
@@ -185,6 +188,13 @@ public abstract class BaseTask {
      * @return:
      */
     abstract protected void run(ServerResponseListener responseListener);
+
+    /** 停止任务 */
+    public void stop(){
+        if (shellProcess != null) {
+            shellProcess.stop();
+        }
+    }
 
     /**
      * 任务执行回调

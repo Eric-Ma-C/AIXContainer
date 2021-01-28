@@ -1,36 +1,35 @@
 package org.zju.vipa.aix.container.common.db.entity.atlas;
 
-
 import org.zju.vipa.aix.container.common.db.entity.aix.Device;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.io.Serializable;
 
-
-public class AixDevice implements Serializable {
-
+public class AixDevice implements Serializable{
+    @Id
+    @GeneratedValue(generator = "JDBC")
     private int id;
-    private String device_name;
-    private java.util.Date created_time;
-    private java.util.Date last_login;
+    private String deviceName;
+    private java.util.Date createdTime;
+    private java.util.Date lastLogin;
     private String detail;
     private String info;
     private String token;
-    private int user_id;
-
+    private int userId;
     public AixDevice() {
     }
 
     public AixDevice(Device device) {
         id = Integer.parseInt(device.getId());
-        device_name = device.getName();
-        created_time = device.getCreatedTime();
-        last_login = device.getUpdatedTime();
-        detail = device.getId();
+        deviceName = device.getName();
+        createdTime = device.getCreatedTime();
+        lastLogin = device.getUpdatedTime();
+        detail = device.getDetail();
         info = device.getInfo();
         token = device.getToken();
-        user_id = Integer.parseInt(device.getCreatedBy());
+        userId = Integer.parseInt(device.getCreatedBy());
     }
-
 
     public int getId() {
         return id;
@@ -41,30 +40,30 @@ public class AixDevice implements Serializable {
     }
 
 
-    public String getDevice_name() {
-        return device_name;
+    public String getDeviceName() {
+        return deviceName;
     }
 
-    public void setDevice_name(String device_name) {
-        this.device_name = device_name;
-    }
-
-
-    public java.util.Date getCreated_time() {
-        return created_time;
-    }
-
-    public void setCreated_time(java.util.Date created_time) {
-        this.created_time = created_time;
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
 
-    public java.util.Date getLast_login() {
-        return last_login;
+    public java.util.Date getCreatedTime() {
+        return createdTime;
     }
 
-    public void setLast_login(java.util.Date last_login) {
-        this.last_login = last_login;
+    public void setCreatedTime(java.util.Date createdTime) {
+        this.createdTime = createdTime;
+    }
+
+
+    public java.util.Date getLastLogin() {
+        return lastLogin;
+    }
+
+    public void setLastLogin(java.util.Date lastLogin) {
+        this.lastLogin = lastLogin;
     }
 
 
@@ -95,12 +94,25 @@ public class AixDevice implements Serializable {
     }
 
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
+    @Override
+    public String toString() {
+        return "AixDevice{" +
+            "id=" + id +
+            ", deviceName='" + deviceName + '\'' +
+            ", createdTime=" + createdTime +
+            ", lastLogin=" + lastLogin +
+            ", detail='" + detail + '\'' +
+            ", info='" + info + '\'' +
+            ", token='" + token + '\'' +
+            ", userId=" + userId +
+            '}';
+    }
 }

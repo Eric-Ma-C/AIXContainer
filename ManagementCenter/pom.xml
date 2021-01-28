@@ -48,8 +48,6 @@
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                 </configuration>
-
-
                 <!-- 添加此项后，可直接使用mvn package | mvn install -->
                 <!-- 不添加此项，需直接使用mvn package assembly:single -->
                 <executions>
@@ -124,6 +122,9 @@
     </build>
 
     <dependencies>
+
+
+
 
         <!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
         <dependency>

@@ -3,9 +3,9 @@ package org.zju.vipa.aix.container.common.env;
 /**
  * @Date: 2020/3/31 18:20
  * @Author: EricMa
- * @Description: 运行过程中的错误类型
+ * @Description: 运行过程中的固定错误类型,不可在线修改
  */
-public enum ErrorType {
+public enum StaticErrorType {
     /**
      * 未知错误
      */
@@ -115,9 +115,9 @@ public enum ErrorType {
 
 
 
-    private String keyWords;
+    private  String keyWords;
 
-    ErrorType(String keyWords) {
+    StaticErrorType(String keyWords) {
         this.keyWords = keyWords;
     }
 
@@ -136,7 +136,7 @@ public enum ErrorType {
      * @param type
      * @return: boolean
      */
-    public boolean match(ErrorType type) {
+    public boolean match(StaticErrorType type) {
         if (type == null) {
             return false;
         }
