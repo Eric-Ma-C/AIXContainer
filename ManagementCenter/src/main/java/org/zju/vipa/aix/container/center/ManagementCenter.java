@@ -2,17 +2,21 @@ package org.zju.vipa.aix.container.center;
 
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.api.entity.TaskBriefInfo;
+import org.zju.vipa.aix.container.center.db.AixDbManager;
 import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.center.dubbo.RpcServer;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.center.netty.NettyTcpServer;
 import org.zju.vipa.aix.container.center.network.SocketServer;
 import org.zju.vipa.aix.container.center.task.TaskManager;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.center.util.GpuUtils;
-import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
+import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.common.env.ErrorParser;
+import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
@@ -62,23 +66,28 @@ public class ManagementCenter {
 
     }
 
-    /** 获取容器正在运行的命令 */
-    public String getRunningCmdsByToken(String token){
+    /**
+     * 获取容器正在运行的命令
+     */
+    public String getRunningCmdsByToken(String token) {
         RunningClient client = clientMap.get(token);
         if (client != null) {
             return client.getRunningCmds();
-        }else {
+        } else {
             return null;
         }
     }
 
-    /** 获取容器正在运行的任务日志
-     * @return*/
-    public List<String> getTaskLogsByToken(String token){
+    /**
+     * 获取容器正在运行的任务日志
+     *
+     * @return
+     */
+    public List<String> getTaskLogsByToken(String token) {
         RunningClient client = clientMap.get(token);
         if (client != null) {
             return client.getTaskLogList();
-        }else {
+        } else {
             return null;
         }
     }
@@ -86,25 +95,26 @@ public class ManagementCenter {
     /**
      * 注册容器
      * 新容器接入平台
+     *
      * @param token
      * @return: id null代表注册失败
      */
-    public String registerClient(String token,String hostIp) {
+    public String registerClient(String token, String hostIp) {
         String id = getClientIdByToken(token);
         AixDevice device;
-        if (id==null){
+        if (id == null) {
             /** 去数据库检查token   */
             device = AtlasDbManager.getInstance().getClientByToken(token);
 
 //            id = JwtUtils.decodeClinetIdByToken(token);
             if (device != null) {
-                id= String.valueOf(device.getId());
+                id = String.valueOf(device.getId());
                 /** 新设备接入 */
 //                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
-                clientMap.put(token, new RunningClient(device,hostIp));
+                clientMap.put(token, new RunningClient(device, hostIp));
             }
-        }else{
-            LogUtils.worning("容器重复注册,token={}",token);
+        } else {
+            LogUtils.worning("容器重复注册,token={}", token);
         }
         return id;
     }
@@ -119,7 +129,7 @@ public class ManagementCenter {
         RunningClient client = clientMap.get(token);
         String id = null;
         if (client != null) {
-            id=client.getId();
+            id = client.getId();
         }
 //        LogUtils.debug("getIdByToken({})={}",token,id);
         return id;
@@ -155,7 +165,7 @@ public class ManagementCenter {
         }
         client.addLatestErrors(error);
 
-        LogUtils.debug("updateLatestError={}",client.getLatestErrors());
+        LogUtils.debug("updateLatestError={}", client.getLatestErrors());
     }
 
     public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo) {
@@ -176,13 +186,13 @@ public class ManagementCenter {
         Map.Entry<String, RunningClient> entry;
         while (iterator.hasNext()) {
             entry = iterator.next();
-            RunningClient client=entry.getValue();
+            RunningClient client = entry.getValue();
             if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 3) {
 
                 LogUtils.debug("******* Remove Dead Client: current={} LastHeartbeat()={} *******", TimeUtils.getCurrentTimeStr(), TimeUtils.getTimeStr(entry.getValue().getLastHeartbeat()));
 
                 /** 超过心跳间隔时间3倍未收到,认为client已离线 */
-                LogUtils.info("******* Remove Dead Client: token={} id={} *******", client.getToken(),client.getId());
+                LogUtils.info("******* Remove Dead Client: token={} id={} *******", client.getToken(), client.getId());
 
                 /** 删除TaskManger中的容器信息  */
                 TaskManager.getInstance().removeDeadClientByToken(client.getToken());
@@ -208,8 +218,18 @@ public class ManagementCenter {
         return clientMap.size();
     }
 
+    private static void initRuntimeError() {
+        List<KnownError> knownErrorList = AixDbManager.getInstance().getKnownErrorList();
+        List<KnownErrorRuntime> knownErrorRuntimeList = new ArrayList<>();
+        for (KnownError knownError : knownErrorList) {
+            knownErrorRuntimeList.add(new KnownErrorRuntime(knownError));
+        }
+        ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
+    }
+
     /**
      * Server 主入口
+     *
      * @return:
      */
     public static void main(String[] args) {
@@ -220,6 +240,8 @@ public class ManagementCenter {
         ExceptionUtils.setDefaultUncaughtExceptionHandler();
         /** dubbo */
         RpcServer.getInstance().start();
+        /** 首次从数据库加载自动环境修复 */
+        initRuntimeError();
 
 
         /** 启动tcp服务 */

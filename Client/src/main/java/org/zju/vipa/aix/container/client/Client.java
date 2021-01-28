@@ -24,6 +24,7 @@ public class Client {
 
         ClientExceptionUtils.setDefaultUncaughtExceptionHandler();
         ClientTaskController.getInstance().start();
-//        SystemInfoUtils.getGpuInfo();
+
+//        RealtimeProcess.getChildPids(1);
     }
 }

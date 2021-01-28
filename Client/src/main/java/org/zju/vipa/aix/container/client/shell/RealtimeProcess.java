@@ -3,6 +3,7 @@ package org.zju.vipa.aix.container.client.shell;
 import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
+import org.zju.vipa.aix.container.client.utils.ShellUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -243,16 +245,51 @@ public class RealtimeProcess {
 //            ClientLogUtils.debug("mProcess.destroy()调用");
 //            mProcess.destroy();
             long pid = getPidOfProcess(mProcess);
-            ClientLogUtils.debug("kill mProcess pid={}",pid);
-            ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "kill -9 "+pid);
 
-            try {
-                Process p = pb.start();
-            } catch (IOException e) {
-                ClientExceptionUtils.handle(e);
+            String[] childPids = getChildPids(pid);
+            if (childPids!=null) {
+                for (String childPid : childPids) {
+                    if ("".equals(childPid)) {
+                        continue;
+                    }
+                    /** kill所有子进程 */
+                    killProcessByPid(Long.valueOf(childPid));
+                }
             }
-
+            /** kill mProcess进程 */
+            killProcessByPid(pid);
         }
+    }
+
+    private void killProcessByPid(long pid){
+        if (pid<=0){
+            ClientLogUtils.error("error kill -9 {}",pid);
+            return;
+        }
+
+        ClientLogUtils.debug("kill -9 {}",pid);
+        ProcessBuilder pb = new ProcessBuilder("/bin/bash", "-c", "kill -9 "+pid);
+        try {
+            Process p = pb.start();
+        } catch (IOException e) {
+            ClientExceptionUtils.handle(e);
+        }
+    }
+
+    public static String[] getChildPids(long pid) {
+//        ShellUtils.CommandResult result1 = ShellUtils.execCommand("ps --ppid "+pid);
+//        System.out.println(result1);
+        ShellUtils.CommandResult result = ShellUtils.execCommand("ps --ppid "+pid+"|awk '{print $1}'|awk 'NR==1{next}{print}'");
+
+
+        if (result.result != 0) {
+            ClientLogUtils.error(result.errorMsg);
+            return null;
+        }
+        String pids = result.responseMsg;
+        String[] pidStrs = pids.split("\n");
+        ClientLogUtils.info("getChildPids({})={}",pid, Arrays.asList(pidStrs));
+        return pidStrs;
     }
 
 
@@ -265,6 +302,7 @@ public class RealtimeProcess {
                 f.setAccessible(true);
                 pid = f.getLong(p);
                 f.setAccessible(false);
+
             }
         } catch (Exception e) {
             pid = -1;

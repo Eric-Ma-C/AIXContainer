@@ -145,7 +145,7 @@ public abstract class BaseTask {
                     @Override
                     public void onResponse(Message message) {
 //                      目前  message.getIntent()== Intent.ACK
-                        /** 指令执行完毕拿到服务器响应才视为执行完毕 */
+                        /** 指令执行完毕拿到服务器响应才视为执行完毕,超时没有响应也可以 */
                         ClientLogUtils.debug("state = TaskState.STOPPED");
                         state = TaskState.STOPPED;
                         endTime = System.currentTimeMillis();

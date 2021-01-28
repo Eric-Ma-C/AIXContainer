@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.center.db.service.aix;
 
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
+import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
 
 import java.util.List;
 
@@ -33,4 +34,6 @@ public interface AixDbService {
     List<FinishedTask> getFinishedTaskListByPage(int page, int countPerPage);
 
     boolean insertFinishedTask(FinishedTask finishedTask);
+
+    List<KnownError> getKnownErrorList();
 }

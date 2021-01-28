@@ -3,7 +3,9 @@ package org.zju.vipa.aix.container.center.db.service.aix;
 
 import org.apache.ibatis.session.RowBounds;
 import org.zju.vipa.aix.container.center.db.dao.aix.FinishedTaskMapper;
+import org.zju.vipa.aix.container.center.db.dao.aix.KnownErrorMapper;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
+import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
 
 import java.util.List;
 
@@ -39,6 +41,13 @@ public class AixDbServiceImpl extends AixSqlSessionManager implements AixDbServi
         FinishedTaskMapper deviceMapper = getMapper(FinishedTaskMapper.class);
         return deviceMapper.insert(finishedTask)>0;
 
+    }
+
+    @Override
+    public List<KnownError> getKnownErrorList() {
+        KnownErrorMapper knownErrorMapper=getMapper(KnownErrorMapper.class);
+
+        return knownErrorMapper.selectAll();
     }
 
 

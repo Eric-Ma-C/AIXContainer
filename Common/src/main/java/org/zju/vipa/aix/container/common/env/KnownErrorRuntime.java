@@ -1,5 +1,7 @@
 package org.zju.vipa.aix.container.common.env;
 
+import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
+
 /**
  * @Date: 2021/1/20 10:44
  * @Author: EricMa
@@ -15,6 +17,11 @@ public class KnownErrorRuntime {
         this.name = name;
         this.key_words = key_words;
         this.repair_cmds = repair_cmds;
+    }
+    public KnownErrorRuntime(KnownError knownError) {
+        this.name = knownError.getName();
+        this.key_words = knownError.getKeyWords();
+        this.repair_cmds = knownError.getRepairCmds();
     }
 
     public String getName() {

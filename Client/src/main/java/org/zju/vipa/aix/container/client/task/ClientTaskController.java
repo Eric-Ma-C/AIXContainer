@@ -189,7 +189,7 @@ public class ClientTaskController {
                 ClientLogUtils.debug("currentTask.getState()={}", currentTask.getState());
             }
             /** 向平台请求任务 */
-            ClientLogUtils.info("Client Task Queue is empty.Ask for new work.");
+            ClientLogUtils.info("Client Task Queue is empty.Ask for new work.\n");
             TcpClient.getInstance().askForCmds();
 
             return;
