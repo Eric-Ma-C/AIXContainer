@@ -112,6 +112,7 @@ public class ManagementCenter {
                 /** 新设备接入 */
 //                clientMap.put(token, new RunningClient(id, token, TimeUtils.getCurrentTimeStr()));
                 clientMap.put(token, new RunningClient(device, hostIp));
+
             }
         } else {
             LogUtils.worning("容器重复注册,token={}", token);
@@ -165,7 +166,7 @@ public class ManagementCenter {
         }
         client.addLatestErrors(error);
 
-        LogUtils.debug("updateLatestError={}", client.getLatestErrors());
+//        LogUtils.debug("updateLatestError={}", client.getLatestErrors());
     }
 
     public void updateTaskBriefInfo(String token, TaskBriefInfo briefInfo) {
@@ -187,7 +188,8 @@ public class ManagementCenter {
         while (iterator.hasNext()) {
             entry = iterator.next();
             RunningClient client = entry.getValue();
-            if (System.currentTimeMillis() - client.getLastHeartbeat() > ClientConfig.HEARTBEATS_INTERVAL_MS * 3) {
+            long lastTime = client.getLastHeartbeat();
+            if (System.currentTimeMillis() - lastTime > ClientConfig.HEARTBEATS_INTERVAL_MS * 3) {
 
                 LogUtils.debug("******* Remove Dead Client: current={} LastHeartbeat()={} *******", TimeUtils.getCurrentTimeStr(), TimeUtils.getTimeStr(entry.getValue().getLastHeartbeat()));
 
@@ -207,7 +209,7 @@ public class ManagementCenter {
      */
     public List<RunningClient> getClientsList() {
 //        LogUtils.debug("getClientsList={}", clientMap.toString());
-        StringBuilder sb=new StringBuilder("getClientsList=");
+        StringBuilder sb = new StringBuilder("getClientsList=");
         for (RunningClient value : clientMap.values()) {
             sb.append(value.getId());
             sb.append(",");

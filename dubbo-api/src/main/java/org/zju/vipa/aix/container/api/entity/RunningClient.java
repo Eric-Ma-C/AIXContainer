@@ -7,6 +7,7 @@ import org.zju.vipa.aix.container.common.utils.TimeUtils;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @Date: 2020/6/4 16:41
@@ -48,7 +49,7 @@ public class RunningClient implements Serializable {
      * 任务执行以来的命令和报错序列
      * 每当抢到新任务清空一次
      */
-    transient List<String> taskLogList;
+    transient CopyOnWriteArrayList<String> taskLogList;
 
     /**
      * 最后一次报错时间，用于区分Error批次
@@ -83,6 +84,8 @@ public class RunningClient implements Serializable {
         this.firstTaskName = "No Task";
         this.runningCmds = "";
         this.latestErrors = "";
+        /** 设置lastHeartbeat保证了刚注册容器还没有第一次心跳传过来时不会被removeDeadClients删除 */
+        this.lastHeartbeat=System.currentTimeMillis();
     }
 
     public String getId() {
@@ -237,12 +240,12 @@ public class RunningClient implements Serializable {
     }
 
     private void clearTaskLogList() {
-        this.taskLogList = new ArrayList<>();
+        this.taskLogList = new CopyOnWriteArrayList<>();
     }
 
     private void addTaskLog(String taskLog) {
         if (this.taskLogList == null) {
-            this.taskLogList = new ArrayList<>();
+            this.taskLogList = new CopyOnWriteArrayList<>();
         }
         this.taskLogList.add(taskLog);
     }
