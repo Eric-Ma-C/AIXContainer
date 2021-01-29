@@ -37,7 +37,7 @@ public class XmlUtils {
         try {
             document = reader.read(new StringReader(info));
         } catch (DocumentException e) {
-            ClientExceptionUtils.handle(e);
+            ClientExceptionUtils.handle(e,false);
             return null;
         }
 

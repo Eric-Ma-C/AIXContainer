@@ -21,6 +21,10 @@
                 <property name="url" value="${db.mysql.aix.url}" />
                 <property name="username" value="${db.mysql.aix.user}" />
                 <property name="password" value="${db.mysql.aix.password}" />
+                <!-- 每隔7小时检查一下连接是否还有效 -->
+                <property name="poolPingEnabled" value="true"/>
+                <property name="poolPingQuery" value="select 1"/>
+                <property name="poolPingConnectionsNotUsedFor" value="25200000"/>
             </dataSource>
         </environment>
     </environments>

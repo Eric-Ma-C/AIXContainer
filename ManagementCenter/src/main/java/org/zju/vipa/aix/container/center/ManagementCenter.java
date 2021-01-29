@@ -206,7 +206,14 @@ public class ManagementCenter {
      * 获取已连接容器列表
      */
     public List<RunningClient> getClientsList() {
-        LogUtils.debug("getClientsList={}", clientMap.toString());
+//        LogUtils.debug("getClientsList={}", clientMap.toString());
+        StringBuilder sb=new StringBuilder("getClientsList=");
+        for (RunningClient value : clientMap.values()) {
+            sb.append(value.getId());
+            sb.append(",");
+        }
+        LogUtils.debug(sb.toString());
+
         List<RunningClient> list = new ArrayList<>(clientMap.values());
         return list;
     }
