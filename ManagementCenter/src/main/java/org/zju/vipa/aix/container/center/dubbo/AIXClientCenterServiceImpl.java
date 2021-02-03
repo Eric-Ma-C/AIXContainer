@@ -134,6 +134,16 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
+    public void refreshPipSource() {
+       ManagementCenter.refreshPipSource();
+    }
+
+    @Override
+    public void refreshAptSource() {
+       ManagementCenter.refreshAptSource();
+    }
+
+    @Override
     public List<RunningClient> getClientList() {
         return ManagementCenter.getInstance().getClientsList();
     }

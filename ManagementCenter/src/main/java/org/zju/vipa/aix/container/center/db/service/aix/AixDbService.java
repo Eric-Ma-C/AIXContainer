@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.center.db.service.aix;
 
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
+import org.zju.vipa.aix.container.common.db.entity.aix.Source;
 
 import java.util.List;
 
@@ -36,4 +37,10 @@ public interface AixDbService {
     boolean insertFinishedTask(FinishedTask finishedTask);
 
     List<KnownError> getKnownErrorList();
+
+    boolean insertSource(Source source);
+
+    List<Source> getPipSourceList();
+
+    List<Source> getAptSourceList();
 }

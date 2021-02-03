@@ -4,6 +4,7 @@ import org.zju.vipa.aix.container.center.db.service.aix.AixDbService;
 import org.zju.vipa.aix.container.center.db.service.aix.AixDbServiceProxy;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
+import org.zju.vipa.aix.container.common.db.entity.aix.Source;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 
@@ -63,13 +64,24 @@ public class AixDbManager implements Serializable {
 
     }
 
-    public void insertFinishedTask(FinishedTask finishedTask) {
-        aixDbService.insertFinishedTask(finishedTask);
+    public boolean insertFinishedTask(FinishedTask finishedTask) {
+        return aixDbService.insertFinishedTask(finishedTask);
     }
 
     public List<KnownError> getKnownErrorList(){
         return aixDbService.getKnownErrorList();
     }
 
+    public boolean insertSource(Source source) {
+        return aixDbService.insertSource(source);
+    }
+
+    public List<Source> getPipSourceList() {
+        return aixDbService.getPipSourceList();
+    }
+
+    public List<Source> getAptSourceList() {
+        return aixDbService.getAptSourceList();
+    }
 }
 

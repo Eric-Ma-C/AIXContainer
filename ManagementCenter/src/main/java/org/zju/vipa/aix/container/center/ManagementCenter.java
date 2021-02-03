@@ -14,9 +14,12 @@ import org.zju.vipa.aix.container.center.util.GpuUtils;
 import org.zju.vipa.aix.container.common.config.ClientConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
+import org.zju.vipa.aix.container.common.db.entity.aix.Source;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
+import org.zju.vipa.aix.container.common.env.AptSource;
 import org.zju.vipa.aix.container.common.env.ErrorParser;
 import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
+import org.zju.vipa.aix.container.common.env.PipSource;
 import org.zju.vipa.aix.container.common.exception.AIXBaseException;
 import org.zju.vipa.aix.container.common.exception.ExceptionCodeEnum;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
@@ -220,6 +223,16 @@ public class ManagementCenter {
         return list;
     }
 
+    public static void refreshPipSource() {
+        List<Source> pipSourceList = AixDbManager.getInstance().getPipSourceList();
+        PipSource.refreshSource(pipSourceList);
+    }
+
+    public static void refreshAptSource() {
+        List<Source> aptSourceList = AixDbManager.getInstance().getAptSourceList();
+        AptSource.refreshSource(aptSourceList);
+    }
+
     /**
      * 获取已连接容器数量
      */
@@ -227,13 +240,17 @@ public class ManagementCenter {
         return clientMap.size();
     }
 
-    private static void initRuntimeError() {
+    private static void initFromDB() {
+        /** 首次从数据库加载自动环境修复 */
         List<KnownError> knownErrorList = AixDbManager.getInstance().getKnownErrorList();
         List<KnownErrorRuntime> knownErrorRuntimeList = new ArrayList<>();
         for (KnownError knownError : knownErrorList) {
             knownErrorRuntimeList.add(new KnownErrorRuntime(knownError));
         }
         ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
+
+        refreshAptSource();
+        refreshPipSource();
     }
 
     /**
@@ -249,8 +266,8 @@ public class ManagementCenter {
         ExceptionUtils.setDefaultUncaughtExceptionHandler();
         /** dubbo */
         RpcServer.getInstance().start();
-        /** 首次从数据库加载自动环境修复 */
-        initRuntimeError();
+       /** 初始化 */
+        initFromDB();
 
 
         /** 启动tcp服务 */

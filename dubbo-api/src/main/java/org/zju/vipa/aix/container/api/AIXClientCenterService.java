@@ -121,7 +121,8 @@ public interface AIXClientCenterService {
 
 
     /**
-     *   注册容器数量
+     * 注册容器数量
+     *
      * @param
      * @return: int
      */
@@ -129,25 +130,38 @@ public interface AIXClientCenterService {
 
 
     /**
-     *  分页查询
-     * @param page 查询第几页
+     * 分页查询
+     *
+     * @param page         查询第几页
      * @param countPerPage 每页的条数(一般固定值)
      * @return: java.util.List<org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice>
      */
     List<AixDeviceVO> getClientListByPage(int page, int countPerPage);
 
     /**
-     *  更新容器
+     * 更新容器
+     *
      * @param
      * @return: int
      */
-    boolean updateDeviceNameById(String id,String newName);
+    boolean updateDeviceNameById(String id, String newName);
+
     /**
-     *  更新容器
+     * 更新容器
+     *
      * @param
      * @return: int
      */
-    boolean updateDeviceInfoById(String id,String newInfo);
+    boolean updateDeviceInfoById(String id, String newInfo);
 
     void refreshRuntimeErrorList(List<KnownErrorRuntime> knownErrorRuntimeList);
+
+    /**
+     * 更新pip源
+     */
+    void refreshPipSource();
+    /**
+     * 更新apt源
+     */
+    void refreshAptSource();
 }

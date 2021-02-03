@@ -5,6 +5,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.zju.vipa.aix.container.center.db.SqlSessionManager;
 import org.zju.vipa.aix.container.center.db.dao.aix.FinishedTaskMapper;
 import org.zju.vipa.aix.container.center.db.dao.aix.KnownErrorMapper;
+import org.zju.vipa.aix.container.center.db.dao.aix.SourceMapper;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import tk.mybatis.mapper.entity.Config;
 import tk.mybatis.mapper.mapperhelper.MapperHelper;
@@ -28,6 +29,7 @@ public class AixSqlSessionManager extends SqlSessionManager {
             sqlSessionFactory = new SqlSessionFactoryBuilder().build(reader);
             sqlSessionFactory.getConfiguration().addMapper(KnownErrorMapper.class);
             sqlSessionFactory.getConfiguration().addMapper(FinishedTaskMapper.class);
+            sqlSessionFactory.getConfiguration().addMapper(SourceMapper.class);
 
 
         } catch (Exception e) {

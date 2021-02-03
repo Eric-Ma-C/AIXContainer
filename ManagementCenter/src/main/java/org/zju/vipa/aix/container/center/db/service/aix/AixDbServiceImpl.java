@@ -4,8 +4,10 @@ package org.zju.vipa.aix.container.center.db.service.aix;
 import org.apache.ibatis.session.RowBounds;
 import org.zju.vipa.aix.container.center.db.dao.aix.FinishedTaskMapper;
 import org.zju.vipa.aix.container.center.db.dao.aix.KnownErrorMapper;
+import org.zju.vipa.aix.container.center.db.dao.aix.SourceMapper;
 import org.zju.vipa.aix.container.common.db.entity.aix.FinishedTask;
 import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
+import org.zju.vipa.aix.container.common.db.entity.aix.Source;
 
 import java.util.List;
 
@@ -48,6 +50,28 @@ public class AixDbServiceImpl extends AixSqlSessionManager implements AixDbServi
         KnownErrorMapper knownErrorMapper=getMapper(KnownErrorMapper.class);
 
         return knownErrorMapper.selectAll();
+    }
+
+    @Override
+    public boolean insertSource(Source source) {
+        SourceMapper sourceMapper = getMapper(SourceMapper.class);
+        return sourceMapper.insert(source)>0;
+    }
+
+    @Override
+    public List<Source> getPipSourceList() {
+        SourceMapper sourceMapper=getMapper(SourceMapper.class);
+        Source source = new Source();
+        source.setType("PIP");
+        return sourceMapper.select(source);
+    }
+
+    @Override
+    public List<Source> getAptSourceList() {
+        SourceMapper sourceMapper=getMapper(SourceMapper.class);
+        Source source = new Source();
+        source.setType("APT");
+        return sourceMapper.select(source);
     }
 
 
