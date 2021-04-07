@@ -2,6 +2,7 @@ package org.zju.vipa.aix.container.common.message;
 
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,7 +48,14 @@ public class Message implements Serializable {
     public static final String CHARSET_NAME = "UTF-8";
 
     protected Intent intent;
+    /**
+     * 简单值或json对象
+     */
     protected String value;
+    /**
+     * 一般用于存储pb对象
+     */
+    protected byte[] byteValue;
     /**
      * 每个容器的唯一身份标识
      */
@@ -70,8 +78,13 @@ public class Message implements Serializable {
         this.intent = intent;
         this.value = value;
         this.token = token;
+    }
 
-
+    public Message(Intent intent, byte[] byteValue, String token) {
+        this.intent = intent;
+        this.value = "";
+        this.byteValue = byteValue;
+        this.token = token;
     }
 
 
@@ -96,6 +109,14 @@ public class Message implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    public byte[] getByteValue() {
+        return byteValue;
+    }
+
+    public void setByteValue(byte[] byteValue) {
+        this.byteValue = byteValue;
     }
 
     public String getToken() {
@@ -137,10 +158,9 @@ public class Message implements Serializable {
         return "Message{" +
             "intent=" + intent +
             ", value='" + value + '\'' +
+            ", byteValue=" + Arrays.toString(byteValue) +
             ", token='" + token + '\'' +
             ", customDataMap=" + customDataMap +
             '}';
     }
-
-
 }

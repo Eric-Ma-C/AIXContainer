@@ -41,7 +41,7 @@ public class SocketIoImpl implements ClientIO {
             readTimeOut = DebugConfig.SOCKET_READ_TIMEOUT_DEBUG;
         }
         if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
-            ClientLogUtils.debug("SEND:\n{}\n", message);
+            ClientLogUtils.debug("SEND MSG:\n{}\n", message);
         }
         Socket socket = null;
         String response = null;
@@ -97,7 +97,7 @@ public class SocketIoImpl implements ClientIO {
             !Intent.EXCEPTION.match(message) &&
             !Intent.REAL_TIME_LOG.match(message)
             && DebugConfig.CLIENT_NETWORK_IO_LOG) {
-            ClientLogUtils.debug("SEND:\n{}\n", message);
+            ClientLogUtils.debug("SEND MSG:\n{}\n", message);
         }
 
         Socket socket = null;

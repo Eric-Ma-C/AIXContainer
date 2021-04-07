@@ -21,6 +21,7 @@ import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 /**
  * @Date: 2020/1/7 15:26
@@ -361,7 +362,8 @@ public class TcpClient {
      * 上传gpu cuda和显存占用信息
      */
     public void heartbeatReport(GpuInfo info) {
-        ClientMessage pingMsg = new ClientMessage(Intent.PING, JsonUtils.toJSONString(info));
+//        ClientMessage pingMsg = new ClientMessage(Intent.PING, JsonUtils.toJSONString(info));
+        ClientMessage pingMsg = new ClientMessage(Intent.PING, ProtostuffUtils.serialize(info));
 
         Message res = clientIO.sendMsgAndGetResponse(pingMsg, 2000);
         handleResponseMsg(res);

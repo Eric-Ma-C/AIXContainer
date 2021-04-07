@@ -209,4 +209,14 @@ public class GpuInfo implements Serializable {
     public void setGpuNum(int gpuNum) {
         this.gpuNum = gpuNum;
     }
+
+    @Override
+    public String toString() {
+        return "GpuInfo{" +
+            "driverVersion='" + driverVersion + '\'' +
+            ", cudaVersion='" + cudaVersion + '\'' +
+            ", gpuNum=" + gpuNum +
+            ", gpus=" + gpus +
+            '}';
+    }
 }

@@ -1,7 +1,5 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import org.zju.vipa.aix.container.client.network.ClientIO;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
@@ -33,7 +31,7 @@ public class NettyIoImpl implements ClientIO {
     @Override
     public Message sendMsgAndGetResponse(ClientMessage message, int readTimeOut) {
         if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
-            ClientLogUtils.debug("SEND:\n{}\n", message);
+            ClientLogUtils.debug("SEND MSG:\n{}\n", message);
         }
 
         if (DebugConfig.IS_LOCAL_DEBUG) {
@@ -46,11 +44,9 @@ public class NettyIoImpl implements ClientIO {
 
         //使用ProtostuffUtils序列化
         byte[] sendData = ProtostuffUtils.serialize(message);
-//        System.out.println("序列化后：" + Arrays.toString(sendData));
-        ByteBuf buf = Unpooled.wrappedBuffer(sendData);
 
         try {
-            response = client.sendMsgAndGetResponse(buf, readTimeOut);
+            response = client.sendMsgAndGetResponse(sendData, readTimeOut);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -67,7 +63,7 @@ public class NettyIoImpl implements ClientIO {
         if (!Intent.SHELL_ERROR_HELP.match(message) && !Intent.EXCEPTION.match(message) && !Intent.REAL_TIME_LOG.match(message)
             && DebugConfig.CLIENT_NETWORK_IO_LOG) {
             //这些待上传类型的message已经在日志中记录过了,不需要再打日志和上传
-            ClientLogUtils.debug("SEND:\n{}\n", message);
+            ClientLogUtils.debug("SEND MSG:\n{}\n", message);
         }
 
         // 使用json序列化
@@ -75,12 +71,10 @@ public class NettyIoImpl implements ClientIO {
 
         //使用ProtostuffUtils序列化
         byte[] sendData = ProtostuffUtils.serialize(message);
-//        System.out.println("序列化后：" + Arrays.toString(sendData));
-        ByteBuf buf = Unpooled.wrappedBuffer(sendData);
 
 
         try {
-            client.sendMsg(buf);
+            client.sendMsg(sendData);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

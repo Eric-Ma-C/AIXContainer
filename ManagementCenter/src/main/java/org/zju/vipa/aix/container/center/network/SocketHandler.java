@@ -17,6 +17,7 @@ import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
 import org.zju.vipa.aix.container.common.message.SystemBriefInfo;
 import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -28,7 +29,6 @@ import java.util.Date;
  * @Description: 处理接收到的所有容器请求
  */
 public class SocketHandler implements Runnable {
-
 
     private ServerIO serverIO;
 
@@ -117,7 +117,6 @@ public class SocketHandler implements Runnable {
 //  没有disconnect();
     }
 
-
     /**
      * 是否接受上传
      */
@@ -162,10 +161,11 @@ public class SocketHandler implements Runnable {
      */
     private void handleHeartbeatGpuInfo(Message message) {
 
-        GpuInfo gpuInfo = JsonUtils.parseObject(message.getValue(), GpuInfo.class);
+//        GpuInfo gpuInfo = JsonUtils.parseObject(message.getValue(), GpuInfo.class);
+        GpuInfo gpuInfo = ProtostuffUtils.deserialize(message.getByteValue(), GpuInfo.class);
         if (gpuInfo != null) {
-            LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), message.getValue());
-            ManagementCenter.getInstance().updateGpuInfo(message.getToken(), gpuInfo);
+            LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), gpuInfo);
+//            ManagementCenter.getInstance().updateGpuInfo(message.getToken(), gpuInfo);
         }
         //取出可能的待发送信息
         Message res = TaskManager.getInstance().getHeartbeatMessage(message.getToken());

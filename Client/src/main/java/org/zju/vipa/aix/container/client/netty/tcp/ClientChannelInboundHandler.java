@@ -8,6 +8,7 @@ import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.ByteUtils;
 import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 import java.util.concurrent.CountDownLatch;
@@ -62,14 +63,14 @@ public class ClientChannelInboundHandler extends ChannelInboundHandlerAdapter {
             if (byteBuf.hasArray()){
                 data=byteBuf.array();
                 if (DebugConfig.OPEN_NETTY_LOG) {
-                    ClientLogUtils.debug("RECEIVE HeapBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                    ClientLogUtils.debug("RECEIVE HeapBuf Bytes FROM {} :\n{}", ctx.channel().id(), ByteUtils.bytes2hex(data));
                 }
             }else {
                 int len=byteBuf.readableBytes();
                 data=new byte[len];
                 byteBuf.getBytes(byteBuf.readerIndex(),data);
                 if (DebugConfig.OPEN_NETTY_LOG) {
-                    ClientLogUtils.debug("RECEIVE DirectBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                    ClientLogUtils.debug("RECEIVE DirectBuf Bytes FROM {} :\n{}", ctx.channel().id(), ByteUtils.bytes2hex(data));
                 }
             }
 

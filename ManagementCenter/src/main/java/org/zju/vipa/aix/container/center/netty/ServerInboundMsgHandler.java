@@ -9,6 +9,7 @@ import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.message.Message;
+import org.zju.vipa.aix.container.common.utils.ByteUtils;
 import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 /**
@@ -37,21 +38,21 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
             if (byteBuf.hasArray()){
                 data=byteBuf.array();
                 if (DebugConfig.OPEN_NETTY_LOG) {
-                    LogUtils.debug("RECEIVE HeapBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                    LogUtils.debug("RECEIVE HeapBuf Bytes FROM {} :\n{}", ctx.channel().id(), ByteUtils.bytes2hex(data));
                 }
             }else {
                 int len=byteBuf.readableBytes();
                 data=new byte[len];
                 byteBuf.getBytes(byteBuf.readerIndex(),data);
                 if (DebugConfig.OPEN_NETTY_LOG) {
-                    LogUtils.debug("RECEIVE DirectBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                    LogUtils.debug("RECEIVE DirectBuf Bytes FROM {} :\n{}", ctx.channel().id(), ByteUtils.bytes2hex(data));
                 }
             }
 
             Message receivedMessage  = ProtostuffUtils.deserialize(data, Message.class);
             if (DebugConfig.SERVER_NETWORK_IO_LOG) {
                 /** 收到客户端日志 */
-                LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
+                LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}", ctx.channel().id(), receivedMessage.getTokenSuffix(), receivedMessage);
             }
 
             new SocketHandler(ctx).handle(receivedMessage);
