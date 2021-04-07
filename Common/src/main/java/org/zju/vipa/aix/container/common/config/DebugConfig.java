@@ -15,14 +15,13 @@ public class DebugConfig {
 
     /**
      * 是否打开Server网络消息收发日志
-     * 警告：由于服务器网络IO日志量较大，仅可在测试时打开
+     * 注意：由于服务器网络IO日志量较大，仅需在测试时打开
      */
     public static final boolean SERVER_NETWORK_IO_LOG = true;
     /**
      * 是否打开client网络消息收发日志
      */
-//    public static final boolean CLIENT_NETWORK_IO_LOG = true;
-    public static final boolean CLIENT_NETWORK_IO_LOG = false;
+    public static final boolean CLIENT_NETWORK_IO_LOG = true;
 
     /**
      * socket响应数据读取超时时间500s
@@ -32,7 +31,7 @@ public class DebugConfig {
     /**
      * 是否记录Netty日志信息
      */
-    public static final boolean OPEN_NETTY_LOG = false;
+    public static final boolean OPEN_NETTY_LOG = true;
 
     /**
      * 是否是下载模型模式

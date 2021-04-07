@@ -9,13 +9,10 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
 import io.netty.handler.codec.LengthFieldPrepender;
-import io.netty.handler.codec.string.StringDecoder;
-import io.netty.handler.codec.string.StringEncoder;
-import io.netty.util.CharsetUtil;
 import io.netty.util.concurrent.GlobalEventExecutor;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.center.netty.upload.FileUploadServer;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 
 /**
@@ -31,7 +28,7 @@ public class NettyTcpServer {
 
     public static void start() {
 //        EventLoopGroup bossGroup = new NioEventLoopGroup(1, new DefaultThreadFactory("bossGroup", true));
-//        EventLoopGroup workGroup = new NioEventLoopGroup(8, new DefaultThreadFactory("workGroup", true));
+//        EventLoopGroup workGroup = new NioEventLoopGroup(5, new DefaultThreadFactory("workGroup", true));
         //主reactor
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         //从reactor
@@ -59,13 +56,10 @@ public class NettyTcpServer {
 //                    pipeline.addLast(new ObjectEncoder());
 //                    pipeline.addLast(new ObjectDecoder(ClassResolvers.cacheDisabled(null)));
 
-
-//                    pipeline.addLast(new );
-
                     /** 字节-> String
                      处理String类型的message */
-                    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
-                    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
+//                    pipeline.addLast(new StringEncoder(CharsetUtil.UTF_8));
+//                    pipeline.addLast(new StringDecoder(CharsetUtil.UTF_8));
 
 
 

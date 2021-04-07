@@ -1,5 +1,7 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import org.zju.vipa.aix.container.client.network.ClientIO;
 import org.zju.vipa.aix.container.client.network.ClientMessage;
 import org.zju.vipa.aix.container.client.network.UploadDataListener;
@@ -8,7 +10,7 @@ import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.config.NetworkConfig;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
-import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 /**
  * @Date: 2020/5/6 16:49
@@ -39,10 +41,16 @@ public class NettyIoImpl implements ClientIO {
         }
         Message response = null;
 
-        String sendData = JsonUtils.toJSONString(message);
+        // 使用json序列化
+//        String sendData = JsonUtils.toJSONString(message);
+
+        //使用ProtostuffUtils序列化
+        byte[] sendData = ProtostuffUtils.serialize(message);
+//        System.out.println("序列化后：" + Arrays.toString(sendData));
+        ByteBuf buf = Unpooled.wrappedBuffer(sendData);
 
         try {
-            response = client.sendMsgAndGetResponse(sendData, readTimeOut);
+            response = client.sendMsgAndGetResponse(buf, readTimeOut);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -62,11 +70,17 @@ public class NettyIoImpl implements ClientIO {
             ClientLogUtils.debug("SEND:\n{}\n", message);
         }
 
-        String sendData = JsonUtils.toJSONString(message);
+        // 使用json序列化
+//        String sendData = JsonUtils.toJSONString(message);
 
-//        boolean doLog =!Intent.SHELL_ERROR_HELP.match(message);
+        //使用ProtostuffUtils序列化
+        byte[] sendData = ProtostuffUtils.serialize(message);
+//        System.out.println("序列化后：" + Arrays.toString(sendData));
+        ByteBuf buf = Unpooled.wrappedBuffer(sendData);
+
+
         try {
-            client.sendMsg(sendData);
+            client.sendMsg(buf);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
@@ -77,13 +91,8 @@ public class NettyIoImpl implements ClientIO {
     public void upLoadData(String path, UploadDataListener listener) {
 
 
-
-
-
 //        /**  读取文件到内存缓冲区 */
 //        BufferedInputStream dataInputStream = new BufferedInputStream(dataInput);
-
-
 
 
         try {

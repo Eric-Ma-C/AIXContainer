@@ -79,9 +79,9 @@ public class AptSource {
 //             "deb http://mirrors.huaweicloud.com/ubuntu/ xenial-security main restricted universe multiverse\n" +
 //             "# deb-src http://mirrors.huaweicloud.com/ubuntu/ xenial-security main restricted universe multiverse");
 
-//    private String url;
+    //    private String url;
 //    private  static AptSource[] aptSources = AptSource.values();
-private static CopyOnWriteArrayList<String> aptSources;
+    private static CopyOnWriteArrayList<String> aptSources=new CopyOnWriteArrayList<>();
 
 //    PipSource(String url) {
 //        this.url = url;
@@ -93,10 +93,10 @@ private static CopyOnWriteArrayList<String> aptSources;
 //        this.url = url;
 //    }
 
-    public static void refreshSource(List<Source> sources){
-       aptSources.clear();
+    public static void refreshSource(List<Source> sources) {
+        aptSources.clear();
         for (Source s : sources) {
-            if ("APT".equals(s.getType())){
+            if ("APT".equals(s.getType())) {
                 aptSources.add(s.getUrl());
             }
         }
@@ -111,7 +111,7 @@ private static CopyOnWriteArrayList<String> aptSources;
     }
 
     public static String nextUrl() {
-        aptSourceId += (new Random().nextInt(aptSources.size()-2)+1);
+        aptSourceId += (new Random().nextInt(aptSources.size() - 2) + 1);
         aptSourceId %= aptSources.size();
         return currentUrl();
     }

@@ -142,6 +142,7 @@ public class ManagementCenter {
     public void updateGpuInfo(String token, GpuInfo info) {
         RunningClient client = clientMap.get(token);
         if (client == null) {
+            LogUtils.worning("updateGpuInfo()未找到在线容器token:{}",token);
             return;
         }
         for (GpuInfo.Gpu gpu : info.getGpus()) {
@@ -225,11 +226,19 @@ public class ManagementCenter {
 
     public static void refreshPipSource() {
         List<Source> pipSourceList = AixDbManager.getInstance().getPipSourceList();
+
+        for (Source source : pipSourceList) {
+            LogUtils.info("refreshPipSource={}",source);
+        }
         PipSource.refreshSource(pipSourceList);
     }
 
     public static void refreshAptSource() {
         List<Source> aptSourceList = AixDbManager.getInstance().getAptSourceList();
+        LogUtils.info("refreshAptSource={}",aptSourceList.toArray());
+        for (Source source : aptSourceList) {
+            LogUtils.info("refreshAptSource={}",source);
+        }
         AptSource.refreshSource(aptSourceList);
     }
 
@@ -259,14 +268,14 @@ public class ManagementCenter {
      * @return:
      */
     public static void main(String[] args) {
-        System.out.println("Starting AIX Container Manager...");
+        LogUtils.info("Starting AIX Container Manager...");
 
 
         /** 处理主线程的未捕获异常 */
         ExceptionUtils.setDefaultUncaughtExceptionHandler();
         /** dubbo */
         RpcServer.getInstance().start();
-       /** 初始化 */
+        /** 初始化 */
         initFromDB();
 
 
@@ -275,7 +284,7 @@ public class ManagementCenter {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    System.out.println("Starting Netty Server...");
+                    LogUtils.info("Starting Netty Server...");
                     /**  启动Netty tcp服务器 */
                     NettyTcpServer.start();
                 }

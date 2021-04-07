@@ -15,8 +15,8 @@ public class TestDb {
         public static void main(String[] args) {
 //                boolean b = AtlasDbManager.getInstance().updateDeviceNameById("1", "c11");
 //                System.out.println(b);
-                AtlasDbManager.getInstance().setTaskWaitingById("291");
-                AtlasDbManager.getInstance().setTaskWaitingById("227");
+                AtlasDbManager.getInstance().setTaskWaitingById("222");
+//                AtlasDbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
 
 

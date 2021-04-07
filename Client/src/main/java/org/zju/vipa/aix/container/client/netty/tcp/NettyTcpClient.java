@@ -1,6 +1,7 @@
 package org.zju.vipa.aix.container.client.netty.tcp;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
 import io.netty.buffer.CompositeByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
@@ -63,7 +64,7 @@ public class NettyTcpClient {
         try {
             channel = bootstrap.connect(host, port).sync().channel();
         } catch (InterruptedException e) {
-            ClientLogUtils.error("连接Server(IP={},PORT={})失败,InterruptedException={}", host, port,e);
+            ClientLogUtils.error("连接Server(IP={},PORT={})失败,InterruptedException={}", host, port, e);
             Thread.currentThread().interrupt();
         }
         return channel;
@@ -75,7 +76,7 @@ public class NettyTcpClient {
      * @param sendData 待发送字符串
      * @return: void
      */
-    public void sendMsg(String sendData) throws InterruptedException {
+    public void sendMsg(ByteBuf sendData) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_LISTENING);
         if (channel == null) {
             ClientLogUtils.debug("Netty建立连接失败!");
@@ -83,10 +84,13 @@ public class NettyTcpClient {
         }
         try {
             channel.writeAndFlush(sendData).sync();
+        } catch (Exception e) {
+            ClientExceptionUtils.handle(e);
+        } finally {
             if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
                 ClientLogUtils.debug("SEND MSG:{}", sendData);
             }
-        } finally {
+
             channel.close().sync();
         }
 
@@ -96,7 +100,7 @@ public class NettyTcpClient {
     /**
      * 同步方法，向服务器发送消息
      */
-    public Message sendMsgAndGetResponse(String sendData, int timeout) throws InterruptedException {
+    public Message sendMsgAndGetResponse(ByteBuf sendData, int timeout) throws InterruptedException {
         Channel channel = getChannel(NetworkConfig.SERVER_IP, NetworkConfig.SERVER_PORT_LISTENING);
         if (channel == null) {
             ClientLogUtils.error("Netty建立连接失败!");
@@ -106,7 +110,7 @@ public class NettyTcpClient {
         try {
             /** 初始化阻塞拦截器 */
             CountDownLatch latch = new CountDownLatch(1);
-            ClientInboundMsgHandler handler = (ClientInboundMsgHandler) channel.pipeline().get(ClientInboundMsgHandler.NAME);
+            ClientChannelInboundHandler handler = (ClientChannelInboundHandler) channel.pipeline().get(ClientChannelInboundHandler.NAME);
             handler.setLatch(latch);
 
             /** 写数据 */
@@ -114,10 +118,12 @@ public class NettyTcpClient {
                 channel.writeAndFlush(sendData).sync();
             } catch (Exception e) {
                 ClientExceptionUtils.handle(e);
+            } finally {
+                if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
+                    ClientLogUtils.debug("SEND MSG:{}", sendData);
+                }
             }
-            if (DebugConfig.CLIENT_NETWORK_IO_LOG) {
-                ClientLogUtils.debug("SEND MSG:{}", sendData);
-            }
+
 
             /** 阻塞等待 */
             latch.await(timeout, TimeUnit.MILLISECONDS);

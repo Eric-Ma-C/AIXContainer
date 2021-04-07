@@ -218,17 +218,14 @@ public class TaskManager {
                 String updataCondaSrcCmds = AIXEnvConfig.UPDATE_CONDA_SOURCE_CMD;
 
 
-                /** 分成两条指令执行，否则可能会卡住? */
-                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(task);
-//                String condaEnvCreateCmds = "ls";
 
-                String startCmds = AIXEnvConfig.getStartCmds(task, token);
-//                String cmds =  AIXEnvConfig.getStartCmds(codePath,modelArgs);
+
 //
 
                 /** test 添加待发送任务至列表 */
-                /** 删除虚拟环境配置 */
-                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD));
+                /** 1.删除虚拟环境配置 */
+                ServerMessage removeEnvMsg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD);
+//                addSerialMessage2Tail(token, removeEnvMsg);
 
 
 //                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get clean && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean"));
@@ -243,7 +240,7 @@ public class TaskManager {
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $0"));
 //                addMessage(token, new ServerMessage(Intent.SHELL_TASK, "echo $-"));
 
-                //如果不通过下载,一般将模型挂载进容器,在数据库写入路径
+                /** 如果不通过下载,一般将模型挂载进容器,在数据库写入路径 */
                 if (DebugConfig.IS_DOWNLOAD_MODULE) {
                     /** 告诉容器下载model */
                     addSerialMessage2Tail(token, new ServerMessage(Intent.DOWNLOAD_MODEL, task.getModelId()));
@@ -251,21 +248,29 @@ public class TaskManager {
                     addSerialMessage2Tail(token, new ServerMessage(Intent.DOWNLOAD_DATASET, task.getDatasetId()));
                 }
 
+                /** 2.conda环境配置指令                  分成两条指令执行，否则可能会卡住? */
+                String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(task);
                 Message condaMsg = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
-                addSerialMessage2Tail(token, condaMsg);
+//                addSerialMessage2Tail(token, condaMsg);
 
-                /** 配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等 */
+
+                /** 3.preCmds       配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等 */
                 String preCmds = task.getPreCmds();
                 if (preCmds != null && !"".equals(preCmds)) {
-                    addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
+//                    addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
                 }
 
+                /** 4.任务启动指令 */
+                String startCmds = AIXEnvConfig.getStartCmds(task, token);
                 Message startMsg = new ServerMessage(Intent.SHELL_TASK, startCmds);
                 startMsg.addCustomData("codePath", codePath);
                 startMsg.addCustomData("modelArgs", modelArgs);
                 addSerialMessage2Tail(token, startMsg);
 
+
                 return getMessageByToken(token);
+
+
             } else {
                 /**  task ！= null，说明有任务正在配置环境 */
 

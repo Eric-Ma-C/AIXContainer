@@ -1,15 +1,17 @@
 package org.zju.vipa.aix.container.center.netty;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.FileRegion;
 import org.zju.vipa.aix.container.center.log.ClientLogFileManager;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.center.network.ServerIO;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.message.Message;
-import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -38,9 +40,17 @@ public class NettyIoImpl implements ServerIO {
 //            LOGGER.debug("RESPONSE TO {}:\n{}\n", context.channel().remoteAddress(), msg);
         }
 
-        String data = JsonUtils.toJSONString(msg);
-//        context.write(Unpooled.copiedBuffer(, CharsetUtil.UTF_8));
-        context.writeAndFlush(data);
+
+
+        // 使用json序列化
+//        String buf = JsonUtils.toJSONString(msg);
+
+        //使用ProtostuffUtils序列化
+        byte[] data = ProtostuffUtils.serialize(msg);
+//        System.out.println("序列化后：" + Arrays.toString(data));
+        ByteBuf buf = Unpooled.wrappedBuffer(data);
+
+        context.writeAndFlush(buf);
         if (isClose) {
             context.channel().close();
         }

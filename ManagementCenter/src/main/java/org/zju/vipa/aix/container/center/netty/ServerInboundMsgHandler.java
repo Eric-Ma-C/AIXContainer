@@ -1,14 +1,15 @@
 package org.zju.vipa.aix.container.center.netty;
 
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.ReferenceCountUtil;
+import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.center.network.SocketHandler;
 import org.zju.vipa.aix.container.center.util.ExceptionUtils;
-import org.zju.vipa.aix.container.center.log.LogUtils;
 import org.zju.vipa.aix.container.common.config.DebugConfig;
 import org.zju.vipa.aix.container.common.message.Message;
-import org.zju.vipa.aix.container.common.utils.JsonUtils;
+import org.zju.vipa.aix.container.common.utils.ProtostuffUtils;
 
 /**
  * @Date: 2020/5/6 22:45
@@ -26,35 +27,36 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
             LogUtils.info("客户端channel:{}读取内容{}", ctx.channel().id(),msg);
         }
 
-        if (msg instanceof String) {
+        if (msg instanceof ByteBuf) {
             /** 处理客户端请求 */
-            Message receivedMessage = JsonUtils.parseObject((String) msg, Message.class);
+            //json反序列化
+//        Message receivedMessage = JsonUtils.parseObject((String) msg, Message.class);
+            //pb反序列化
+            ByteBuf byteBuf= (ByteBuf) msg;
+            byte[] data;
+            if (byteBuf.hasArray()){
+                data=byteBuf.array();
+                if (DebugConfig.OPEN_NETTY_LOG) {
+                    LogUtils.debug("RECEIVE HeapBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                }
+            }else {
+                int len=byteBuf.readableBytes();
+                data=new byte[len];
+                byteBuf.getBytes(byteBuf.readerIndex(),data);
+                if (DebugConfig.OPEN_NETTY_LOG) {
+                    LogUtils.debug("RECEIVE DirectBuf MSG FROM {} :\n{}\n", ctx.channel().id(), data);
+                }
+            }
+
+            Message receivedMessage  = ProtostuffUtils.deserialize(data, Message.class);
             if (DebugConfig.SERVER_NETWORK_IO_LOG) {
                 /** 收到客户端日志 */
                 LogUtils.debug("RECEIVE MSG FROM {} TOKEN: {}:\n{}\n", ctx.channel().id(), receivedMessage.getTokenSuffix(), msg);
             }
 
-//            if (Intent.UPLOAD_DATA.match(receivedMessage.getIntent())){
-//                /** 上传文件 */
-//                LogUtils.info("准备读取文件内容");
-//            }
-
             new SocketHandler(ctx).handle(receivedMessage);
 
-        }
-//        else if (msg instanceof FileRegion) {
-//
-//            FileRegion region = (FileRegion) msg;
-//
-//            LogUtils.info("\n\nmsg instanceof FileRegion\n\n");
-//
-//        } else if (msg instanceof ByteBuf){
-//
-//            LogUtils.error("\n\nmsg instanceof ByteBuf\n\n", msg);
-//
-//
-//        }
-        else {
+        } else {
             LogUtils.error("\n\nUnknown msg {}\n\n", msg);
         }
 
@@ -62,19 +64,6 @@ public class ServerInboundMsgHandler extends ChannelInboundHandlerAdapter {
         /** todo 验证是否需要释放资源 */
         ReferenceCountUtil.release(msg);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     /**
      * 服务端接收客户端数据结束时调用

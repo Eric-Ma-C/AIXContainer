@@ -6,55 +6,57 @@
 
     <settings>
         <setting name="logImpl" value="LOG4J"/>
-<!--        <setting name="cacheEnabled" value="true"/>-->
-<!--        <setting name="lazyLoadingEnabled" value="true"/>-->
-<!--        <setting name="multipleResultSetsEnabled" value="true"/>-->
-<!--        <setting name="useColumnLabel" value="true"/>-->
-<!--        <setting name="useGeneratedKeys" value="false"/>-->
-<!--        <setting name="autoMappingBehavior" value="PARTIAL"/>-->
-<!--        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>-->
-<!--        <setting name="defaultExecutorType" value="SIMPLE"/>-->
-<!--        <setting name="defaultStatementTimeout" value="25"/>-->
-<!--        <setting name="defaultFetchSize" value="100"/>-->
-<!--        <setting name="safeRowBoundsEnabled" value="false"/>-->
+        <!--        <setting name="cacheEnabled" value="true"/>-->
+        <!--        <setting name="lazyLoadingEnabled" value="true"/>-->
+        <!--        <setting name="multipleResultSetsEnabled" value="true"/>-->
+        <!--        <setting name="useColumnLabel" value="true"/>-->
+        <!--        <setting name="useGeneratedKeys" value="false"/>-->
+        <!--        <setting name="autoMappingBehavior" value="PARTIAL"/>-->
+        <!--        <setting name="autoMappingUnknownColumnBehavior" value="WARNING"/>-->
+        <!--        <setting name="defaultExecutorType" value="SIMPLE"/>-->
+        <!--        <setting name="defaultStatementTimeout" value="25"/>-->
+        <!--        <setting name="defaultFetchSize" value="100"/>-->
+        <!--        <setting name="safeRowBoundsEnabled" value="false"/>-->
         <setting name="mapUnderscoreToCamelCase" value="true"/>
-<!--        <setting name="localCacheScope" value="SESSION"/>-->
-<!--        <setting name="jdbcTypeForNull" value="OTHER"/>-->
-<!--        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>-->
+        <!--        <setting name="localCacheScope" value="SESSION"/>-->
+        <!--        <setting name="jdbcTypeForNull" value="OTHER"/>-->
+        <!--        <setting name="lazyLoadTriggerMethods" value="equals,clone,hashCode,toString"/>-->
     </settings>
 
     <typeAliases>
-<!--        <typeAlias alias="User" type="DataturksUser" />-->
-<!--    <typeAliases>标签内指定的是你定义的实体类的别名，方便之后使用。-->
+        <!--        <typeAlias alias="User" type="DataturksUser" />-->
+        <!--    <typeAliases>标签内指定的是你定义的实体类的别名，方便之后使用。-->
     </typeAliases>
 
     <environments default="atlas">
         <environment id="atlas">
-            <transactionManager type="JDBC" />
+            <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver" />
-                <property name="url" value="${db.mysql.atlas.url}" />
-                <property name="username" value="${db.mysql.atlas.user}" />
-                <property name="password" value="${db.mysql.atlas.password}" />
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="${db.mysql.atlas.url}"/>
+                <property name="username" value="${db.mysql.atlas.user}"/>
+                <property name="password" value="${db.mysql.atlas.password}"/>
+                <property name="poolMaximumActiveConnections" value="1000"/>
+                <property name="poolMaximumIdleConnections" value="1000"/>
                 <!-- 每隔7小时检查一下连接是否还有效 -->
                 <property name="poolPingEnabled" value="true"/>
                 <property name="poolPingQuery" value="select 1"/>
                 <property name="poolPingConnectionsNotUsedFor" value="25200000"/>
             </dataSource>
         </environment>
-<!--        <environment id="aix">-->
-<!--            <transactionManager type="JDBC" />-->
-<!--            <dataSource type="POOLED">-->
-<!--                <property name="driver" value="com.mysql.jdbc.Driver" />-->
-<!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://10.214.211.207:3316/center_temp?serverTimezone=Asia/Shanghai" />&ndash;&gt;-->
-<!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://112.124.46.179:3307/center_temp?serverTimezone=Asia/Shanghai&amp;useSSL=false" />&ndash;&gt;-->
-<!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://127.0.0.1:3307/center_temp?serverTimezone=Asia/Shanghai" />&ndash;&gt;-->
-<!--                <property name="url" value="jdbc:mysql://10.214.211.205:3316/center_temp?serverTimezone=Asia/Shanghai" />-->
+        <!--        <environment id="aix">-->
+        <!--            <transactionManager type="JDBC" />-->
+        <!--            <dataSource type="POOLED">-->
+        <!--                <property name="driver" value="com.mysql.jdbc.Driver" />-->
+        <!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://10.214.211.207:3316/center_temp?serverTimezone=Asia/Shanghai" />&ndash;&gt;-->
+        <!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://112.124.46.179:3307/center_temp?serverTimezone=Asia/Shanghai&amp;useSSL=false" />&ndash;&gt;-->
+        <!--&lt;!&ndash;                <property name="url" value="jdbc:mysql://127.0.0.1:3307/center_temp?serverTimezone=Asia/Shanghai" />&ndash;&gt;-->
+        <!--                <property name="url" value="jdbc:mysql://10.214.211.205:3316/center_temp?serverTimezone=Asia/Shanghai" />-->
 
-<!--                <property name="username" value="sontal" />-->
-<!--                <property name="password" value="12345" />-->
-<!--            </dataSource>-->
-<!--        </environment>-->
+        <!--                <property name="username" value="sontal" />-->
+        <!--                <property name="password" value="12345" />-->
+        <!--            </dataSource>-->
+        <!--        </environment>-->
     </environments>
 
 

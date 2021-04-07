@@ -31,9 +31,9 @@ public class PipSource {
 //     */
 //    TUNA("https://pypi.tuna.tsinghua.edu.cn/simple/");
 
-    private static CopyOnWriteArrayList<String> pipSources;
+    private static CopyOnWriteArrayList<String> pipSources=new CopyOnWriteArrayList<>();
 
-//    private String url;
+    //    private String url;
 //    private  static PipSource[] pipSources =PipSource.values();
     private static int pipSourceId = 0;
 
@@ -41,10 +41,10 @@ public class PipSource {
 //        this.url = url;
 //    }
 
-    public static void refreshSource(List<Source> sources){
+    public static void refreshSource(List<Source> sources) {
         pipSources.clear();
         for (Source s : sources) {
-            if ("PIP".equals(s.getType())){
+            if ("PIP".equals(s.getType())) {
                 pipSources.add(s.getUrl());
             }
         }
@@ -59,7 +59,7 @@ public class PipSource {
     }
 
     public static String nextUrl() {
-        pipSourceId += (new Random().nextInt(pipSources.size()-2)+1);
+        pipSourceId += (new Random().nextInt(pipSources.size() - 2) + 1);
         pipSourceId %= pipSources.size();
         return currentUrl();
     }
