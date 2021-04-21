@@ -17,11 +17,11 @@ public class ProtostuffUtils {
     /**
      * 避免每次序列化都重新申请Buffer空间
      */
-    private static LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
+//    private static LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
     /**
      * 缓存Schema
      */
-    private static Map<Class<?>, Schema<?>> schemaCache = new ConcurrentHashMap<>();
+    private static final Map<Class<?>, Schema<?>> schemaCache = new ConcurrentHashMap<>();
 
     /**
      * 序列化方法，把指定对象序列化成字节数组
@@ -30,16 +30,30 @@ public class ProtostuffUtils {
      * @param <T>
      * @return
      */
-    public static <T> byte[] serialize(T obj) {
-        Class<T> clazz = (Class<T>) obj.getClass();
-        Schema<T> schema = getSchema(clazz);
-        byte[] data;
+//    public static <T> byte[] serialize(T obj) {
+//        Class<T> clazz = (Class<T>) obj.getClass();
+//        Schema<T> schema = getSchema(clazz);
+//        byte[] data;
+//        try {
+//            data = ProtostuffIOUtil.toByteArray(obj, schema, buffer);
+//        } catch (Exception e) {
+//            throw new RuntimeException("Protostuff序列化(" + obj.getClass() + ")对象(" + obj + ")发生异常!", e);
+//        } finally {
+//            buffer.clear();
+//        }
+//
+//        return data;
+//    }
+    public static <T> byte[] serialize( T obj) {
+        Class<T> cls = (Class<T>) obj.getClass();
+        Schema<T> schema = getSchema(cls);
+        byte[] data = null;
         try {
+            LinkedBuffer buffer = LinkedBuffer.allocate(LinkedBuffer.DEFAULT_BUFFER_SIZE);
             data = ProtostuffIOUtil.toByteArray(obj, schema, buffer);
-        } finally {
-            buffer.clear();
+        } catch (Exception e) {
+            throw new RuntimeException("序列化(" + obj.getClass() + ")对象(" + obj + ")发生异常!", e);
         }
-
         return data;
     }
 
@@ -59,14 +73,31 @@ public class ProtostuffUtils {
     }
 
 
-    private static <T> Schema<T> getSchema(Class<T> clazz) {
-        Schema<T> schema = (Schema<T>) schemaCache.get(clazz);
-        if (schema == null) {
-            //这个schema通过RuntimeSchema进行懒创建并缓存
-            //所以可以一直调用RuntimeSchema.getSchema(),这个方法是线程安全的
-            schema = RuntimeSchema.getSchema(clazz);
-            if (schema != null) {
-                schemaCache.put(clazz, schema);
+//    private static <T> Schema<T> getSchema(Class<T> clazz) {
+//        Schema<T> schema = (Schema<T>) schemaCache.get(clazz);
+//        if (schema == null) {
+//            //这个schema通过RuntimeSchema进行懒创建并缓存
+//            //所以可以一直调用RuntimeSchema.getSchema(),这个方法是线程安全的
+//            schema = RuntimeSchema.getSchema(clazz);
+//            if (schema != null) {
+//                schemaCache.put(clazz, schema);
+//            }
+//        }
+//        return schema;
+//    }
+    private static <T> Schema<T> getSchema(Class<T> cls) {
+        Schema<T> schema = (Schema<T>) schemaCache.get(cls);
+        if (schema==null) {
+            synchronized (schemaCache) {
+                //双重校验锁
+                schema = (Schema<T>) schemaCache.get(cls);
+                if (schema==null) {
+                    // schema通过RuntimeSchema进行懒创建并缓存
+                    schema = RuntimeSchema.getSchema(cls);
+                    if (schema!=null) {
+                        schemaCache.put(cls, schema);
+                    }
+                }
             }
         }
         return schema;

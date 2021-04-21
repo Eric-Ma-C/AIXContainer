@@ -165,7 +165,7 @@ public class SocketHandler implements Runnable {
         GpuInfo gpuInfo = ProtostuffUtils.deserialize(message.getByteValue(), GpuInfo.class);
         if (gpuInfo != null) {
             LogUtils.info("Heartbeat from {},GPU info:{}", message.getTokenSuffix(), gpuInfo);
-//            ManagementCenter.getInstance().updateGpuInfo(message.getToken(), gpuInfo);
+            ManagementCenter.getInstance().updateGpuInfo(message.getToken(), gpuInfo);
         }
         //取出可能的待发送信息
         Message res = TaskManager.getInstance().getHeartbeatMessage(message.getToken());
