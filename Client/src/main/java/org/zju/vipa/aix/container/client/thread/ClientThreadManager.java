@@ -130,9 +130,10 @@ public class ClientThreadManager {
      */
     private static void initThreadPool() {
         /** 核心线程池大小 */
-        int corePoolSize = 5;
+        int corePoolSize = 10;
         /** 最大线程池大小 */
-        int maximumPoolSize = 30;
+        int maximumPoolSize = 90;
+//        int maximumPoolSize = Integer.MAX_VALUE;
         /** 超过corePoolSize后,线程最大空闲时间,超出后将被销毁 */
         long keepAliveTime = 60;
         TimeUnit unit = TimeUnit.SECONDS;

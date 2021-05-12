@@ -225,7 +225,7 @@ public class TaskManager {
                 /** test 添加待发送任务至列表 */
                 /** 1.删除虚拟环境配置 */
                 ServerMessage removeEnvMsg = new ServerMessage(Intent.SHELL_TASK, AIXEnvConfig.CONDA_REMOVE_ALL_CMD);
-//                addSerialMessage2Tail(token, removeEnvMsg);
+                addSerialMessage2Tail(token, removeEnvMsg);
 
 
 //                addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, "sudo apt-get clean && sudo mv /var/lib/apt/lists /var/lib/apt/lists.old && sudo mkdir -p /var/lib/apt/lists/partial && sudo apt-get clean"));
@@ -251,13 +251,13 @@ public class TaskManager {
                 /** 2.conda环境配置指令                  分成两条指令执行，否则可能会卡住? */
                 String condaEnvCreateCmds = AIXEnvConfig.getCondaEnvCreateCmds(task);
                 Message condaMsg = new ServerMessage(Intent.SHELL_TASK, condaEnvCreateCmds);
-//                addSerialMessage2Tail(token, condaMsg);
+                addSerialMessage2Tail(token, condaMsg);
 
 
                 /** 3.preCmds       配置环境结束后，任务启动前，附加执行的代码,可以用来调整环境等 */
                 String preCmds = task.getPreCmds();
                 if (preCmds != null && !"".equals(preCmds)) {
-//                    addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
+                    addSerialMessage2Tail(token, new ServerMessage(Intent.SHELL_TASK, preCmds));
                 }
 
                 /** 4.任务启动指令 */

@@ -1,5 +1,7 @@
+import org.zju.vipa.aix.container.center.db.AixDbManager;
 import org.zju.vipa.aix.container.center.db.AtlasDbManager;
 import org.zju.vipa.aix.container.common.db.entity.aix.DataturksUser;
+import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 
 import java.util.List;
@@ -15,9 +17,12 @@ public class TestDb {
         public static void main(String[] args) {
 //                boolean b = AtlasDbManager.getInstance().updateDeviceNameById("1", "c11");
 //                System.out.println(b);
-                AtlasDbManager.getInstance().setTaskWaitingById("222");
+//                AtlasDbManager.getInstance().setTaskWaitingById("222");
 //                AtlasDbManager.getInstance().setTaskWaitingById("227");
 //                DbManager.getInstance().setTaskWaitingById("221");
+
+                List<KnownError> knownErrorList = AixDbManager.getInstance().getKnownErrorList();
+                System.out.println(knownErrorList);
 
 
 //                AixDevice client = AtlasDbManager.getInstance().getClientById(String.valueOf(2));

@@ -142,7 +142,7 @@ public class ManagementCenter {
     public void updateGpuInfo(String token, GpuInfo info) {
         RunningClient client = clientMap.get(token);
         if (client == null) {
-            LogUtils.worning("updateGpuInfo()未找到在线容器token:{}",token);
+            LogUtils.worning("updateGpuInfo()未找到在线容器token:{}", token);
             return;
         }
         for (GpuInfo.Gpu gpu : info.getGpus()) {
@@ -227,19 +227,44 @@ public class ManagementCenter {
     public static void refreshPipSource() {
         List<Source> pipSourceList = AixDbManager.getInstance().getPipSourceList();
 
-        for (Source source : pipSourceList) {
-            LogUtils.info("refreshPipSource={}",source);
+        if (pipSourceList != null) {
+            for (Source source : pipSourceList) {
+                LogUtils.info("refreshPipSource={}", source);
+            }
+            PipSource.refreshSource(pipSourceList);
+        } else {
+            LogUtils.error("aptSourceList=null!");
         }
-        PipSource.refreshSource(pipSourceList);
+
+    }
+    public static void refreshKnownError() {
+        List<KnownError> knownErrorList = AixDbManager.getInstance().getKnownErrorList();
+        if (knownErrorList == null) {
+            LogUtils.error("knownErrorList is null!");
+        } else {
+            LogUtils.debug("knownErrorList.size={}", knownErrorList.size());
+            List<KnownErrorRuntime> knownErrorRuntimeList = new ArrayList<>();
+            for (KnownError knownError : knownErrorList) {
+                knownErrorRuntimeList.add(new KnownErrorRuntime(knownError));
+                LogUtils.debug(knownError.toString());
+            }
+            ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
+        }
     }
 
     public static void refreshAptSource() {
         List<Source> aptSourceList = AixDbManager.getInstance().getAptSourceList();
-        LogUtils.info("refreshAptSource={}",aptSourceList.toArray());
-        for (Source source : aptSourceList) {
-            LogUtils.info("refreshAptSource={}",source);
+
+        if (aptSourceList != null) {
+            LogUtils.info("refreshAptSource={}", aptSourceList.toArray());
+            for (Source source : aptSourceList) {
+                LogUtils.info("refreshAptSource={}", source);
+            }
+            AptSource.refreshSource(aptSourceList);
+        } else {
+            LogUtils.error("aptSourceList=null!");
         }
-        AptSource.refreshSource(aptSourceList);
+
     }
 
     /**
@@ -251,13 +276,7 @@ public class ManagementCenter {
 
     private static void initFromDB() {
         /** 首次从数据库加载自动环境修复 */
-        List<KnownError> knownErrorList = AixDbManager.getInstance().getKnownErrorList();
-        List<KnownErrorRuntime> knownErrorRuntimeList = new ArrayList<>();
-        for (KnownError knownError : knownErrorList) {
-            knownErrorRuntimeList.add(new KnownErrorRuntime(knownError));
-        }
-        ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
-
+        refreshKnownError();
         refreshAptSource();
         refreshPipSource();
     }
@@ -273,10 +292,14 @@ public class ManagementCenter {
 
         /** 处理主线程的未捕获异常 */
         ExceptionUtils.setDefaultUncaughtExceptionHandler();
-        /** dubbo */
-        RpcServer.getInstance().start();
+
+
         /** 初始化 */
         initFromDB();
+
+
+        /** dubbo */
+        RpcServer.getInstance().start();
 
 
         /** 启动tcp服务 */

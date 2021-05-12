@@ -65,7 +65,7 @@ public class GrabbingTaskThread {
                             Client.grabTaskFailedCount = 0;
                             grabbingInterval = ClientConfig.INITIAL_GRABBING_INTERVAL;
                         }
-                        ClientLogUtils.info("暂时没有抢到任务,准备第{}次尝试,请耐心等待...", Client.grabTaskFailedCount);
+                        ClientLogUtils.info("暂时没有抢到任务,准备再次尝试,请耐心等待...");
 
                     }
 

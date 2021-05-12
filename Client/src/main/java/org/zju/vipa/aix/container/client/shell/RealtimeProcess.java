@@ -1,6 +1,5 @@
 package org.zju.vipa.aix.container.client.shell;
 
-import org.zju.vipa.aix.container.client.thread.ClientThreadManager;
 import org.zju.vipa.aix.container.client.utils.ClientExceptionUtils;
 import org.zju.vipa.aix.container.client.utils.ClientLogUtils;
 import org.zju.vipa.aix.container.client.utils.ShellUtils;
@@ -32,7 +31,7 @@ public class RealtimeProcess {
     /**
      * 保存所有的输出信息
      */
-    private StringBuffer mStringBuffer = new StringBuffer();
+//    private StringBuffer mStringBuffer = new StringBuffer();
     /**
      * 处理线程构造器
      */
@@ -153,9 +152,9 @@ public class RealtimeProcess {
         return commands.toArray(new String[commands.size()]);
     }
 
-    public String getAllResult() {
-        return mStringBuffer.toString();
-    }
+//    public String getAllResult() {
+//        return mStringBuffer.toString();
+//    }
 
 
     /**
@@ -171,7 +170,7 @@ public class RealtimeProcess {
         readStderr = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
         final CountDownLatch latch = new CountDownLatch(1);
-        ClientThreadManager.getInstance().startNewTask(new Runnable() {
+        Runnable processOutput = new Runnable() {
             @Override
             public void run() {
                 Thread.currentThread().setName("process output");
@@ -179,14 +178,18 @@ public class RealtimeProcess {
                     // 逐行读取,readLine()只有在数据流发生异常或者另一端被close()掉时，才会返回null值
                     while ((stdOutTmp = readStdout.readLine()) != null || (stdErrTmp = readStderr.readLine()) != null) {
                         if (stdOutTmp != null) {
-                            mStringBuffer.append(stdOutTmp + "\n");
+//                            mStringBuffer.append(stdOutTmp + "\n");
                             // 回调接口方法
                             mInterface.onNewStdOut(stdOutTmp);
+//                            ClientLogUtils.debug("stdOutTmp = "+stdOutTmp);
                         }
                         if (stdErrTmp != null) {
-                            mStringBuffer.append(stdErrTmp + "\n");
+//                            mStringBuffer.append(stdErrTmp + "\n");
                             mInterface.onNewStdError(stdErrTmp);
+//                            ClientLogUtils.debug("stdErrTmp = "+stdErrTmp);
                         }
+//                        Thread.sleep(500);
+
                     }
                 } catch (IOException e) {
                     ClientExceptionUtils.handle(e);
@@ -196,9 +199,7 @@ public class RealtimeProcess {
 
                     ClientLogUtils.debug("process.waitFor()调用");
                     resultCode = process.waitFor();
-                    ClientLogUtils.debug("process.waitFor()返回resultCode={}",resultCode);
-
-
+                    ClientLogUtils.debug("process.waitFor()返回resultCode={}", resultCode);
 
 
                 } catch (InterruptedException e) {
@@ -213,7 +214,9 @@ public class RealtimeProcess {
                 }
             }
 
-        });
+        };
+//        ClientThreadManager.getInstance().startNewTask(processOutput);
+        new Thread(processOutput).start();
 
         try {
             latch.await();
