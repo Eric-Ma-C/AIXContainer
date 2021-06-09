@@ -3,7 +3,6 @@ package org.zju.vipa.aix.container.api;
 import org.zju.vipa.aix.container.api.entity.AixDeviceVO;
 import org.zju.vipa.aix.container.api.entity.RunningClient;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
-import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Message;
 
@@ -154,14 +153,10 @@ public interface AIXClientCenterService {
      */
     boolean updateDeviceInfoById(String id, String newInfo);
 
-    void refreshRuntimeErrorList(List<KnownErrorRuntime> knownErrorRuntimeList);
+    void refreshRuntimeErrorList();
 
     /**
-     * 更新pip源
+     * 更新pip源和apt源
      */
-    void refreshPipSource();
-    /**
-     * 更新apt源
-     */
-    void refreshAptSource();
+    void refreshSource();
 }

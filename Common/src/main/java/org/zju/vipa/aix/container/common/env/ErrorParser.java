@@ -15,6 +15,7 @@ import java.util.List;
  * @Description: shell错误解析器
  */
 public class ErrorParser {
+    private static Logger logger = LoggerFactory.getLogger(ErrorParser.class);
     /**
      * 最后一次报错时间，用于同一次Error区分
      */
@@ -23,6 +24,10 @@ public class ErrorParser {
     private volatile static List<KnownErrorRuntime> knownErrorRuntimeList;
 
     public static void refreshRuntimeErrorList(List<KnownErrorRuntime> errorList){
+//        logger.info("refreshRuntimeErrorList:");
+//        for (KnownErrorRuntime errorRuntime : errorList) {
+//            logger.info("\n"+errorRuntime.toString());
+//        }
         knownErrorRuntimeList=errorList;
     }
 
@@ -197,7 +202,7 @@ public class ErrorParser {
                 break;
         }
 
-        Logger logger = LoggerFactory.getLogger(ErrorParser.class);
+
 
         long millis = System.currentTimeMillis();
         if (millis - lastErrorTime < 500) {

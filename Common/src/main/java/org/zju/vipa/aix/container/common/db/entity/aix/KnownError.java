@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class KnownError implements Serializable {
     @Id
     @GeneratedValue(generator = "JDBC")
-    private int id;
+    private Integer id;
     private String name;
     private String keyWords;
     private String repairCmds;
@@ -15,11 +15,11 @@ public class KnownError implements Serializable {
     public KnownError() {
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -50,4 +50,13 @@ public class KnownError implements Serializable {
         this.repairCmds = repairCmds;
     }
 
+    @Override
+    public String toString() {
+        return "KnownError{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            ", keyWords='" + keyWords + '\'' +
+            ", repairCmds='" + repairCmds + '\'' +
+            '}';
+    }
 }

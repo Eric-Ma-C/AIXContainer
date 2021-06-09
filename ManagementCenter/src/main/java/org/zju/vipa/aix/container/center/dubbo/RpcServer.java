@@ -57,7 +57,7 @@ public class RpcServer {
         // 服务提供者协议配置
         ProtocolConfig protocol = new ProtocolConfig();
         protocol.setName("dubbo");
-        protocol.setPort(NetworkConfig.ZK_AIX_PORT);
+        protocol.setPort(NetworkConfig.DUBBO_SERVER_PORT);
         protocol.setThreads(5);
 
 

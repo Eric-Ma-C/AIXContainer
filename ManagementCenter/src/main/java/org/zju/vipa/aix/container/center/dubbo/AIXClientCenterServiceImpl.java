@@ -11,8 +11,6 @@ import org.zju.vipa.aix.container.center.network.ServerMessage;
 import org.zju.vipa.aix.container.center.task.TaskManagerService;
 import org.zju.vipa.aix.container.common.db.entity.aix.Task;
 import org.zju.vipa.aix.container.common.db.entity.atlas.AixDevice;
-import org.zju.vipa.aix.container.common.env.ErrorParser;
-import org.zju.vipa.aix.container.common.env.KnownErrorRuntime;
 import org.zju.vipa.aix.container.common.message.GpuInfo;
 import org.zju.vipa.aix.container.common.message.Intent;
 import org.zju.vipa.aix.container.common.message.Message;
@@ -129,18 +127,14 @@ public class AIXClientCenterServiceImpl implements AIXClientCenterService {
     }
 
     @Override
-    public void refreshRuntimeErrorList(List<KnownErrorRuntime> knownErrorRuntimeList) {
-        ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
+    public void refreshRuntimeErrorList() {
+        ManagementCenter.refreshKnownError();
     }
 
     @Override
-    public void refreshPipSource() {
+    public void refreshSource() {
        ManagementCenter.refreshPipSource();
-    }
-
-    @Override
-    public void refreshAptSource() {
-       ManagementCenter.refreshAptSource();
+        ManagementCenter.refreshAptSource();
     }
 
     @Override

@@ -2,13 +2,15 @@ package org.zju.vipa.aix.container.common.env;
 
 import org.zju.vipa.aix.container.common.db.entity.aix.KnownError;
 
+import java.io.Serializable;
+
 /**
  * @Date: 2021/1/20 10:44
  * @Author: EricMa
  * @Description: 可在线修改的错误模板
  */
 //@Data
-public class KnownErrorRuntime {
+public class KnownErrorRuntime implements Serializable {
     private String name;
     private String key_words;
     private String repair_cmds;
@@ -46,5 +48,14 @@ public class KnownErrorRuntime {
 
     public void setRepair_cmds(String repair_cmds) {
         this.repair_cmds = repair_cmds;
+    }
+
+    @Override
+    public String toString() {
+        return "KnownErrorRuntime{" +
+            "name='" + name + '\'' +
+            ", key_words='" + key_words + '\'' +
+            ", repair_cmds='" + repair_cmds + '\'' +
+            '}';
     }
 }

@@ -52,4 +52,13 @@ public class Source implements Serializable{
     this.url = url;
   }
 
+  @Override
+  public String toString() {
+    return "Source{" +
+        "id=" + id +
+        ", type='" + type + '\'' +
+        ", name='" + name + '\'' +
+        ", url='" + url + '\'' +
+        '}';
+  }
 }

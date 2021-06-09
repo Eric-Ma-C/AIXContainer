@@ -44,11 +44,15 @@ public class NetworkConfig {
     /**
      * zk服务器地址
      */
-    public static final String ZK_SERVER_URL = "zookeeper://112.124.46.179:2181";
+//    public static String ZK_SERVER_URL = "zookeeper://112.124.46.179:2181";
+    public static String ZK_SERVER_URL = PropertyUtils.getProperty("common.properties","zk.server.url","zookeeper://112.124.46.179:2181");
+
     /**
-     * zk服务端口
+     * dubbo服务端口
      */
-    public static final int ZK_AIX_PORT = 20880;
+//    public static int ZK_AIX_PORT = 20880;
+    public static int DUBBO_SERVER_PORT = Integer.parseInt(PropertyUtils.getProperty("common.properties","dubbo.server.port","20880"));
+
     /**
      * kafka broker服务器地址
      */

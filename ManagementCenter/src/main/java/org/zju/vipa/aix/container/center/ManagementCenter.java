@@ -228,12 +228,13 @@ public class ManagementCenter {
         List<Source> pipSourceList = AixDbManager.getInstance().getPipSourceList();
 
         if (pipSourceList != null) {
+            LogUtils.info("refreshPipSource:size={}", pipSourceList.size());
             for (Source source : pipSourceList) {
-                LogUtils.info("refreshPipSource={}", source);
+                LogUtils.info(source.toString());
             }
             PipSource.refreshSource(pipSourceList);
         } else {
-            LogUtils.error("aptSourceList=null!");
+            LogUtils.error("aptSourceList is null!");
         }
 
     }
@@ -242,11 +243,11 @@ public class ManagementCenter {
         if (knownErrorList == null) {
             LogUtils.error("knownErrorList is null!");
         } else {
-            LogUtils.debug("knownErrorList.size={}", knownErrorList.size());
+            LogUtils.info("refreshKnownError:knownErrorList.size={}", knownErrorList.size());
             List<KnownErrorRuntime> knownErrorRuntimeList = new ArrayList<>();
             for (KnownError knownError : knownErrorList) {
                 knownErrorRuntimeList.add(new KnownErrorRuntime(knownError));
-                LogUtils.debug(knownError.toString());
+                LogUtils.info(knownError.toString());
             }
             ErrorParser.refreshRuntimeErrorList(knownErrorRuntimeList);
         }
@@ -256,13 +257,13 @@ public class ManagementCenter {
         List<Source> aptSourceList = AixDbManager.getInstance().getAptSourceList();
 
         if (aptSourceList != null) {
-            LogUtils.info("refreshAptSource={}", aptSourceList.toArray());
+            LogUtils.info("refreshAptSource:size={}", aptSourceList.size());
             for (Source source : aptSourceList) {
-                LogUtils.info("refreshAptSource={}", source);
+                LogUtils.info(source.toString());
             }
             AptSource.refreshSource(aptSourceList);
         } else {
-            LogUtils.error("aptSourceList=null!");
+            LogUtils.error("aptSourceList is null!");
         }
 
     }

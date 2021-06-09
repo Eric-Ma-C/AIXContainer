@@ -27,7 +27,7 @@ public class AIXEnvConfig {
 
 
     private static String PIP_SOURCE = PipSource.defaultUrl();
-    private static final String PIP_CACHE_DIR = "/home/aix/cache/pip/";
+    private static final String PIP_CACHE_DIR = "/home/aix/.cache/pip/";
     //    private static final String PIP_INSTALL = "pip install  --prefer-binary  --cache-dir \"" + PIP_CACHE_DIR + "\" ";
     private static final String PIP_INSTALL = "pip install  --prefer-binary -i " + PIP_SOURCE + " --cache-dir \"" + PIP_CACHE_DIR + "\" ";
 
